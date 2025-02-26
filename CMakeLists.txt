@@ -13,22 +13,14 @@ endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
-
-target_compile_options(${PROJECT_NAME} PRIVATE
--Werror
--Wall
--Wextra
-)
+if(MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE /W3)
+else()
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+endif()
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-    ${PROJECT_SOURCE_DIR}/src/main.cpp
-    ${PROJECT_SOURCE_DIR}/src/TCP/Client/TCPClient.cpp
-    ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPServer.cpp
-    ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPConnection.cpp
-    ${PROJECT_SOURCE_DIR}/src/Window/Window.cpp
-    ${PROJECT_SOURCE_DIR}/src/Application.cpp
-
     ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui.cpp
     ${PROJECT_SOURCE_DIR}/vendor/imgui/backends/imgui_impl_glfw.cpp
     ${PROJECT_SOURCE_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp
@@ -38,6 +30,15 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui_widgets.cpp
     ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui_demo.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
+
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/TCP/Client/TCPClient.cpp
+    ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPServer.cpp
+    ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPConnection.cpp
+    ${PROJECT_SOURCE_DIR}/src/Window/Window.cpp
+    ${PROJECT_SOURCE_DIR}/src/Application.cpp
+
+    
 )
 
 target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32)
