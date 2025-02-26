@@ -4,6 +4,7 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <vector>
+
 #define GL_SILENCE_DEPRECATION
 
 void Window::GLFWErrorCallback(int error, const char* description)

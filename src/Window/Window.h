@@ -4,7 +4,7 @@
 #include "imgui.h"
 #include <utility>
 
-class GLFWwindow;
+struct GLFWwindow;
 
 class Window
 {

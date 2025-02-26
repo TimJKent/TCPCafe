@@ -9,8 +9,6 @@ Application::Application()
 {
 }
 
-
-
 void AppendString(std::string& stringToAppend, const std::string& addition)
 {
     for(auto& c : addition)
