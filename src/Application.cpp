@@ -7,6 +7,13 @@ Application::Application()
 , ioContext()
 , tcpServer(ioContext)
 {
+    tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
+    tcpClientSendMessage2 = std::make_unique<SendMessageWidget>("tcpCTX2", [&](const std::string& message){SendMessageFromClient(message);});
+    tcpClientSendMessage3 = std::make_unique<SendMessageWidget>("tcpCTX3", [&](const std::string& message){SendMessageFromClient(message);});
+
+    tcpServerSendMessage1 = std::make_unique<SendMessageWidget>("tcpSTX1", [&](const std::string& message){SendMessageFromServer(message);});
+    tcpServerSendMessage2 = std::make_unique<SendMessageWidget>("tcpSTX2", [&](const std::string& message){SendMessageFromServer(message);});
+    tcpServerSendMessage3 = std::make_unique<SendMessageWidget>("tcpSTX3", [&](const std::string& message){SendMessageFromServer(message);});
 }
 
 void AppendString(std::string& stringToAppend, const std::string& addition)
@@ -142,34 +149,9 @@ void Application::DrawTCPClientWindow()
     if(tcpClient.IsConnected())
     {
         ImGui::Text("Send Message");
-        ImGui::InputText("##Message1", &clientMessage1);
-        ImGui::SameLine();
-        ImGui::PushID("Send1");
-        if(ImGui::Button("Send"))
-        {
-            AppendString(clientSend, clientMessage1);
-            tcpClient.SendMessageA(clientMessage1);
-        }
-        ImGui::PopID();
-        ImGui::InputText("##Message2", &clientMessage2);
-        ImGui::SameLine();
-        ImGui::PushID("Send2");
-        if(ImGui::Button("Send"))
-        {
-            AppendString(clientSend, clientMessage2);
-            tcpClient.SendMessageA(clientMessage2);
-        }
-        ImGui::PopID();
-        
-        ImGui::InputText("##Message3", &clientMessage3);
-        ImGui::SameLine();
-        ImGui::PushID("Send3");
-        if(ImGui::Button("Send"))
-        {
-            AppendString(clientSend, clientMessage3);
-            tcpClient.SendMessageA(clientMessage3);
-        }
-        ImGui::PopID();
+        tcpClientSendMessage1->Draw();
+        tcpClientSendMessage2->Draw();
+        tcpClientSendMessage3->Draw();
     }
 }
 
@@ -240,34 +222,9 @@ void Application::DrawTCPServerWindow()
     if(tcpServer.IsListening())
     {
         ImGui::Text("Send Message");
-        ImGui::InputText("##Message1", &serverMessage1);
-        ImGui::SameLine();
-        ImGui::PushID("Send1");
-        if(ImGui::Button("Send"))
-        {
-            AppendString(serverSend, serverMessage1);
-            tcpServer.SendMessageA(serverMessage1);
-        }
-        ImGui::PopID();
-        ImGui::InputText("##Message2", &serverMessage2);
-        ImGui::SameLine();
-        ImGui::PushID("Send2");
-        if(ImGui::Button("Send"))
-        {
-            AppendString(serverSend, serverMessage2);
-            tcpServer.SendMessageA(serverMessage2);
-        }
-        ImGui::PopID();
-        
-        ImGui::InputText("##Message3", &serverMessage3);
-        ImGui::SameLine();
-        ImGui::PushID("Send3");
-        if(ImGui::Button("Send"))
-        {
-            AppendString(serverSend, serverMessage3);
-            tcpServer.SendMessageA(serverMessage3);
-        }
-        ImGui::PopID();
+        tcpServerSendMessage1->Draw();
+        tcpServerSendMessage2->Draw();
+        tcpServerSendMessage3->Draw();
     }
 }
 
@@ -285,4 +242,16 @@ void Application::BeginMainPanel()
 void Application::EndMainPanel()
 {
     ImGui::End();
+}
+
+void Application::SendMessageFromServer(const std::string& message)
+{
+    AppendString(serverSend, message);
+    tcpServer.SendMessageA(message);
+}
+
+void Application::SendMessageFromClient(const std::string& message)
+{
+    AppendString(clientSend, message);
+    tcpClient.SendMessageA(message);
 }

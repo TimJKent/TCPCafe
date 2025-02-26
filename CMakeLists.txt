@@ -37,8 +37,7 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPConnection.cpp
     ${PROJECT_SOURCE_DIR}/src/Window/Window.cpp
     ${PROJECT_SOURCE_DIR}/src/Application.cpp
-
-    
+    ${PROJECT_SOURCE_DIR}/src/Widgets/SendMessageWidget.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32)
