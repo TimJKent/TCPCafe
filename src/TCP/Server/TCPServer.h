@@ -11,7 +11,6 @@ public:
     void Listen(uint16_t listeningPort);
     void StopListen();
     bool IsListening();
-    void Run();
     std::string ConsumeRXData();
     void SendMessage(const std::string& message);
 private:

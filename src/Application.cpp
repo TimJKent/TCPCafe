@@ -5,6 +5,7 @@ Application::Application()
 : window(1280, 720, "TCPCafe 0.0.1")
 , activeMenu(MENU_NAME::TCP_CLIENT)
 , ioContext()
+, tcpClient(ioContext)
 , tcpServer(ioContext)
 {
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
@@ -34,9 +35,8 @@ int Application::Run()
 
     while (!window.ShouldClose())
     {
-        tcpServer.Run();
-        tcpClient.Run();
-        
+        ioContext.run();
+
         window.BeginFrame();
         
         DrawMainMenu();
@@ -145,7 +145,6 @@ void Application::DrawTCPClientWindow()
     }
     
     AppendString(clientReceive, tcpClient.ConsumeRXData());
-    AppendString(serverReceive, tcpServer.ConsumeRXData());
     if(tcpClient.IsConnected())
     {
         ImGui::Text("Send Message");
@@ -157,6 +156,7 @@ void Application::DrawTCPClientWindow()
 
 void Application::DrawTCPServerWindow()
 {
+    AppendString(serverReceive, tcpServer.ConsumeRXData());
     int portInputSize = 5;
 
     static std::string portBuf  = "65535";
@@ -246,12 +246,18 @@ void Application::EndMainPanel()
 
 void Application::SendMessageFromServer(const std::string& message)
 {
-    AppendString(serverSend, message);
-    tcpServer.SendMessageA(message);
+    if(tcpServer.IsListening())
+    {
+        AppendString(serverSend, message);
+        tcpServer.SendMessageA(message);
+    }
 }
 
 void Application::SendMessageFromClient(const std::string& message)
 {
-    AppendString(clientSend, message);
-    tcpClient.SendMessageA(message);
+    if(tcpClient.IsConnected())
+    {
+        AppendString(clientSend, message);
+        tcpClient.SendMessageA(message);
+    }
 }

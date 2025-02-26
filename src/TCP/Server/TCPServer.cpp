@@ -45,11 +45,6 @@ void TCPServer::Listen(uint16_t listeningPort)
   isListening = true;
 }
 
-void TCPServer::Run()
-{
-  ioContext.run();
-}
-
 void TCPServer::StopListen()
 {
   acceptor->close();
