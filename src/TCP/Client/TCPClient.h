@@ -8,16 +8,15 @@ using asio::ip::tcp;
 class TCPClient
 {
 public:
-    TCPClient();
+    TCPClient(asio::io_service& ioContext);
     void OnReadData(std::error_code ec, std::size_t len);
     void Connect(const std::string& ipAddres, uint32_t port);
-    void Run();
     void Disconnect();
     void SendMessage(const std::string& message);
     bool IsConnected();
     std::string ConsumeRXData();
 private:
-    asio::io_service io_service;
+    asio::io_service& ioContext;
     std::unique_ptr<tcp::socket> socket;
     std::vector<char> buffer;
     std::string rxData;

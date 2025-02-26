@@ -3,9 +3,9 @@
 
 using asio::ip::tcp;
 
-    TCPClient::TCPClient()
-    : io_service()
-    , socket(std::make_unique<tcp::socket>(io_service))
+    TCPClient::TCPClient(asio::io_context& ioContext)
+    : ioContext(ioContext)
+    , socket(std::make_unique<tcp::socket>(ioContext))
     , buffer(4096)
     {
         
@@ -41,7 +41,7 @@ using asio::ip::tcp;
         try{
             tcp::endpoint endpoint(asio::ip::address::from_string(ipAddres), port);
             asio::error_code error;
-            socket.reset(new tcp::socket(io_service));
+            socket.reset(new tcp::socket(ioContext));
             socket->connect(endpoint, error);
             
             if(error)
@@ -57,11 +57,6 @@ using asio::ip::tcp;
         {
             rxData.append(e.what());
         }
-    }
-
-    void TCPClient::Run()
-    {
-        io_service.run();
     }
 
     void TCPClient::Disconnect()
