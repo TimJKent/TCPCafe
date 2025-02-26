@@ -2,12 +2,13 @@
 ImGUI based tool for testing TCP connections
 
 ## Building
-Create Directory /build
 
-cd build
+### Generators
+Tested Compilers: MSVC, MinGW
 
-cmake -G <Generator Name> ..
-
-cmake --build .
-
-./TCPCafe.exe
+### CMake
+1. Create Directory /build
+1. cd build
+1. cmake -G "Generator Name" ..
+1. cmake --build .
+1. ./TCPCafe.exe
