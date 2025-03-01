@@ -3,12 +3,14 @@ ImGUI based tool for testing TCP connections
 
 ## Building
 
-### Generators
-Tested Compilers: MSVC, MinGW
+### CMake Generators
+CMake will select a build system automatically base on your OS.
+If you wish to select a different build system:
+1. mkdir /build (delete if already exists)
+1. cd /build
+1. View available Build System: cmake -G
+1. Generate Build Files: cmake -G "Generator Name" ..
 
-### CMake
-1. Create Directory /build
+### Building
 1. cd build
-1. cmake -G "Generator Name" ..
 1. cmake --build .
-1. ./TCPCafe.exe
