@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.11)
+include(FetchContent)
+
 project(TCPCafe)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
 add_definitions(-DASIO_STANDALONE )
 
@@ -13,6 +14,27 @@ endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
+#BEGIN_DEPS
+
+# OpenGL
+find_package(OpenGL REQUIRED)
+
+include(cmake/glfw.cmake)
+
+#Glad
+include(cmake/glad.cmake)
+
+# ImGui
+include(cmake/imgui.cmake)
+target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_IncludeDirectories})
+target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_Sources})
+
+# Asio
+include(cmake/asio.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ASIO_IncludeDirectories})
+
+#END_DEPS
+
 if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W3)
 else()
@@ -21,16 +43,6 @@ endif()
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/backends/imgui_impl_glfw.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/misc/cpp/imgui_stdlib.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui_draw.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui_tables.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui_widgets.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/imgui_demo.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
-
     ${PROJECT_SOURCE_DIR}/src/main.cpp
     ${PROJECT_SOURCE_DIR}/src/TCP/Client/TCPClient.cpp
     ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPServer.cpp
@@ -46,11 +58,4 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     src
-    vendor/glfw/include
-    vendor/imgui
-    vendor/imgui/backends
-    vendor/glad/include
-    vendor/asio/include
 )
-
-add_subdirectory(vendor/GLFW)
