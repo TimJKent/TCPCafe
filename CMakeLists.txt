@@ -19,12 +19,13 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 # OpenGL
 find_package(OpenGL REQUIRED)
 
+# GLFW
 include(cmake/glfw.cmake)
 
-#Glad
+# Glad
 include(cmake/glad.cmake)
 
-# ImGui
+# Dear ImGui
 include(cmake/imgui.cmake)
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_IncludeDirectories})
 target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_Sources})
