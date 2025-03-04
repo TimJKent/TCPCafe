@@ -34,6 +34,11 @@ target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_Sources})
 include(cmake/asio.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${ASIO_IncludeDirectories})
 
+# imgui-node-editor
+include(cmake/imgui-node-editor.cmake)
+target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_IncludeDirectories})
+target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_Sources})
+
 #END_DEPS
 
 if(MSVC)
