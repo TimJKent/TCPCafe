@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "misc/cpp/imgui_stdlib.h"
+#include "Nodes/PrintNode.h"
 
 Application::Application()
 : window(1280, 720, "TCPCafe 0.0.1")
@@ -15,6 +16,8 @@ Application::Application()
     tcpServerSendMessage1 = std::make_unique<SendMessageWidget>("tcpSTX1", [&](const std::string& message){SendMessageFromServer(message);});
     tcpServerSendMessage2 = std::make_unique<SendMessageWidget>("tcpSTX2", [&](const std::string& message){SendMessageFromServer(message);});
     tcpServerSendMessage3 = std::make_unique<SendMessageWidget>("tcpSTX3", [&](const std::string& message){SendMessageFromServer(message);});
+
+    m_Context = ed::CreateEditor();
 }
 
 void AppendString(std::string& stringToAppend, const std::string& addition)
@@ -46,6 +49,7 @@ int Application::Run()
         {
             case TCP_CLIENT: DrawTCPClientWindow(); break;
             case TCP_SERVER: DrawTCPServerWindow(); break;
+            case NODE_EDITOR: DrawNodeEditor(); break;
         }
         EndMainPanel();
 
@@ -68,6 +72,10 @@ void Application::DrawMainMenu()
         if(ImGui::MenuItem("Server","n", activeMenu == MENU_NAME::TCP_SERVER))
         {
             activeMenu = MENU_NAME::TCP_SERVER;
+        }
+        if(ImGui::MenuItem("Node Editor","n", activeMenu == MENU_NAME::NODE_EDITOR))
+        {
+            activeMenu = MENU_NAME::NODE_EDITOR;
         }
         ImGui::EndMainMenuBar();
     }
@@ -259,5 +267,63 @@ void Application::SendMessageFromClient(const std::string& message)
     {
         AppendString(clientSend, message);
         tcpClient.SendMessageA(message);
+    }
+}
+
+
+int Application::GetNextId()
+{
+    return m_NextId++;
+}
+
+void Application::SpawnInputActionNode()
+{
+    nodes.emplace_back(std::shared_ptr<PrintNode>(new PrintNode()));
+}
+
+void Application::DrawNodeEditor()
+{
+    ed::SetCurrentEditor(m_Context);
+    ed::Begin("My Editor", ImVec2(0.0, 0.0f));
+    int uniqueId = 1;
+    
+    // Start drawing nodes.
+    for (auto& node : nodes)
+    {
+        if(ax::NodeEditor::IsNodeSelected(node->id))
+        {
+            if(ImGui::IsKeyReleased(ImGuiKey_Delete))
+            {
+                std::cout << "DELETE " << node->id << std::endl;
+            }
+        }
+
+        node->Draw();
+    }
+
+    ed::End();
+    ed::SetCurrentEditor(nullptr);
+
+    
+    
+
+
+    if (ImGui::BeginPopup("Create New Node"))
+    {
+            Node* node = nullptr;
+            if (ImGui::MenuItem("Input Action"))
+            {
+                SpawnInputActionNode();
+            }
+
+        ImGui::EndPopup();
+    }
+
+    if(ImGui::IsItemHovered())
+    {
+        if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+        {
+            ImGui::OpenPopup("Create New Node");
+        }
     }
 }

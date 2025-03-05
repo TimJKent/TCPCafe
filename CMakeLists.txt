@@ -36,8 +36,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${ASIO_IncludeDirectories})
 
 # imgui-node-editor
 include(cmake/imgui-node-editor.cmake)
-target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_IncludeDirectories})
+target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_NODE_EDITOR_IncludeDirectories})
 target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_Sources})
+
+message(${IMGUI_NODE_EDITOR_IncludeDirectories})
 
 #END_DEPS
 
@@ -56,6 +58,8 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Window/Window.cpp
     ${PROJECT_SOURCE_DIR}/src/Application.cpp
     ${PROJECT_SOURCE_DIR}/src/Widgets/SendMessageWidget.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/PrintNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/Node.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32)
