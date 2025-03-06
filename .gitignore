@@ -2,6 +2,9 @@ imgui.ini
 
 /build
 
+# Compiler Specific
+*.vscode/
+
 # Prerequisites
 *.d
 
