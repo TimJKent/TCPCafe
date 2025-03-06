@@ -1,9 +1,10 @@
 #include "Nodes/Node.h"
+#include "Nodes/NodeManager.h"
 
-int Node::globalId = 100;
+
 
 Node::Node()
-: id(Node::globalId++)
+: id(NodeManager::globalId++)
 {
-    
+        
 }

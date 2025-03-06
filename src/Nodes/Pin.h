@@ -1,11 +1,11 @@
 #pragma once
-#include "Nodes/Node.h"
+#include "Nodes/NodeManager.h"
 
 class Pin
 {
 public:
     Pin(const std::string& name, ax::NodeEditor::PinKind pinKind)
-    : id(Node::globalId++)
+    : id(NodeManager::globalId++)
     , pinKind(pinKind)
     , name(name)
     {}

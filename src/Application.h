@@ -6,6 +6,7 @@
 #include "Widgets/SendMessageWidget.h"
 #include "imgui_node_editor.h"
 #include "Nodes/Node.h"
+#include "Nodes/NodeManager.h"
 
 namespace ed = ax::NodeEditor;
 
@@ -29,8 +30,7 @@ private:
     void EndMainPanel();
     void SendMessageFromServer(const std::string& message);
     void SendMessageFromClient(const std::string& message);
-    int GetNextId();
-    void SpawnInputActionNode();
+
 
 private:
     Window window;
@@ -52,7 +52,5 @@ private:
     asio::io_context ioContext;
     TCPClient tcpClient;
     TCPServer tcpServer;
-    ed::EditorContext* m_Context = nullptr;
-    std::vector<std::shared_ptr<Node>> nodes;
-    int m_NextId = 1;
+    NodeManager nodeManager;
 };

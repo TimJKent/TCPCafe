@@ -16,8 +16,6 @@ Application::Application()
     tcpServerSendMessage1 = std::make_unique<SendMessageWidget>("tcpSTX1", [&](const std::string& message){SendMessageFromServer(message);});
     tcpServerSendMessage2 = std::make_unique<SendMessageWidget>("tcpSTX2", [&](const std::string& message){SendMessageFromServer(message);});
     tcpServerSendMessage3 = std::make_unique<SendMessageWidget>("tcpSTX3", [&](const std::string& message){SendMessageFromServer(message);});
-
-    m_Context = ed::CreateEditor();
 }
 
 void AppendString(std::string& stringToAppend, const std::string& addition)
@@ -271,49 +269,28 @@ void Application::SendMessageFromClient(const std::string& message)
 }
 
 
-int Application::GetNextId()
-{
-    return m_NextId++;
-}
-
-void Application::SpawnInputActionNode()
-{
-    nodes.emplace_back(std::shared_ptr<PrintNode>(new PrintNode()));
-}
-
 void Application::DrawNodeEditor()
 {
-    ed::SetCurrentEditor(m_Context);
+    ed::SetCurrentEditor(nodeManager.GetEditorContext());
     ed::Begin("My Editor", ImVec2(0.0, 0.0f));
     int uniqueId = 1;
     
     // Start drawing nodes.
-    for (auto& node : nodes)
+    for (auto& node : nodeManager.GetNodes())
     {
-        if(ax::NodeEditor::IsNodeSelected(node->id))
-        {
-            if(ImGui::IsKeyReleased(ImGuiKey_Delete))
-            {
-                std::cout << "DELETE " << node->id << std::endl;
-            }
-        }
-
         node->Draw();
     }
-
+    nodeManager.Update();
+    
     ed::End();
     ed::SetCurrentEditor(nullptr);
-
-    
-    
 
 
     if (ImGui::BeginPopup("Create New Node"))
     {
-            Node* node = nullptr;
             if (ImGui::MenuItem("Input Action"))
             {
-                SpawnInputActionNode();
+                nodeManager.SpawnInputActionNode();
             }
 
         ImGui::EndPopup();
