@@ -3,35 +3,9 @@
 #include "imgui_node_editor.h"
 #include <string>
 #include <vector>
+#include <memory>
 
-enum class PinType
-{
-    Flow,
-    Bool,
-    Int,
-    Float,
-    String,
-    Object,
-    Function,
-    Delegate,
-};
-
-enum class PinKind
-{
-    Output,
-    Input
-};
-
-enum class NodeType
-{
-    Blueprint,
-    Simple,
-    Tree,
-    Comment,
-    Houdini
-};
-
-class Node;
+class Pin;
 
 class Node
 {
@@ -39,8 +13,8 @@ public:
     Node();
 public:
     ax::NodeEditor::NodeId id;
-
-    virtual void Draw(){}; 
+    virtual std::vector<std::shared_ptr<Pin>> GetPins() {return {};}
+    virtual void Draw(){} 
 };
 
 class Link

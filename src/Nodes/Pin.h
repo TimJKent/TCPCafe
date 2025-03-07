@@ -1,13 +1,28 @@
 #pragma once
 #include "Nodes/NodeManager.h"
+#include <any>
 
 class Pin
 {
 public:
-    Pin(const std::string& name, ax::NodeEditor::PinKind pinKind)
+    enum class PinType
+    {
+        Trigger,
+        Bool,
+        Int,
+        Float,
+        String,
+        Object,
+        Function,
+        Delegate,
+    };
+
+public:
+    Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType)
     : id(NodeManager::globalId++)
     , pinKind(pinKind)
     , name(name)
+    , pinType(pinType)
     {}
 
     void Draw()
@@ -27,8 +42,13 @@ public:
         }
     }
 
-private:
-    int id;
+    bool active = false;
+
+    ax::NodeEditor::PinId id;
     ax::NodeEditor::PinKind pinKind;
+    PinType pinType;
+    std::any any;
+private:
     std::string name;
+    bool triggered = false;
 };

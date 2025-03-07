@@ -59,8 +59,12 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Application.cpp
     ${PROJECT_SOURCE_DIR}/src/Widgets/SendMessageWidget.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/PrintNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/ButtonNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/StringNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/ConcatNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Node.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/NodeManager.cpp
+    
 )
 
 target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32)

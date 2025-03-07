@@ -276,10 +276,15 @@ void Application::DrawNodeEditor()
     int uniqueId = 1;
     
     // Start drawing nodes.
+    int nodePushID = 0;
     for (auto& node : nodeManager.GetNodes())
     {
+        std::string id = "Node_" + std::to_string(nodePushID++);
+        ImGui::PushID(id.c_str());
         node->Draw();
+        ImGui::PopID();
     }
+
     nodeManager.Update();
     
     ed::End();
@@ -288,10 +293,25 @@ void Application::DrawNodeEditor()
 
     if (ImGui::BeginPopup("Create New Node"))
     {
-            if (ImGui::MenuItem("Input Action"))
+
+            if (ImGui::MenuItem("Button"))
+            {
+                nodeManager.SpawnButtonNode();
+            }
+            if (ImGui::MenuItem("String"))
+            {
+                nodeManager.SpawnStringNode();
+            }
+            if (ImGui::MenuItem("Concatenate"))
+            {
+                nodeManager.SpawnConcatNode();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Print"))
             {
                 nodeManager.SpawnInputActionNode();
             }
+            
 
         ImGui::EndPopup();
     }

@@ -1,5 +1,8 @@
 #include "Nodes/NodeManager.h"
 #include "Nodes/PrintNode.h"
+#include "Nodes/ButtonNode.h"
+#include "Nodes/StringNode.h"
+#include "Nodes/ConcatNode.h"
 
 #include <iostream>
 
@@ -7,7 +10,9 @@ int NodeManager::globalId = 100;
 
 NodeManager::NodeManager()
 {
-    nodeEditorContext = ax::NodeEditor::CreateEditor();
+    ax::NodeEditor::Config config;
+    config.NavigateButtonIndex = 2;
+    nodeEditorContext = ax::NodeEditor::CreateEditor(&config);
 }
 
 ax::NodeEditor::EditorContext* NodeManager::GetEditorContext()
@@ -20,18 +25,39 @@ void NodeManager::SpawnInputActionNode()
     nodes.emplace_back(std::shared_ptr<PrintNode>(new PrintNode()));
 }
 
+void NodeManager::SpawnButtonNode()
+{
+    nodes.emplace_back(std::shared_ptr<ButtonNode>(new ButtonNode()));
+}
+
+void NodeManager::SpawnStringNode()
+{
+    nodes.emplace_back(std::shared_ptr<StringNode>(new StringNode()));
+}
+
+void NodeManager::SpawnConcatNode()
+{
+    nodes.emplace_back(std::shared_ptr<ConcatNode>(new ConcatNode()));
+}
+
 void NodeManager::Update()
 {
     for (auto& linkInfo : links)
     {
         ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID);
+        
+        std::shared_ptr<Pin> inputPin = GetPinFromId(linkInfo.StartPinID);
+        std::shared_ptr<Pin> outputPin = GetPinFromId(linkInfo.EndPinID);
+
+        inputPin->active = outputPin->active;
+        inputPin->any = outputPin->any;
     }
 
     // Handle creation action, returns true if editor want to create new object (node or link)
     if (ax::NodeEditor::BeginCreate())
     {
         ax::NodeEditor::PinId inputPinId, outputPinId;
-        if (ax::NodeEditor::QueryNewLink(&inputPinId, &outputPinId))
+        if (ax::NodeEditor::QueryNewLink(&outputPinId, &inputPinId))
         {
             // QueryNewLink returns true if editor want to create new link between pins.
             //
@@ -45,21 +71,35 @@ void NodeManager::Update()
             //   * input invalid, output valid - user started to drag new ling from output pin
             //   * input valid, output valid   - user dragged link over other pin, can be validated
 
-            if (inputPinId && outputPinId) // both are valid, let's accept link
+            bool accept = false;
+            std::shared_ptr<Pin> inputPin = GetPinFromId(inputPinId);
+            std::shared_ptr<Pin> outputPin = GetPinFromId(outputPinId);
+
+            if(inputPin->pinKind == ax::NodeEditor::PinKind::Input  && outputPin->pinKind == ax::NodeEditor::PinKind::Output)
+            {
+                bool matchesType  = inputPin->pinType == outputPin->pinType;
+                bool pinIsntFull = !inputPin->active || inputPin->pinType == Pin::PinType::Trigger;
+                if(matchesType && pinIsntFull)
+                {
+                    accept = true;
+                }
+            }
+            
+            if (accept)
             {
                 // ed::AcceptNewItem() return true when user release mouse button.
                 if (ax::NodeEditor::AcceptNewItem())
                 {
                     // Since we accepted new link, lets add one to our list of links.
                     links.push_back({ ax::NodeEditor::LinkId(NodeManager::globalId++), inputPinId, outputPinId });
-
+                    
                     // Draw new link.
                     ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID);
                 }
-
-                // You may choose to reject connection between these nodes
-                // by calling ed::RejectNewItem(). This will allow editor to give
-                // visual feedback by changing link thickness and color.
+            }
+            else
+            {
+                ax::NodeEditor::RejectNewItem(ImColor(255, 0, 0), 1.0f);
             }
         }
         ax::NodeEditor::EndCreate(); // Wraps up object creation action handling.
@@ -85,7 +125,7 @@ void NodeManager::Update()
                 }
             }
 
-            // You may reject link deletion by calling:
+            // You may reject node deletion by calling:
             // ed::RejectDeletedItem();
         }
 
@@ -101,6 +141,15 @@ void NodeManager::Update()
                 {
                     if (link.ID == deletedLinkId)
                     {
+                        std::shared_ptr<Pin> inputPin = GetPinFromId(link.EndPinID);
+                        std::shared_ptr<Pin> outputPin = GetPinFromId(link.StartPinID);
+                            
+                            inputPin->any.reset();
+                            inputPin->active = false;
+
+                            outputPin->any.reset();
+                            outputPin->active = false;
+
                         links.erase(std::remove(links.begin(), links.end(), link), links.end());
                         break;
                     }
@@ -111,9 +160,21 @@ void NodeManager::Update()
             // ed::RejectDeletedItem();
         }
 
-        
-
         ax::NodeEditor::EndDelete(); // Wrap up deletion action
+    }   
+}
+
+std::shared_ptr<Pin> NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
+{
+    for (auto& node : nodes)
+    {
+        for(std::shared_ptr<Pin> pin : node->GetPins())
+        {
+            if(pin->id == pinId)
+            {
+                return pin;
+            }
+        }
     }
-    
+    return nullptr;
 }

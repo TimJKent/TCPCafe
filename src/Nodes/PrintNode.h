@@ -7,7 +7,10 @@ class PrintNode : public Node
 public:
     PrintNode();
     void Draw() final;
+    void Print();
+    std::vector<std::shared_ptr<Pin>> GetPins() final;
 private:
-    Pin inputPin;
-    Pin outputPin;
+    std::shared_ptr<Pin> triggerPin;
+    std::shared_ptr<Pin> stringPin;
+    std::string message;
 };
