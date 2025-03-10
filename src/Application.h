@@ -50,7 +50,7 @@ private:
     MENU_NAME activeMenu;
 private:
     asio::io_context ioContext;
-    TCPClient tcpClient;
+    std::shared_ptr<TCPClient> tcpClient;
     TCPServer tcpServer;
     NodeManager nodeManager;
 };

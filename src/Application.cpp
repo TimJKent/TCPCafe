@@ -1,12 +1,21 @@
 #include "Application.h"
 #include "misc/cpp/imgui_stdlib.h"
+
 #include "Nodes/PrintNode.h"
+#include "Nodes/PrintNode.h"
+#include "Nodes/ButtonNode.h"
+#include "Nodes/StringNode.h"
+#include "Nodes/ConcatNode.h"
+#include "Nodes/IntNode.h"
+#include "Nodes/ToStringNode.h"
+#include "Nodes/ClientSendNode.h"
+#include "Nodes/TimerNode.h"
 
 Application::Application()
 : window(1280, 720, "TCPCafe 0.0.1")
 , activeMenu(MENU_NAME::TCP_CLIENT)
 , ioContext()
-, tcpClient(ioContext)
+, tcpClient(std::make_shared<TCPClient>(ioContext))
 , tcpServer(ioContext)
 {
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
@@ -104,17 +113,17 @@ void Application::DrawTCPClientWindow()
 
         ImGui::TableSetColumnIndex(2);
 
-        std::string connectText = tcpClient.IsConnected() ? "Disconnect" : "Connect";
+        std::string connectText = tcpClient->IsConnected() ? "Disconnect" : "Connect";
 
         if(ImGui::Button(connectText.c_str()))
         {
-            if(!tcpClient.IsConnected())
+            if(!tcpClient->IsConnected())
             {
-                tcpClient.Connect(ipBuf, std::stoi(portBuf));
+                tcpClient->Connect(ipBuf, std::stoi(portBuf));
             }
             else
             {
-                tcpClient.Disconnect();
+                tcpClient->Disconnect();
             }
         }
         
@@ -150,8 +159,8 @@ void Application::DrawTCPClientWindow()
         ImGui::EndTable();
     }
     
-    AppendString(clientReceive, tcpClient.ConsumeRXData());
-    if(tcpClient.IsConnected())
+    AppendString(clientReceive, tcpClient->ConsumeRXData());
+    if(tcpClient->IsConnected())
     {
         ImGui::Text("Send Message");
         tcpClientSendMessage1->Draw();
@@ -261,10 +270,10 @@ void Application::SendMessageFromServer(const std::string& message)
 
 void Application::SendMessageFromClient(const std::string& message)
 {
-    if(tcpClient.IsConnected())
+    if(tcpClient->IsConnected())
     {
         AppendString(clientSend, message);
-        tcpClient.SendMessageA(message);
+        tcpClient->SendMessageA(message);
     }
 }
 
@@ -296,23 +305,40 @@ void Application::DrawNodeEditor()
 
             if (ImGui::MenuItem("Button"))
             {
-                nodeManager.SpawnButtonNode();
+                nodeManager.SpawnNode<ButtonNode>();
             }
+            if (ImGui::MenuItem("Timer"))
+            {
+                nodeManager.SpawnNode<TimerNode>();
+            }
+            ImGui::Separator();
             if (ImGui::MenuItem("String"))
             {
-                nodeManager.SpawnStringNode();
+                nodeManager.SpawnNode<StringNode>();
+            }
+            if (ImGui::MenuItem("Int"))
+            {
+                nodeManager.SpawnNode<IntNode>();
             }
             if (ImGui::MenuItem("Concatenate"))
             {
-                nodeManager.SpawnConcatNode();
+                nodeManager.SpawnNode<ConcatNode>();
+            }
+            if (ImGui::MenuItem("ToString"))
+            {
+                nodeManager.SpawnNode<ToStringNode>();
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Print"))
             {
-                nodeManager.SpawnInputActionNode();
+                nodeManager.SpawnNode<PrintNode>();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("TCP Client"))
+            {
+                nodeManager.SpawnNode<ClientSendNode>(tcpClient);
             }
             
-
         ImGui::EndPopup();
     }
 

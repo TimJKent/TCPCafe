@@ -15,6 +15,7 @@ public:
     ax::NodeEditor::NodeId id;
     virtual std::vector<std::shared_ptr<Pin>> GetPins() {return {};}
     virtual void Draw(){} 
+    virtual void Update(){} 
 };
 
 class Link

@@ -3,6 +3,7 @@
 #include "Nodes/ButtonNode.h"
 #include "Nodes/StringNode.h"
 #include "Nodes/ConcatNode.h"
+#include "Nodes/ClientSendNode.h"
 
 #include <iostream>
 
@@ -20,28 +21,13 @@ ax::NodeEditor::EditorContext* NodeManager::GetEditorContext()
     return nodeEditorContext;
 }
 
-void NodeManager::SpawnInputActionNode()
-{
-    nodes.emplace_back(std::shared_ptr<PrintNode>(new PrintNode()));
-}
-
-void NodeManager::SpawnButtonNode()
-{
-    nodes.emplace_back(std::shared_ptr<ButtonNode>(new ButtonNode()));
-}
-
-void NodeManager::SpawnStringNode()
-{
-    nodes.emplace_back(std::shared_ptr<StringNode>(new StringNode()));
-}
-
-void NodeManager::SpawnConcatNode()
-{
-    nodes.emplace_back(std::shared_ptr<ConcatNode>(new ConcatNode()));
-}
-
 void NodeManager::Update()
 {
+    for(auto& node : nodes)
+    {
+        node->Update();
+    }
+
     for (auto& linkInfo : links)
     {
         ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID);
@@ -77,7 +63,7 @@ void NodeManager::Update()
 
             if(inputPin->pinKind == ax::NodeEditor::PinKind::Input  && outputPin->pinKind == ax::NodeEditor::PinKind::Output)
             {
-                bool matchesType  = inputPin->pinType == outputPin->pinType;
+                bool matchesType  = inputPin->pinType == outputPin->pinType || (inputPin->pinType == Pin::PinType::Any && outputPin->pinType != Pin::PinType::Trigger);
                 bool pinIsntFull = !inputPin->active || inputPin->pinType == Pin::PinType::Trigger;
                 if(matchesType && pinIsntFull)
                 {

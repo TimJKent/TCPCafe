@@ -15,6 +15,7 @@ public:
         Object,
         Function,
         Delegate,
+        Any,
     };
 
 public:

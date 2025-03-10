@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+class TCPClient;
+
 class NodeManager
 {
 public:
@@ -12,10 +14,12 @@ public:
 public:
     NodeManager();
 public:
-    void SpawnInputActionNode();
-    void SpawnButtonNode();
-    void SpawnStringNode();
-    void SpawnConcatNode();
+    template <typename T, typename... Args>
+    void SpawnNode(Args... args)
+    {
+        nodes.emplace_back(std::make_shared<T>(args...));
+    }
+    void SpawnClientSendNode(std::shared_ptr<TCPClient> tcpClient);
     ax::NodeEditor::EditorContext* GetEditorContext();
     std::vector<std::shared_ptr<Node>>& GetNodes() {return nodes;}
     void Update();

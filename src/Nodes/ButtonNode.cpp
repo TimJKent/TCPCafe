@@ -4,7 +4,7 @@
 
 
 ButtonNode::ButtonNode() : Node()
-, outputPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
+, outputPin(std::make_shared<Pin>("", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
 {
 
 }
@@ -21,6 +21,7 @@ void ButtonNode::Draw()
         {
             outputPin->active = false;
         }
+        ImGui::SameLine();
         outputPin->Draw();
     ax::NodeEditor::EndNode();
     
