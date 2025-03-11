@@ -6,9 +6,10 @@
 #include "Nodes/ButtonNode.h"
 #include "Nodes/StringNode.h"
 #include "Nodes/ConcatNode.h"
+#include "Nodes/AddNode.h"
 #include "Nodes/IntNode.h"
 #include "Nodes/ToStringNode.h"
-#include "Nodes/ClientSendNode.h"
+#include "Nodes/TCPClientNode.h"
 #include "Nodes/TimerNode.h"
 
 Application::Application()
@@ -316,10 +317,6 @@ void Application::DrawNodeEditor()
             {
                 nodeManager.SpawnNode<StringNode>();
             }
-            if (ImGui::MenuItem("Int"))
-            {
-                nodeManager.SpawnNode<IntNode>();
-            }
             if (ImGui::MenuItem("Concatenate"))
             {
                 nodeManager.SpawnNode<ConcatNode>();
@@ -329,6 +326,15 @@ void Application::DrawNodeEditor()
                 nodeManager.SpawnNode<ToStringNode>();
             }
             ImGui::Separator();
+            if (ImGui::MenuItem("Int"))
+            {
+                nodeManager.SpawnNode<IntNode>();
+            }
+            if (ImGui::MenuItem("Add"))
+            {
+                nodeManager.SpawnNode<AddNode>();
+            }
+            ImGui::Separator();
             if (ImGui::MenuItem("Print"))
             {
                 nodeManager.SpawnNode<PrintNode>();
@@ -336,7 +342,7 @@ void Application::DrawNodeEditor()
             ImGui::Separator();
             if (ImGui::MenuItem("TCP Client"))
             {
-                nodeManager.SpawnNode<ClientSendNode>(tcpClient);
+                nodeManager.SpawnNode<TCPClientNode>(tcpClient);
             }
             
         ImGui::EndPopup();

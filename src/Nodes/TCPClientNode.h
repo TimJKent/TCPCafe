@@ -3,10 +3,10 @@
 #include "Nodes/Pin.h"
 #include "TCP/Client/TCPClient.h"
 
-class ClientSendNode : public Node
+class TCPClientNode : public Node
 {
 public:
-    ClientSendNode(std::shared_ptr<TCPClient> tcpClient);
+TCPClientNode(std::shared_ptr<TCPClient> tcpClient);
     void Draw() final;
     void Send();
     std::vector<std::shared_ptr<Pin>> GetPins() final;

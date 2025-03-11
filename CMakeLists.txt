@@ -61,11 +61,12 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Nodes/PrintNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/ButtonNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/TimerNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/AddNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/StringNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/IntNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/ToStringNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/ConcatNode.cpp
-    ${PROJECT_SOURCE_DIR}/src/Nodes/ClientSendNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/TCPClientNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Node.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/NodeManager.cpp
     

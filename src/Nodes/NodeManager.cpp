@@ -1,9 +1,6 @@
 #include "Nodes/NodeManager.h"
-#include "Nodes/PrintNode.h"
-#include "Nodes/ButtonNode.h"
-#include "Nodes/StringNode.h"
-#include "Nodes/ConcatNode.h"
-#include "Nodes/ClientSendNode.h"
+#include "Nodes/Node.h"
+#include "Nodes/Pin.h"
 
 #include <iostream>
 

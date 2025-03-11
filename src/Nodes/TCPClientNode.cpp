@@ -1,18 +1,18 @@
-#include "Nodes/ClientSendNode.h"
+#include "Nodes/TCPClientNode.h"
 #include "imgui_node_editor.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include <iostream>
 
 
-ClientSendNode::ClientSendNode(std::shared_ptr<TCPClient> tcpClient) : Node()
-, triggerSendPin(std::make_shared<Pin>("Send", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
-, stringPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input, Pin::PinType::String))
+TCPClientNode::TCPClientNode(std::shared_ptr<TCPClient> tcpClient) : Node()
+, triggerSendPin(std::make_shared<Pin>("Send Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
+, stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::String))
 , tcpClient(tcpClient)
 {
 
 }
 
-void ClientSendNode::Send()
+void TCPClientNode::Send()
 {
     if(tcpClient && tcpClient->IsConnected())
     {
@@ -20,10 +20,10 @@ void ClientSendNode::Send()
     }
 }
 
-void ClientSendNode::Draw()
+void TCPClientNode::Draw()
 {
     ax::NodeEditor::BeginNode(id);
-        ImGui::Text("Print Message");
+        ImGui::Text("TCP Client");
         stringPin->Draw();
         triggerSendPin->Draw();
     ax::NodeEditor::EndNode();
@@ -45,7 +45,7 @@ void ClientSendNode::Draw()
     }
 }
 
-std::vector<std::shared_ptr<Pin>> ClientSendNode::GetPins()
+std::vector<std::shared_ptr<Pin>> TCPClientNode::GetPins()
 {
     return {triggerSendPin, stringPin};
 }
