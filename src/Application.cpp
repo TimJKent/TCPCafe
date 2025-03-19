@@ -300,10 +300,12 @@ void Application::DrawNodeEditor()
     ed::End();
     ed::SetCurrentEditor(nullptr);
 
-
     if (ImGui::BeginPopup("Create New Node"))
     {
-
+        ImGui::Text("Add Node");
+        ImGui::Separator();
+        if(ImGui::BeginMenu("Input"))
+        {
             if (ImGui::MenuItem("Button"))
             {
                 nodeManager.SpawnNode<ButtonNode>();
@@ -312,25 +314,32 @@ void Application::DrawNodeEditor()
             {
                 nodeManager.SpawnNode<TimerNode>();
             }
-            ImGui::Separator();
             if (ImGui::MenuItem("String"))
             {
                 nodeManager.SpawnNode<StringNode>();
             }
+            if (ImGui::MenuItem("Number"))
+            {
+                nodeManager.SpawnNode<NumberNode>();
+            }
+            ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("Math")){
             if (ImGui::MenuItem("Concatenate"))
             {
                 nodeManager.SpawnNode<ConcatNode>();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Number"))
-            {
-                nodeManager.SpawnNode<NumberNode>();
-            }
+
             if (ImGui::MenuItem("Add"))
             {
                 nodeManager.SpawnNode<AddNode>();
             }
-            ImGui::Separator();
+            ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("Output")){
             if (ImGui::MenuItem("Print"))
             {
                 nodeManager.SpawnNode<PrintNode>();
@@ -344,6 +353,8 @@ void Application::DrawNodeEditor()
             {
                 nodeManager.SpawnNode<TCPServerNode>(tcpServer);
             }
+            ImGui::EndMenu();
+        }
             
         ImGui::EndPopup();
     }
