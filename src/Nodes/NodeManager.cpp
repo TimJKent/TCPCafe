@@ -3,6 +3,7 @@
 #include "Nodes/Pin.h"
 
 #include <iostream>
+#include <algorithm>
 
 int NodeManager::globalId = 100;
 
@@ -105,7 +106,7 @@ void NodeManager::Update()
                         nodes.erase(std::remove(nodes.begin(), nodes.end(), node), nodes.end());
                         break;
                     }
-                }
+                }       
             }
 
             // You may reject node deletion by calling:
@@ -127,11 +128,16 @@ void NodeManager::Update()
                         std::shared_ptr<Pin> inputPin = GetPinFromId(link.EndPinID);
                         std::shared_ptr<Pin> outputPin = GetPinFromId(link.StartPinID);
                             
+                        if(inputPin)
+                        {
                             inputPin->any.reset();
                             inputPin->active = false;
-
+                        }
+                        if(outputPin)
+                        {
                             outputPin->any.reset();
                             outputPin->active = false;
+                        }
 
                         links.erase(std::remove(links.begin(), links.end(), link), links.end());
                         break;
