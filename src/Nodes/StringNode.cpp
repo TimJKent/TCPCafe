@@ -4,7 +4,7 @@
 
 
 StringNode::StringNode() : Node()
-, outputPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Output,Pin::PinType::String))
+, outputPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Output, Pin::PinType::Any))
 {
 
 }

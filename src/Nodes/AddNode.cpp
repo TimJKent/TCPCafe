@@ -1,12 +1,12 @@
 #include "Nodes/AddNode.h"
 #include "imgui_node_editor.h"
 #include "misc/cpp/imgui_stdlib.h"
-
+#include <cmath>
 
 AddNode::AddNode() : Node()
-, inputPin1(std::make_shared<Pin>("Abc", ax::NodeEditor::PinKind::Input, Pin::PinType::Int))
-, inputPin2(std::make_shared<Pin>("Bbc", ax::NodeEditor::PinKind::Input, Pin::PinType::Int))
-, outputPin(std::make_shared<Pin>("Sum", ax::NodeEditor::PinKind::Output, Pin::PinType::Int))
+, inputPin1(std::make_shared<Pin>("A", ax::NodeEditor::PinKind::Input, Pin::PinType::Number))
+, inputPin2(std::make_shared<Pin>("B", ax::NodeEditor::PinKind::Input, Pin::PinType::Number))
+, outputPin(std::make_shared<Pin>("Sum(1)", ax::NodeEditor::PinKind::Output, Pin::PinType::Number))
 {
 
 }
@@ -24,18 +24,38 @@ void AddNode::Draw()
 
 void AddNode::Update()
 {
-    int output = 0;
+    int iOutput = 0;
+    float fOutput = 0.0f;
     
-    if(inputPin1->active && inputPin1->any.has_value() && inputPin1->any.type() == typeid(int))
+    bool outputAsFloat = false;
+
+    for(std::shared_ptr<Pin> pin : GetPins())
     {
-        output += std::any_cast<int>(inputPin1->any);
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active && pin->any.has_value())
+        {
+            if(pin->any.type() == typeid(int))
+            {
+                iOutput += std::any_cast<int>(pin->any);
+                fOutput += std::any_cast<int>(pin->any);
+            }
+            else if(pin->any.type() == typeid(float))
+            {
+                iOutput += (int)std::round(std::any_cast<float>(pin->any));
+                fOutput += std::any_cast<float>(pin->any);
+                outputAsFloat = true;
+            }
+        }
     }
-    if(inputPin2->active && inputPin2->any.has_value() && inputPin2->any.type() == typeid(int))
+
+    if(outputAsFloat)
     {
-        output += std::any_cast<int>(inputPin2->any);
+        outputPin->any = std::make_any<float>(fOutput);
     }
-    
-    outputPin->any = std::make_any<int>(output);
+    else
+    {
+        outputPin->any = std::make_any<int>(iOutput);
+    }
+
     outputPin->active = true;
 }
 

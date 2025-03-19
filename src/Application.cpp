@@ -7,9 +7,9 @@
 #include "Nodes/StringNode.h"
 #include "Nodes/ConcatNode.h"
 #include "Nodes/AddNode.h"
-#include "Nodes/IntNode.h"
-#include "Nodes/ToStringNode.h"
+#include "Nodes/NumberNode.h"
 #include "Nodes/TCPClientNode.h"
+#include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
 
 Application::Application()
@@ -17,7 +17,7 @@ Application::Application()
 , activeMenu(MENU_NAME::TCP_CLIENT)
 , ioContext()
 , tcpClient(std::make_shared<TCPClient>(ioContext))
-, tcpServer(ioContext)
+, tcpServer(std::make_shared<TCPServer>(ioContext))
 {
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
     tcpClientSendMessage2 = std::make_unique<SendMessageWidget>("tcpCTX2", [&](const std::string& message){SendMessageFromClient(message);});
@@ -172,7 +172,7 @@ void Application::DrawTCPClientWindow()
 
 void Application::DrawTCPServerWindow()
 {
-    AppendString(serverReceive, tcpServer.ConsumeRXData());
+    AppendString(serverReceive, tcpServer->ConsumeRXData());
     int portInputSize = 5;
 
     static std::string portBuf  = "65535";
@@ -189,17 +189,17 @@ void Application::DrawTCPServerWindow()
 
         ImGui::TableSetColumnIndex(1);
 
-        std::string startListenText = tcpServer.IsListening() ? "Stop" : "Listen";
+        std::string startListenText = tcpServer->IsListening() ? "Stop" : "Listen";
 
         if(ImGui::Button(startListenText.c_str()))
         {
-            if(tcpServer.IsListening())
+            if(tcpServer->IsListening())
             {
-                tcpServer.StopListen();
+                tcpServer->StopListen();
             }
             else
             {
-                tcpServer.Listen(std::stoi(portBuf));
+                tcpServer->Listen(std::stoi(portBuf));
             }
         }
         ImGui::EndTable();
@@ -235,7 +235,7 @@ void Application::DrawTCPServerWindow()
         ImGui::EndTable();
     }
 
-    if(tcpServer.IsListening())
+    if(tcpServer->IsListening())
     {
         ImGui::Text("Send Message");
         tcpServerSendMessage1->Draw();
@@ -262,10 +262,10 @@ void Application::EndMainPanel()
 
 void Application::SendMessageFromServer(const std::string& message)
 {
-    if(tcpServer.IsListening())
+    if(tcpServer->IsListening())
     {
         AppendString(serverSend, message);
-        tcpServer.SendMessageA(message);
+        tcpServer->SendMessageA(message);
     }
 }
 
@@ -321,14 +321,10 @@ void Application::DrawNodeEditor()
             {
                 nodeManager.SpawnNode<ConcatNode>();
             }
-            if (ImGui::MenuItem("ToString"))
-            {
-                nodeManager.SpawnNode<ToStringNode>();
-            }
             ImGui::Separator();
-            if (ImGui::MenuItem("Int"))
+            if (ImGui::MenuItem("Number"))
             {
-                nodeManager.SpawnNode<IntNode>();
+                nodeManager.SpawnNode<NumberNode>();
             }
             if (ImGui::MenuItem("Add"))
             {
@@ -343,6 +339,10 @@ void Application::DrawNodeEditor()
             if (ImGui::MenuItem("TCP Client"))
             {
                 nodeManager.SpawnNode<TCPClientNode>(tcpClient);
+            }
+            if (ImGui::MenuItem("TCP Server"))
+            {
+                nodeManager.SpawnNode<TCPServerNode>(tcpServer);
             }
             
         ImGui::EndPopup();

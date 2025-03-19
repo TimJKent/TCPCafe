@@ -4,9 +4,9 @@
 
 
 ConcatNode::ConcatNode() : Node()
-, stringAPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input,Pin::PinType::String))
-, stringBPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input,Pin::PinType::String))
-, outputPin(std::make_shared<Pin>("String",  ax::NodeEditor::PinKind::Output,Pin::PinType::String))
+, stringAPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input,Pin::PinType::Any))
+, stringBPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input,Pin::PinType::Any))
+, outputPin(std::make_shared<Pin>("String",  ax::NodeEditor::PinKind::Output,Pin::PinType::Any))
 {
 
 }
@@ -25,18 +25,12 @@ void ConcatNode::Draw()
 
     if(stringAPin->active)
     {
-        if(stringAPin->any.has_value() && stringAPin->any.type() == typeid(std::string))
-        {
-            output += std::any_cast<std::string>(stringAPin->any);
-        }
+        output +=stringAPin->PinOutputToString();
     }
 
     if(stringBPin->active)
     {
-        if(stringBPin->any.has_value() && stringBPin->any.type() == typeid(std::string))
-        {
-            output += std::any_cast<std::string>(stringBPin->any);
-        }
+        output +=stringBPin->PinOutputToString();
     }
 
     outputPin->any = std::make_any<std::string>(output);

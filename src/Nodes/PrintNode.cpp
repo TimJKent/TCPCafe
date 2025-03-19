@@ -6,7 +6,7 @@
 
 PrintNode::PrintNode() : Node()
 , triggerPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
-, stringPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input, Pin::PinType::String))
+, stringPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 {
 
 }
@@ -26,10 +26,7 @@ void PrintNode::Draw()
 
     if(stringPin->active)
     {
-        if(stringPin->any.has_value() && stringPin->any.type() == typeid(std::string))
-        {
-            message = std::any_cast<std::string>(stringPin->any);
-        }
+            message = stringPin->PinOutputToString();
     }else
     {
         message = "";

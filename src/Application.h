@@ -51,6 +51,6 @@ private:
 private:
     asio::io_context ioContext;
     std::shared_ptr<TCPClient> tcpClient;
-    TCPServer tcpServer;
+    std::shared_ptr<TCPServer> tcpServer;
     NodeManager nodeManager;
 };

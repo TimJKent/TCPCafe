@@ -1,29 +1,29 @@
-#include "Nodes/TCPClientNode.h"
+#include "Nodes/TCPServerNode.h"
 #include "imgui_node_editor.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include <iostream>
 
 
-TCPClientNode::TCPClientNode(std::shared_ptr<TCPClient> tcpClient) : Node()
+TCPServerNode::TCPServerNode(std::shared_ptr<TCPServer> tcpServer) : Node()
 , triggerSendPin(std::make_shared<Pin>("Send Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
 , stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
-, tcpClient(tcpClient)
+, tcpServer(tcpServer)
 {
 
 }
 
-void TCPClientNode::Send()
+void TCPServerNode::Send()
 {
-    if(tcpClient && tcpClient->IsConnected())
+    if(tcpServer && tcpServer->IsListening())
     {
-        tcpClient->SendMessageA(message);
+        tcpServer->SendMessageA(message);
     }
 }
 
-void TCPClientNode::Draw()
+void TCPServerNode::Draw()
 {
     ax::NodeEditor::BeginNode(id);
-        ImGui::Text("TCP Client");
+        ImGui::Text("TCP Server");
         stringPin->Draw();
         triggerSendPin->Draw();
     ax::NodeEditor::EndNode();
@@ -42,7 +42,7 @@ void TCPClientNode::Draw()
     }
 }
 
-std::vector<std::shared_ptr<Pin>> TCPClientNode::GetPins()
+std::vector<std::shared_ptr<Pin>> TCPServerNode::GetPins()
 {
     return {triggerSendPin, stringPin};
 }

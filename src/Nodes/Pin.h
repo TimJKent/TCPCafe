@@ -9,42 +9,19 @@ public:
     {
         Trigger,
         Bool,
-        Int,
+        Number,
         Float,
-        String,
         Object,
         Function,
         Delegate,
         Any,
     };
-
 public:
-    Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType)
-    : id(NodeManager::globalId++)
-    , pinKind(pinKind)
-    , name(name)
-    , pinType(pinType)
-    {}
-
-    void Draw()
-    {
-        if(pinKind == ax::NodeEditor::PinKind::Output)
-        {
-            ImGui::Text(name.c_str());
-            ImGui::SameLine();
-        }
-        ax::NodeEditor::BeginPin(id, pinKind);
-            ImGui::Text(" * ");
-        ax::NodeEditor::EndPin();
-        if(pinKind == ax::NodeEditor::PinKind::Input)
-        {
-            ImGui::SameLine();
-            ImGui::Text(name.c_str());
-        }
-    }
-
+    Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType);
+    void Draw();
+    std::string PinOutputToString();
+public:
     bool active = false;
-
     ax::NodeEditor::PinId id;
     ax::NodeEditor::PinKind pinKind;
     PinType pinType;
