@@ -21,9 +21,9 @@ std::string Pin::PinOutputToString()
         {
             output = std::to_string(std::any_cast<int>(any));
         }
-        else if(any.type() == typeid(float))
+        else if(any.type() == typeid(double))
         {
-            output = std::to_string(std::any_cast<float>(any));
+            output = std::to_string(std::any_cast<double>(any));
         }
         else if(any.type() == typeid(double))
         {

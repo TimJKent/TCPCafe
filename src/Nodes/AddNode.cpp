@@ -25,7 +25,7 @@ void AddNode::Draw()
 void AddNode::Update()
 {
     int iOutput = 0;
-    float fOutput = 0.0f;
+    double fOutput = 0.0f;
     
     bool outputAsFloat = false;
 
@@ -38,10 +38,10 @@ void AddNode::Update()
                 iOutput += std::any_cast<int>(pin->any);
                 fOutput += std::any_cast<int>(pin->any);
             }
-            else if(pin->any.type() == typeid(float))
+            else if(pin->any.type() == typeid(double))
             {
-                iOutput += (int)std::round(std::any_cast<float>(pin->any));
-                fOutput += std::any_cast<float>(pin->any);
+                iOutput += (int)std::round(std::any_cast<double>(pin->any));
+                fOutput += std::any_cast<double>(pin->any);
                 outputAsFloat = true;
             }
         }
@@ -49,7 +49,7 @@ void AddNode::Update()
 
     if(outputAsFloat)
     {
-        outputPin->any = std::make_any<float>(fOutput);
+        outputPin->any = std::make_any<double>(fOutput);
     }
     else
     {

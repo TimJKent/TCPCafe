@@ -14,6 +14,6 @@ private:
     std::shared_ptr<Pin> inputPin1;
     std::shared_ptr<Pin> inputPin2;
     int integer = 0;
-    float floatingPoint = 0.0f;
+    double floatingPoint = 0.0;
     bool isFloating;
 };

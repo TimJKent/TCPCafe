@@ -20,7 +20,7 @@ void NumberNode::Draw()
         ImGui::SetNextItemWidth(150);
         if(isFloating)
         {
-            ImGui::InputFloat("##Float", &floatingPoint);
+            ImGui::InputDouble("##double", &floatingPoint);
         }
         else
         {
@@ -40,24 +40,24 @@ void NumberNode::Update()
         if(inputPin1->any.type() == typeid(int))
         {
             integer = std::any_cast<int>(inputPin1->any);
-            floatingPoint = (float)integer;
+            floatingPoint = (double)integer;
         }
-        else if(inputPin1->any.type() == typeid(float))
+        else if(inputPin1->any.type() == typeid(double))
         {
-            floatingPoint = std::any_cast<float>(inputPin1->any);
+            floatingPoint = std::any_cast<double>(inputPin1->any);
             integer = (int)std::round(floatingPoint);
         }
     }
 
     if(isFloating)
     {
-        outputPin->any = std::make_any<float>(floatingPoint);
+        outputPin->any = std::make_any<double>(floatingPoint);
         integer = (int)std::round(floatingPoint);
     }
     else
     {
         outputPin->any = std::make_any<int>(integer);
-        floatingPoint = (float)integer;
+        floatingPoint = (double)integer;
     }
     outputPin->active = true;
 }

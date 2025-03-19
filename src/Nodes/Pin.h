@@ -10,7 +10,6 @@ public:
         Trigger,
         Bool,
         Number,
-        Float,
         Object,
         Function,
         Delegate,
