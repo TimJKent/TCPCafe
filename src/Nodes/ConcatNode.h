@@ -7,9 +7,11 @@ class ConcatNode : public Node
 public:
     ConcatNode();
     void Draw() final;
+    void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;
+    void AddInputPin();
+    void RemoveInputPin();
 private:
-    std::shared_ptr<Pin> stringAPin;
-    std::shared_ptr<Pin> stringBPin;
+    std::vector<std::shared_ptr<Pin>> inputPins;
     std::shared_ptr<Pin> outputPin;
 };

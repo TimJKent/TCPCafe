@@ -297,9 +297,10 @@ void Application::DrawNodeEditor()
 
     nodeManager.Update();
     
+    auto openPopupPosition = ImGui::GetMousePos();
     ed::End();
     ed::SetCurrentEditor(nullptr);
-
+    std::shared_ptr<Node> spawnedNode;
     if (ImGui::BeginPopup("Create New Node"))
     {
         ImGui::Text("Add Node");
@@ -308,19 +309,19 @@ void Application::DrawNodeEditor()
         {
             if (ImGui::MenuItem("Button"))
             {
-                nodeManager.SpawnNode<ButtonNode>();
+                spawnedNode = nodeManager.SpawnNode<ButtonNode>();
             }
             if (ImGui::MenuItem("Timer"))
             {
-                nodeManager.SpawnNode<TimerNode>();
+                spawnedNode =nodeManager.SpawnNode<TimerNode>();
             }
             if (ImGui::MenuItem("String"))
             {
-                nodeManager.SpawnNode<StringNode>();
+                spawnedNode =nodeManager.SpawnNode<StringNode>();
             }
             if (ImGui::MenuItem("Number"))
             {
-                nodeManager.SpawnNode<NumberNode>();
+                spawnedNode =nodeManager.SpawnNode<NumberNode>();
             }
             ImGui::EndMenu();
         }
@@ -328,13 +329,13 @@ void Application::DrawNodeEditor()
         if(ImGui::BeginMenu("Math")){
             if (ImGui::MenuItem("Concatenate"))
             {
-                nodeManager.SpawnNode<ConcatNode>();
+                spawnedNode =nodeManager.SpawnNode<ConcatNode>();
             }
             ImGui::Separator();
 
             if (ImGui::MenuItem("Add"))
             {
-                nodeManager.SpawnNode<AddNode>();
+                spawnedNode =nodeManager.SpawnNode<AddNode>();
             }
             ImGui::EndMenu();
         }
@@ -342,23 +343,32 @@ void Application::DrawNodeEditor()
         if(ImGui::BeginMenu("Output")){
             if (ImGui::MenuItem("Print"))
             {
-                nodeManager.SpawnNode<PrintNode>();
+                spawnedNode =nodeManager.SpawnNode<PrintNode>();
             }
             ImGui::Separator();
             if (ImGui::MenuItem("TCP Client"))
             {
-                nodeManager.SpawnNode<TCPClientNode>(tcpClient);
+                spawnedNode =nodeManager.SpawnNode<TCPClientNode>(tcpClient);
             }
             if (ImGui::MenuItem("TCP Server"))
             {
-                nodeManager.SpawnNode<TCPServerNode>(tcpServer);
+                spawnedNode = nodeManager.SpawnNode<TCPServerNode>(tcpServer);
             }
             ImGui::EndMenu();
         }
-            
+        
+        
+        
         ImGui::EndPopup();
     }
 
+    if(spawnedNode)
+    {
+        ed::SetCurrentEditor(nodeManager.GetEditorContext());
+        ed::SetNodePosition(spawnedNode->id, openPopupPosition);
+        ed::SetCurrentEditor(nullptr);
+    }
+   
     if(ImGui::IsItemHovered())
     {
         if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))

@@ -15,9 +15,11 @@ public:
     NodeManager();
 public:
     template <typename T, typename... Args>
-    void SpawnNode(Args... args)
+    std::shared_ptr<Node> SpawnNode(Args... args)
     {
-        nodes.emplace_back(std::make_shared<T>(args...));
+        std::shared_ptr<Node> node = std::make_shared<T>(args...);
+        nodes.emplace_back(node);
+        return node;
     }
     void SpawnClientSendNode(std::shared_ptr<TCPClient> tcpClient);
     ax::NodeEditor::EditorContext* GetEditorContext();

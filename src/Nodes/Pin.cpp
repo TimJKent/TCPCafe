@@ -1,4 +1,6 @@
 #include "Nodes/Pin.h"
+ #include "Nodes/Drawing.h"
+#include "Nodes/Widgets.h"
 
 Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType)
 : id(NodeManager::globalId++)
@@ -39,6 +41,17 @@ std::string Pin::PinOutputToString()
     return output;
 }
 
+ImColor Pin::GetColorFromType(PinType type)
+{
+    switch(type)
+    {
+        case PinType::Any: return ImColor{204, 191, 139};
+        case PinType::Number: return ImColor{91, 151, 207};
+        case PinType::Trigger: return ImColor{75, 173, 108};
+    }
+    return ImColor{255,255,255};
+}
+
 void Pin::Draw()
 {
     if(pinKind == ax::NodeEditor::PinKind::Output)
@@ -47,7 +60,7 @@ void Pin::Draw()
         ImGui::SameLine();
     }
     ax::NodeEditor::BeginPin(id, pinKind);
-        ImGui::Text(" * ");
+    ax::Widgets::Icon(ImVec2(static_cast<float>(24), static_cast<float>(24)), ax::Drawing::IconType::Circle, isConnected, GetColorFromType(pinType), {0,0,0,0});
     ax::NodeEditor::EndPin();
     if(pinKind == ax::NodeEditor::PinKind::Input)
     {

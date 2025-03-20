@@ -4,21 +4,25 @@
 #include <cmath>
 
 AddNode::AddNode() : Node()
-, inputPin1(std::make_shared<Pin>("A", ax::NodeEditor::PinKind::Input, Pin::PinType::Number))
-, inputPin2(std::make_shared<Pin>("B", ax::NodeEditor::PinKind::Input, Pin::PinType::Number))
-, outputPin(std::make_shared<Pin>("Sum(1)", ax::NodeEditor::PinKind::Output, Pin::PinType::Number))
+, outputPin(std::make_shared<Pin>("Sum", ax::NodeEditor::PinKind::Output, Pin::PinType::Number))
 {
-
+    AddInputPin();
+    AddInputPin();
 }
 
 void AddNode::Draw()
 {
     ax::NodeEditor::BeginNode(id);
         ImGui::Text("Add");
-        inputPin1->Draw();
+        auto drawList  = ImGui::GetWindowDrawList();
+        inputPins[0]->Draw();
         ImGui::SameLine();
         outputPin->Draw();
-        inputPin2->Draw();
+        inputPins[1]->Draw();
+        for(int i = 2; i < inputPins.size(); i++)
+        {
+            inputPins[i]->Draw();
+        }
     ax::NodeEditor::EndNode();
 }
 
@@ -56,10 +60,32 @@ void AddNode::Update()
         outputPin->any = std::make_any<int>(iOutput);
     }
 
+    if(inputPins[inputPins.size()-1]->active)
+    {
+        AddInputPin();
+    }
+
+    if(inputPins.size() > 2 && !inputPins[inputPins.size()-2]->active)
+    {
+        RemoveInputPin();
+    }
+
     outputPin->active = true;
+}
+
+void AddNode::AddInputPin()
+{
+    inputPins.emplace_back(std::make_shared<Pin>("A", ax::NodeEditor::PinKind::Input, Pin::PinType::Number));
+}
+
+void AddNode::RemoveInputPin()
+{
+    inputPins.pop_back();
 }
 
 std::vector<std::shared_ptr<Pin>> AddNode::GetPins()
 {
-    return {inputPin1, inputPin2, outputPin};
+    std::vector<std::shared_ptr<Pin>> pins = inputPins;
+    pins.emplace_back(outputPin);
+    return pins;
 }

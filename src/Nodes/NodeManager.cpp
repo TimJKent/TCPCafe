@@ -28,17 +28,20 @@ void NodeManager::Update()
 
     for (auto& linkInfo : links)
     {
-        ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID);
         
         std::shared_ptr<Pin> inputPin = GetPinFromId(linkInfo.StartPinID);
         std::shared_ptr<Pin> outputPin = GetPinFromId(linkInfo.EndPinID);
-
+        inputPin->isConnected = true;
+        outputPin->isConnected = true;
+        
         inputPin->active = outputPin->active;
         inputPin->any = outputPin->any;
+
+        ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID, inputPin->GetColorFromType(inputPin->pinType), 2.0f);
     }
 
     // Handle creation action, returns true if editor want to create new object (node or link)
-    if (ax::NodeEditor::BeginCreate())
+    if (ax::NodeEditor::BeginCreate(ImColor(255, 255, 255), 2.0f))
     {
         ax::NodeEditor::PinId inputPinId, outputPinId;
         if (ax::NodeEditor::QueryNewLink(&outputPinId, &inputPinId))
@@ -62,7 +65,7 @@ void NodeManager::Update()
             if(inputPin->pinKind == ax::NodeEditor::PinKind::Input  && outputPin->pinKind == ax::NodeEditor::PinKind::Output)
             {
                 bool matchesType  = inputPin->pinType == outputPin->pinType || (inputPin->pinType == Pin::PinType::Any && outputPin->pinType != Pin::PinType::Trigger);
-                bool pinIsntFull = !inputPin->active || inputPin->pinType == Pin::PinType::Trigger;
+                bool pinIsntFull = !inputPin->isConnected;
                 if(matchesType && pinIsntFull)
                 {
                     accept = true;
@@ -75,15 +78,15 @@ void NodeManager::Update()
                 if (ax::NodeEditor::AcceptNewItem())
                 {
                     // Since we accepted new link, lets add one to our list of links.
-                    links.push_back({ ax::NodeEditor::LinkId(NodeManager::globalId++), inputPinId, outputPinId });
+                    links.push_back({ ax::NodeEditor::LinkId(NodeManager::globalId++), inputPinId, outputPinId});
                     
                     // Draw new link.
-                    ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID);
+                    ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID,inputPin->GetColorFromType(inputPin->pinType), 2.0f);
                 }
             }
             else
             {
-                ax::NodeEditor::RejectNewItem(ImColor(255, 0, 0), 1.0f);
+                ax::NodeEditor::RejectNewItem(ImColor(255, 0, 0), 2.0f);
             }
         }
         ax::NodeEditor::EndCreate(); // Wraps up object creation action handling.
@@ -130,11 +133,13 @@ void NodeManager::Update()
                             
                         if(inputPin)
                         {
+                            inputPin->isConnected = false;
                             inputPin->any.reset();
                             inputPin->active = false;
                         }
                         if(outputPin)
                         {
+                            outputPin->isConnected = false;
                             outputPin->any.reset();
                             outputPin->active = false;
                         }

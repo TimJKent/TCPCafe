@@ -9,8 +9,9 @@ public:
     void Draw() final;
     void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;
+    void AddInputPin();
+    void RemoveInputPin();
 private:
-    std::shared_ptr<Pin> inputPin1;
-    std::shared_ptr<Pin> inputPin2;
+    std::vector<std::shared_ptr<Pin>> inputPins;
     std::shared_ptr<Pin> outputPin;
 };

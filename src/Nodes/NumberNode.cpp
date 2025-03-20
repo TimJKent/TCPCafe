@@ -4,9 +4,9 @@
 #include <cmath>
 
 NumberNode::NumberNode() : Node()
-, outputPin(std::make_shared<Pin>("Out(1)", ax::NodeEditor::PinKind::Output,Pin::PinType::Number))
-, inputPin1(std::make_shared<Pin>("X(1)", ax::NodeEditor::PinKind::Input,Pin::PinType::Number))
-, inputPin2(std::make_shared<Pin>("T", ax::NodeEditor::PinKind::Input,Pin::PinType::Trigger))
+, outputPin(std::make_shared<Pin>("Out", ax::NodeEditor::PinKind::Output,Pin::PinType::Number))
+, inputPin1(std::make_shared<Pin>("X", ax::NodeEditor::PinKind::Input,Pin::PinType::Number))
+, inputPin2(std::make_shared<Pin>("Set", ax::NodeEditor::PinKind::Input,Pin::PinType::Trigger))
 {
 
 }
@@ -27,7 +27,7 @@ void NumberNode::Draw()
             ImGui::InputInt("##Int", &integer);
         }
         inputPin1->Draw();
-        ImGui::SameLine();
+        ImGui::SameLine(110);
         outputPin->Draw();
         inputPin2->Draw();
     ax::NodeEditor::EndNode();

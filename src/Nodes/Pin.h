@@ -8,19 +8,19 @@ public:
     enum class PinType
     {
         Trigger,
-        Bool,
         Number,
-        Object,
-        Function,
-        Delegate,
         Any,
     };
 public:
+
+    ImColor GetColorFromType(PinType type);
+
     Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType);
     void Draw();
     std::string PinOutputToString();
 public:
     bool active = false;
+    bool isConnected = false;
     ax::NodeEditor::PinId id;
     ax::NodeEditor::PinKind pinKind;
     PinType pinType;

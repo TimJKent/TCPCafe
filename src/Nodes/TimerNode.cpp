@@ -15,6 +15,8 @@ void TimerNode::Draw()
         ImGui::Text("Timer");
         ImGui::SetNextItemWidth(150);
         ImGui::InputInt("MS", &repRate);
+        ImGui::NewLine();
+        ImGui::SameLine(70);
         outputPin->active = false;
         outputPin->Draw();
     ax::NodeEditor::EndNode();

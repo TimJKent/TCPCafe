@@ -70,6 +70,8 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Nodes/TCPServerNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Node.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/NodeManager.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/Widgets.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/Drawing.cpp
     
 )
 
