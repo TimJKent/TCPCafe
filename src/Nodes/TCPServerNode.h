@@ -6,10 +6,12 @@
 class TCPServerNode : public Node
 {
 public:
-TCPServerNode(std::shared_ptr<TCPServer> tcpServer);
+TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServer> tcpServer);
     void Draw() final;
     void Send();
     std::vector<std::shared_ptr<Pin>> GetPins() final;
+    void ConstructFromJSON(const nlohmann::json& json) final;
+    std::string GetNodeTypeName() final;
 private:
     std::shared_ptr<Pin> triggerSendPin;
     std::shared_ptr<Pin> stringPin;

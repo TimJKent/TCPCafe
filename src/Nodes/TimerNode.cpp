@@ -3,11 +3,17 @@
 #include "misc/cpp/imgui_stdlib.h"
 
 
-TimerNode::TimerNode() : Node()
+TimerNode::TimerNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
 {
     lastTriggerTime = std::chrono::high_resolution_clock::now();
 }
+
+std::string TimerNode::GetNodeTypeName()
+{
+    return "TimerNode";
+}
+
 
 void TimerNode::Draw()
 {
@@ -42,4 +48,23 @@ void TimerNode::Update()
 std::vector<std::shared_ptr<Pin>> TimerNode::GetPins()
 {
     return {outputPin};
+}
+
+void TimerNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->GetName() == "Trigger")
+        {
+            outputPin = pin;
+        }
+    }
+
+    repRate = json["repRate"];
+}
+
+void TimerNode::SpecialSerialze(nlohmann::json& json)
+{
+    json["repRate"] = repRate;
 }

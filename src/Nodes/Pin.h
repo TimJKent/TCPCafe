@@ -1,8 +1,9 @@
 #pragma once
 #include "Nodes/NodeManager.h"
 #include <any>
+#include <variant>
 
-class Pin
+class Pin : public Serialization::ISerializable
 {
 public:
     enum class PinType
@@ -12,12 +13,15 @@ public:
         Any,
     };
 public:
-
+    nlohmann::json Serialize() final;
+public:
     ImColor GetColorFromType(PinType type);
 
     Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType);
+    Pin(nlohmann::json json);
     void Draw();
     std::string PinOutputToString();
+    std::string GetName(){return name;}
 public:
     bool active = false;
     bool isConnected = false;
@@ -25,6 +29,7 @@ public:
     ax::NodeEditor::PinKind pinKind;
     PinType pinType;
     std::any any;
+    std::variant<std::string, bool, float, int> value;
 private:
     std::string name;
     bool triggered = false;

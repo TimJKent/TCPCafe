@@ -3,11 +3,16 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 
-ConcatNode::ConcatNode() : Node()
+ConcatNode::ConcatNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("Out", ax::NodeEditor::PinKind::Output, Pin::PinType::Any))
 {
     AddInputPin();
     AddInputPin();
+}
+
+std::string ConcatNode::GetNodeTypeName()
+{
+    return "ConcatNode";
 }
 
 void ConcatNode::Draw()
@@ -68,4 +73,20 @@ std::vector<std::shared_ptr<Pin>> ConcatNode::GetPins()
     std::vector<std::shared_ptr<Pin>> pins = inputPins;
     pins.emplace_back(outputPin);
     return pins;
+}
+
+void ConcatNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    inputPins.clear();
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input)
+        {
+            inputPins.emplace_back(pin);
+        }else
+        {
+            outputPin = pin;
+        }
+    }
 }

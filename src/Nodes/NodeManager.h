@@ -2,18 +2,28 @@
 
 #include "imgui_node_editor.h"
 #include "Nodes/Node.h"
+#include "Nodes/Link.h"
 #include <memory>
 #include <vector>
+#include <nlohmann/json.hpp>
+#include "Serialization/ISerializable.h"
+#include <TCP/Client/TCPClient.h>
+#include <TCP/Server/TCPServer.h>
+
 
 class TCPClient;
 
-class NodeManager
+class NodeManager : public Serialization::ISerializable
 {
 public:
     static int globalId;
 public:
-    NodeManager();
+    NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient);
 public:
+    void LoadFromFile(const std::string& filename);
+    void DeleteAllNodes();
+    void SpawnNodesFromFile(const std::string& filename);
+    nlohmann::json Serialize();
     template <typename T, typename... Args>
     std::shared_ptr<Node> SpawnNode(Args... args)
     {
@@ -26,8 +36,12 @@ public:
     std::vector<std::shared_ptr<Node>>& GetNodes() {return nodes;}
     void Update();
     std::shared_ptr<Pin> GetPinFromId(ax::NodeEditor::PinId pinId);
+    void SerializeToFile(const std::string& filename);
 private:
+    std::shared_ptr<TCPServer> tcpServer;
+    std::shared_ptr<TCPClient> tcpClient;
     ax::NodeEditor::EditorContext* nodeEditorContext = nullptr;
     std::vector<std::shared_ptr<Node>> nodes;
     std::vector<Link> links; 
+    bool deleteAll = false;
 };

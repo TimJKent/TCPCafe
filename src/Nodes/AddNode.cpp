@@ -3,11 +3,16 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 
-AddNode::AddNode() : Node()
+AddNode::AddNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("Sum", ax::NodeEditor::PinKind::Output, Pin::PinType::Number))
 {
     AddInputPin();
     AddInputPin();
+}
+
+std::string AddNode::GetNodeTypeName()
+{
+    return "AddNode";
 }
 
 void AddNode::Draw()
@@ -88,4 +93,20 @@ std::vector<std::shared_ptr<Pin>> AddNode::GetPins()
     std::vector<std::shared_ptr<Pin>> pins = inputPins;
     pins.emplace_back(outputPin);
     return pins;
+}
+
+void AddNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    inputPins.clear();
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input)
+        {
+            inputPins.emplace_back(pin);
+        }else
+        {
+            outputPin = pin;
+        }
+    }
 }

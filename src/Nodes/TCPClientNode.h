@@ -6,10 +6,12 @@
 class TCPClientNode : public Node
 {
 public:
-TCPClientNode(std::shared_ptr<TCPClient> tcpClient);
+TCPClientNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPClient> tcpClient);
     void Draw() final;
     void Send();
     std::vector<std::shared_ptr<Pin>> GetPins() final;
+    void ConstructFromJSON(const nlohmann::json& json) final;
+    std::string GetNodeTypeName() final;
 private:
     std::shared_ptr<Pin> triggerSendPin;
     std::shared_ptr<Pin> stringPin;

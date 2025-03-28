@@ -3,10 +3,15 @@
 #include "misc/cpp/imgui_stdlib.h"
 
 
-ButtonNode::ButtonNode() : Node()
+ButtonNode::ButtonNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
 {
 
+}
+
+std::string ButtonNode::GetNodeTypeName()
+{
+    return "ButtonNode";
 }
 
 void ButtonNode::Draw()
@@ -30,4 +35,16 @@ void ButtonNode::Draw()
 std::vector<std::shared_ptr<Pin>> ButtonNode::GetPins()
 {
     return {outputPin};
+}
+
+void ButtonNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->pinKind == ax::NodeEditor::PinKind::Output)
+        {
+            outputPin = pin;
+        }
+    }
 }

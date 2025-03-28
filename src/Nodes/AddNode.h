@@ -5,12 +5,14 @@
 class AddNode : public Node
 {
 public:
-    AddNode();
+    AddNode(ax::NodeEditor::NodeId id);
     void Draw() final;
     void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;
+    void ConstructFromJSON(const nlohmann::json& json) final;
     void AddInputPin();
     void RemoveInputPin();
+    std::string GetNodeTypeName() final;
 private:
     std::vector<std::shared_ptr<Pin>> inputPins;
     std::shared_ptr<Pin> outputPin;

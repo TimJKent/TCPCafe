@@ -1,13 +1,32 @@
 #include "Nodes/Pin.h"
  #include "Nodes/Drawing.h"
 #include "Nodes/Widgets.h"
+#include <iostream>
+
+
+using json = nlohmann::json;
 
 Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType)
-: id(NodeManager::globalId++)
+: id(++NodeManager::globalId)
 , pinKind(pinKind)
 , name(name)
 , pinType(pinType)
-{}
+{
+    value = 0.0f;
+}
+
+Pin::Pin(json json)
+: id(0)
+, pinKind(ax::NodeEditor::PinKind::Input)
+, name("")
+, pinType(PinType::Any)
+{
+    ++NodeManager::globalId;
+    id = (uint64_t)json["id"];
+    pinKind = json["flow"] == 0 ? ax::NodeEditor::PinKind::Input : ax::NodeEditor::PinKind::Output;
+    pinType = json["type"];
+    name = json["name"];
+}
 
 std::string Pin::PinOutputToString()
 {
@@ -67,4 +86,19 @@ void Pin::Draw()
         ImGui::SameLine();
         ImGui::Text(name.c_str());
     }
+}
+
+json Pin::Serialize() 
+{
+    json pinJson;
+
+    pinJson["id"] = id.Get();
+    pinJson["name"] = name;
+    pinJson["type"] = pinType;  
+    pinJson["flow"] = pinKind;  
+    std::visit([&pinJson](auto &&arg) -> void {
+        pinJson["value"] = arg;
+    }, value);
+
+    return pinJson;
 }

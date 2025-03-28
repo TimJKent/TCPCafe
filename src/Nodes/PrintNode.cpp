@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-PrintNode::PrintNode() : Node()
+PrintNode::PrintNode(ax::NodeEditor::NodeId id) : Node(id)
 , triggerPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
 , stringPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 {
@@ -14,6 +14,11 @@ PrintNode::PrintNode() : Node()
 void PrintNode::Print()
 {
     std::cout << message << std::endl;
+}
+
+std::string PrintNode::GetNodeTypeName()
+{
+    return "PrintNode";
 }
 
 void PrintNode::Draw()
@@ -41,4 +46,19 @@ void PrintNode::Draw()
 std::vector<std::shared_ptr<Pin>> PrintNode::GetPins()
 {
     return {triggerPin, stringPin};
+}
+
+void PrintNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->GetName() == "Trigger")
+        {
+            triggerPin = pin;
+        }else if(pin->GetName() == "String")
+        {
+            stringPin = pin;
+        }
+    }
 }

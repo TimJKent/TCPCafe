@@ -18,6 +18,7 @@ Application::Application()
 , ioContext()
 , tcpClient(std::make_shared<TCPClient>(ioContext))
 , tcpServer(std::make_shared<TCPServer>(ioContext))
+, nodeManager(tcpServer, tcpClient)
 {
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
     tcpClientSendMessage2 = std::make_unique<SendMessageWidget>("tcpCTX2", [&](const std::string& message){SendMessageFromClient(message);});
@@ -84,6 +85,14 @@ void Application::DrawMainMenu()
         if(ImGui::MenuItem("Node Editor","n", activeMenu == MENU_NAME::NODE_EDITOR))
         {
             activeMenu = MENU_NAME::NODE_EDITOR;
+        }
+        if(ImGui::MenuItem("Save","n", false))
+        {
+            nodeManager.SerializeToFile("Test.cafe");
+        }
+        if(ImGui::MenuItem("Load","n", false))
+        {
+            nodeManager.LoadFromFile("Test.cafe");
         }
         ImGui::EndMainMenuBar();
     }
@@ -309,19 +318,19 @@ void Application::DrawNodeEditor()
         {
             if (ImGui::MenuItem("Button"))
             {
-                spawnedNode = nodeManager.SpawnNode<ButtonNode>();
+                spawnedNode = nodeManager.SpawnNode<ButtonNode>(0);
             }
             if (ImGui::MenuItem("Timer"))
             {
-                spawnedNode =nodeManager.SpawnNode<TimerNode>();
+                spawnedNode =nodeManager.SpawnNode<TimerNode>(0);
             }
             if (ImGui::MenuItem("String"))
             {
-                spawnedNode =nodeManager.SpawnNode<StringNode>();
+                spawnedNode =nodeManager.SpawnNode<StringNode>(0);
             }
             if (ImGui::MenuItem("Number"))
             {
-                spawnedNode =nodeManager.SpawnNode<NumberNode>();
+                spawnedNode =nodeManager.SpawnNode<NumberNode>(0);
             }
             ImGui::EndMenu();
         }
@@ -329,13 +338,13 @@ void Application::DrawNodeEditor()
         if(ImGui::BeginMenu("Math")){
             if (ImGui::MenuItem("Concatenate"))
             {
-                spawnedNode =nodeManager.SpawnNode<ConcatNode>();
+                spawnedNode =nodeManager.SpawnNode<ConcatNode>(0);
             }
             ImGui::Separator();
 
             if (ImGui::MenuItem("Add"))
             {
-                spawnedNode =nodeManager.SpawnNode<AddNode>();
+                spawnedNode =nodeManager.SpawnNode<AddNode>(0);
             }
             ImGui::EndMenu();
         }
@@ -343,16 +352,16 @@ void Application::DrawNodeEditor()
         if(ImGui::BeginMenu("Output")){
             if (ImGui::MenuItem("Print"))
             {
-                spawnedNode =nodeManager.SpawnNode<PrintNode>();
+                spawnedNode =nodeManager.SpawnNode<PrintNode>(0);
             }
             ImGui::Separator();
             if (ImGui::MenuItem("TCP Client"))
             {
-                spawnedNode =nodeManager.SpawnNode<TCPClientNode>(tcpClient);
+                spawnedNode =nodeManager.SpawnNode<TCPClientNode>(0, tcpClient);
             }
             if (ImGui::MenuItem("TCP Server"))
             {
-                spawnedNode = nodeManager.SpawnNode<TCPServerNode>(tcpServer);
+                spawnedNode = nodeManager.SpawnNode<TCPServerNode>(0, tcpServer);
             }
             ImGui::EndMenu();
         }

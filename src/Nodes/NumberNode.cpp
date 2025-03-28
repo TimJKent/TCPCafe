@@ -2,13 +2,19 @@
 #include "imgui_node_editor.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
+#include <iostream>
 
-NumberNode::NumberNode() : Node()
+
+NumberNode::NumberNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("Out", ax::NodeEditor::PinKind::Output,Pin::PinType::Number))
 , inputPin1(std::make_shared<Pin>("X", ax::NodeEditor::PinKind::Input,Pin::PinType::Number))
 , inputPin2(std::make_shared<Pin>("Set", ax::NodeEditor::PinKind::Input,Pin::PinType::Trigger))
 {
+}
 
+std::string NumberNode::GetNodeTypeName()
+{
+    return "NumberNode";
 }
 
 void NumberNode::Draw()
@@ -65,4 +71,42 @@ void NumberNode::Update()
 std::vector<std::shared_ptr<Pin>> NumberNode::GetPins()
 {
     return {inputPin1, inputPin2, outputPin};
+}
+
+void NumberNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->GetName() == "Out")
+        {
+            outputPin = pin;
+        }else if(pin->GetName() == "X")
+        {
+            inputPin1 = pin;
+        }
+        else if(pin->GetName() == "Set")
+        {
+            inputPin2 = pin;
+        }
+    }
+
+    isFloating = json["isFloating"];
+
+    if(isFloating)
+    {
+        floatingPoint = json["number"];
+        integer = (int)std::round(floatingPoint);
+    }
+    else
+    {
+        integer = json["number"];
+        floatingPoint = (double)integer;
+    }
+}
+
+void NumberNode::SpecialSerialze(nlohmann::json& json)
+{
+    json["isFloating"] = isFloating;
+    json["number"] = isFloating ? floatingPoint : integer;
 }

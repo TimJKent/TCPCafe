@@ -4,12 +4,17 @@
 #include <iostream>
 
 
-TCPClientNode::TCPClientNode(std::shared_ptr<TCPClient> tcpClient) : Node()
+TCPClientNode::TCPClientNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPClient> tcpClient) : Node(id)
 , triggerSendPin(std::make_shared<Pin>("Send Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
 , stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 , tcpClient(tcpClient)
 {
 
+}
+
+std::string TCPClientNode::GetNodeTypeName()
+{
+    return "TCPClientNode";
 }
 
 void TCPClientNode::Send()
@@ -45,4 +50,19 @@ void TCPClientNode::Draw()
 std::vector<std::shared_ptr<Pin>> TCPClientNode::GetPins()
 {
     return {triggerSendPin, stringPin};
+}
+
+void TCPClientNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->GetName() == "Send Trigger")
+        {
+            triggerSendPin = pin;
+        }else if(pin->GetName() == "Send String")
+        {
+            stringPin = pin;
+        }
+    }
 }

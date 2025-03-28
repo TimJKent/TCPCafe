@@ -4,10 +4,25 @@
 
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+
+#include "Nodes/PrintNode.h"
+#include "Nodes/PrintNode.h"
+#include "Nodes/ButtonNode.h"
+#include "Nodes/StringNode.h"
+#include "Nodes/ConcatNode.h"
+#include "Nodes/AddNode.h"
+#include "Nodes/NumberNode.h"
+#include "Nodes/TCPClientNode.h"
+#include "Nodes/TCPServerNode.h"
+#include "Nodes/TimerNode.h"
 
 int NodeManager::globalId = 100;
+using json = nlohmann::json;
 
-NodeManager::NodeManager()
+NodeManager::NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient) 
+: tcpServer(tcpServer)
+, tcpClient(tcpClient)
 {
     ax::NodeEditor::Config config;
     config.NavigateButtonIndex = 2;
@@ -17,6 +32,128 @@ NodeManager::NodeManager()
 ax::NodeEditor::EditorContext* NodeManager::GetEditorContext()
 {
     return nodeEditorContext;
+}
+
+
+nlohmann::json NodeManager::Serialize()
+{
+    nlohmann::json json;
+    
+    for(std::shared_ptr<Node> node : GetNodes())
+    {
+        json["nodes"] += node->Serialize();
+    }
+    
+    for(Link link : links)
+    {
+        json["links"] += link.Serialize();
+    }
+    
+    return json;
+}
+
+void NodeManager::SerializeToFile(const std::string& filename)
+{
+    ax::NodeEditor::SetCurrentEditor(GetEditorContext());
+
+    std::ofstream outputFile(filename);
+    if(outputFile.is_open())
+    {
+        outputFile.clear(); 
+        {
+            outputFile << Serialize().dump(3);
+        }
+
+        outputFile.close();
+    }
+    ax::NodeEditor::SetCurrentEditor(nullptr);
+}
+
+void NodeManager::LoadFromFile(const std::string& filename)
+{
+    ax::NodeEditor::SetCurrentEditor(GetEditorContext());
+    DeleteAllNodes();
+    SpawnNodesFromFile(filename);
+    ax::NodeEditor::SetCurrentEditor(nullptr);
+
+}
+
+void NodeManager::SpawnNodesFromFile(const std::string& filename)
+{
+
+    std::ifstream ifs(filename);
+
+    if(ifs.is_open())
+    {
+        json json = json::parse(ifs);
+
+        for (auto& [key, val] : json["nodes"].items())
+        {
+            std::string nodeType = val["type"];
+            std::shared_ptr<Node> spawnedNode;
+            
+            ax::NodeEditor::NodeId id = (uint64_t)val["id"];
+            if (nodeType == "ButtonNode")
+            {
+                spawnedNode =  SpawnNode<ButtonNode>(id);
+            }
+            if (nodeType == "TimerNode")
+            {
+                spawnedNode = SpawnNode<TimerNode>(id);
+            }
+            if (nodeType == "StringNode")
+            {
+                spawnedNode = SpawnNode<StringNode>(id);
+            }
+            if (nodeType == "NumberNode")
+            {
+                spawnedNode = SpawnNode<NumberNode>(id);
+            }
+            if (nodeType == "ConcatNode")
+            {
+                spawnedNode = SpawnNode<ConcatNode>(id);
+            }
+            if (nodeType == "AddNode")
+            {
+                spawnedNode = SpawnNode<AddNode>(id);
+            }
+            if (nodeType == "PrintNode")
+            {
+                spawnedNode = SpawnNode<PrintNode>(id);
+            }
+            if (nodeType == "TCPClientNode")
+            {
+                spawnedNode = SpawnNode<TCPClientNode>(id, tcpClient);
+            }
+            if (nodeType == "TCPServerNode")
+            {
+                spawnedNode = SpawnNode<TCPServerNode>(id, tcpServer);
+            }
+
+            spawnedNode->ConstructFromJSON(val);
+            float posX = val["pos_x"];
+            float posY = val["pos_y"];
+            ax::NodeEditor::SetNodePosition(id, {posX,posY});
+        }
+
+        for (auto& [key, val] : json["links"].items())
+        {
+            NodeManager::globalId++;
+            ax::NodeEditor::LinkId id = (uint64_t)val["id"];
+            ax::NodeEditor::PinId startId = (uint64_t)val["startPinId"];
+            ax::NodeEditor::PinId endId = (uint64_t)val["endPinId"];
+
+            links.emplace_back(Link{id, startId, endId});
+        }
+//
+        ifs.close();
+    }
+}
+
+void NodeManager::DeleteAllNodes()
+{
+    for(auto& node : GetNodes())
+    ax::NodeEditor::DeleteNode(node->id);
 }
 
 void NodeManager::Update()
@@ -78,7 +215,7 @@ void NodeManager::Update()
                 if (ax::NodeEditor::AcceptNewItem())
                 {
                     // Since we accepted new link, lets add one to our list of links.
-                    links.push_back({ ax::NodeEditor::LinkId(NodeManager::globalId++), inputPinId, outputPinId});
+                    links.push_back({ ax::NodeEditor::LinkId(++NodeManager::globalId), inputPinId, outputPinId});
                     
                     // Draw new link.
                     ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID,inputPin->GetColorFromType(inputPin->pinType), 2.0f);
@@ -143,7 +280,6 @@ void NodeManager::Update()
                             outputPin->any.reset();
                             outputPin->active = false;
                         }
-
                         links.erase(std::remove(links.begin(), links.end(), link), links.end());
                         break;
                     }

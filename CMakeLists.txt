@@ -39,6 +39,10 @@ include(cmake/imgui-node-editor.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_NODE_EDITOR_IncludeDirectories})
 target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_Sources})
 
+# nlohmann-json
+include(cmake/nlohmann-json.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${NLOHMANN-JSON_IncludeDirectories})
+
 message(${IMGUI_NODE_EDITOR_IncludeDirectories})
 
 #END_DEPS

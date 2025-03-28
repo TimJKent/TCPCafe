@@ -5,10 +5,13 @@
 class NumberNode : public Node
 {
 public:
-    NumberNode();
+    NumberNode(ax::NodeEditor::NodeId id);
     void Draw() final;
     void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;
+    void ConstructFromJSON(const nlohmann::json& json) final;
+    void SpecialSerialze(nlohmann::json& json) final;
+    std::string GetNodeTypeName() final;
 private:
     std::shared_ptr<Pin> outputPin;
     std::shared_ptr<Pin> inputPin1;

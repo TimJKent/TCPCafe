@@ -4,13 +4,19 @@
 #include <iostream>
 
 
-TCPServerNode::TCPServerNode(std::shared_ptr<TCPServer> tcpServer) : Node()
+TCPServerNode::TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServer> tcpServer) : Node(id)
 , triggerSendPin(std::make_shared<Pin>("Send Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
 , stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 , tcpServer(tcpServer)
 {
 
 }
+
+std::string TCPServerNode::GetNodeTypeName()
+{
+    return "TCPServerNode";
+}
+
 
 void TCPServerNode::Send()
 {
@@ -45,4 +51,19 @@ void TCPServerNode::Draw()
 std::vector<std::shared_ptr<Pin>> TCPServerNode::GetPins()
 {
     return {triggerSendPin, stringPin};
+}
+
+void TCPServerNode::ConstructFromJSON(const nlohmann::json& json)
+{
+    for (auto& [key, val] : json["pins"].items())
+    {
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        if(pin->GetName() == "Send Trigger")
+        {
+            triggerSendPin = pin;
+        }else if(pin->GetName() == "Send String")
+        {
+            stringPin = pin;
+        }
+    }
 }
