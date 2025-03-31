@@ -1,7 +1,13 @@
 # TCPCafe
 ImGUI based tool for testing TCP connections
 
-### Demo
+## Demo
+
+Node Editor View
+![NodeEditorDemo.png](https://github.com/TimJKent/TCPCafe/blob/NodeEditor/promo/NodeEditorDemo.png "NodeEditorDemo.png")
+
+TCP Server View
+![TCPServerDemo.png](https://github.com/TimJKent/TCPCafe/blob/NodeEditor/promo/TCPServerDemo.png "TCPServerDemo.png")
 
 
 
