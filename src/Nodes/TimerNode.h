@@ -7,6 +7,8 @@ class TimerNode : public Node
 {
 public:
     TimerNode(ax::NodeEditor::NodeId id);
+    TimerNode(TimerNode& copy);
+    std::shared_ptr<Node> Clone() final {return std::make_shared<TimerNode>(*this);};
     void Draw() final;
     void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;

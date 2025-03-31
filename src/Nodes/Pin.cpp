@@ -28,6 +28,16 @@ Pin::Pin(json json)
     name = json["name"];
 }
 
+Pin::Pin(Pin& copy)
+: id(++NodeManager::globalId)
+, pinKind(copy.pinKind)
+, name(copy.name)
+, pinType(copy.pinType)
+, value(copy.value)
+{
+
+}
+
 std::string Pin::PinOutputToString()
 {
     std::string output = "";

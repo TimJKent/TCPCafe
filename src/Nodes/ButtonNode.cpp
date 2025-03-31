@@ -6,7 +6,11 @@
 ButtonNode::ButtonNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
 {
+}
 
+ButtonNode::ButtonNode(ButtonNode& copy) : Node(++NodeManager::globalId)
+, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
+{
 }
 
 std::string ButtonNode::GetNodeTypeName()

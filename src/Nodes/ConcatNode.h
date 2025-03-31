@@ -6,6 +6,8 @@ class ConcatNode : public Node
 {
 public:
     ConcatNode(ax::NodeEditor::NodeId id);
+    ConcatNode(ConcatNode& copy);
+    std::shared_ptr<Node> Clone() final {return std::make_shared<ConcatNode>(*this);};
     void Draw() final;
     void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;

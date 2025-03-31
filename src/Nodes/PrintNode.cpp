@@ -11,6 +11,12 @@ PrintNode::PrintNode(ax::NodeEditor::NodeId id) : Node(id)
 
 }
 
+PrintNode::PrintNode(PrintNode& copy) : Node(++NodeManager::globalId)
+, triggerPin(std::make_shared<Pin>(*copy.triggerPin.get()))
+, stringPin(std::make_shared<Pin>(*copy.stringPin.get()))
+{
+}
+
 void PrintNode::Print()
 {
     std::cout << message << std::endl;

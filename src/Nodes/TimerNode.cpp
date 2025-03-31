@@ -9,11 +9,16 @@ TimerNode::TimerNode(ax::NodeEditor::NodeId id) : Node(id)
     lastTriggerTime = std::chrono::high_resolution_clock::now();
 }
 
+TimerNode::TimerNode(TimerNode& copy) : Node(++NodeManager::globalId)
+, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
+, repRate(copy.repRate)
+{
+}
+
 std::string TimerNode::GetNodeTypeName()
 {
     return "TimerNode";
 }
-
 
 void TimerNode::Draw()
 {

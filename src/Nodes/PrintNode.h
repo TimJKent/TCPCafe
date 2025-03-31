@@ -6,6 +6,8 @@ class PrintNode : public Node
 {
 public:
     PrintNode(ax::NodeEditor::NodeId id);
+    PrintNode(PrintNode& copy);
+    std::shared_ptr<Node> Clone() final {return std::make_shared<PrintNode>(*this);};
     void Draw() final;
     void Print();
     std::vector<std::shared_ptr<Pin>> GetPins() final;

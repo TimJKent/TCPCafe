@@ -12,6 +12,17 @@ NumberNode::NumberNode(ax::NodeEditor::NodeId id) : Node(id)
 {
 }
 
+NumberNode::NumberNode(NumberNode& copy) : Node(++NodeManager::globalId)
+, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
+, inputPin1(std::make_shared<Pin>(*copy.inputPin1.get()))
+, inputPin2(std::make_shared<Pin>(*copy.inputPin2.get()))
+, isFloating(copy.isFloating)
+, floatingPoint(copy.floatingPoint)
+, integer(copy.integer)
+{
+}
+
+
 std::string NumberNode::GetNodeTypeName()
 {
     return "NumberNode";

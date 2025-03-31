@@ -6,7 +6,9 @@
 class TCPServerNode : public Node
 {
 public:
-TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServer> tcpServer);
+    TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServer> tcpServer);
+    TCPServerNode(TCPServerNode& copy);
+    std::shared_ptr<Node> Clone() final {return std::make_shared<TCPServerNode>(*this);};
     void Draw() final;
     void Send();
     std::vector<std::shared_ptr<Pin>> GetPins() final;

@@ -9,7 +9,13 @@ TCPClientNode::TCPClientNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPClien
 , stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 , tcpClient(tcpClient)
 {
+}
 
+TCPClientNode::TCPClientNode(TCPClientNode& copy) : Node(++NodeManager::globalId)
+, triggerSendPin(std::make_shared<Pin>(*copy.triggerSendPin.get()))
+, stringPin(std::make_shared<Pin>(*copy.stringPin.get()))
+, tcpClient(copy.tcpClient)
+{
 }
 
 std::string TCPClientNode::GetNodeTypeName()

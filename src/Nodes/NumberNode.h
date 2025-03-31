@@ -6,6 +6,8 @@ class NumberNode : public Node
 {
 public:
     NumberNode(ax::NodeEditor::NodeId id);
+    NumberNode(NumberNode& copy);
+    std::shared_ptr<Node> Clone() final {return std::make_shared<NumberNode>(*this);};
     void Draw() final;
     void Update() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;

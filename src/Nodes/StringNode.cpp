@@ -6,7 +6,12 @@
 StringNode::StringNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Output, Pin::PinType::Any))
 {
+}
 
+StringNode::StringNode(StringNode& copy) : Node(++NodeManager::globalId)
+, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
+, string(copy.string)
+{
 }
 
 std::string StringNode::GetNodeTypeName()

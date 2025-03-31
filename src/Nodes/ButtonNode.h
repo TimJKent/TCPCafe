@@ -6,6 +6,8 @@ class ButtonNode : public Node
 {
 public:
     ButtonNode(ax::NodeEditor::NodeId id);
+    ButtonNode(ButtonNode& copy);
+    std::shared_ptr<Node> Clone() final {return std::make_shared<ButtonNode>(*this);};
     void Draw() final;
     std::vector<std::shared_ptr<Pin>> GetPins() final;
     void ConstructFromJSON(const nlohmann::json& json) final;

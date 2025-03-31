@@ -11,7 +11,6 @@ Node::Node(ax::NodeEditor::NodeId nodeID)
     if((uint64_t)id== 0){id = NodeManager::globalId;}
 }
 
-
 nlohmann::json Node::Serialize()
 {
     nlohmann::json json;

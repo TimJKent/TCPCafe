@@ -9,7 +9,13 @@ TCPServerNode::TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServe
 , stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 , tcpServer(tcpServer)
 {
+}
 
+TCPServerNode::TCPServerNode(TCPServerNode& copy) : Node(++NodeManager::globalId)
+, triggerSendPin(std::make_shared<Pin>(*copy.triggerSendPin.get()))
+, stringPin(std::make_shared<Pin>(*copy.stringPin.get()))
+, tcpServer(copy.tcpServer)
+{
 }
 
 std::string TCPServerNode::GetNodeTypeName()

@@ -34,7 +34,6 @@ ax::NodeEditor::EditorContext* NodeManager::GetEditorContext()
     return nodeEditorContext;
 }
 
-
 nlohmann::json NodeManager::Serialize()
 {
     nlohmann::json json;
@@ -52,9 +51,21 @@ nlohmann::json NodeManager::Serialize()
     return json;
 }
 
+void NodeManager::SetEditorActive(bool active)
+{
+    if(active)
+    {
+        ax::NodeEditor::SetCurrentEditor(GetEditorContext());
+    }
+    else
+    {
+        ax::NodeEditor::SetCurrentEditor(nullptr);
+    }
+}
+
 void NodeManager::SerializeToFile(const std::string& filename)
 {
-    ax::NodeEditor::SetCurrentEditor(GetEditorContext());
+    SetEditorActive(true);
 
     std::ofstream outputFile(filename);
     if(outputFile.is_open())
@@ -66,7 +77,7 @@ void NodeManager::SerializeToFile(const std::string& filename)
 
         outputFile.close();
     }
-    ax::NodeEditor::SetCurrentEditor(nullptr);
+    SetEditorActive(false);
 }
 
 void NodeManager::LoadFromFile(const std::string& filename)
@@ -75,7 +86,6 @@ void NodeManager::LoadFromFile(const std::string& filename)
     DeleteAllNodes();
     SpawnNodesFromFile(filename);
     ax::NodeEditor::SetCurrentEditor(nullptr);
-
 }
 
 void NodeManager::SpawnNodesFromFile(const std::string& filename)
@@ -145,7 +155,7 @@ void NodeManager::SpawnNodesFromFile(const std::string& filename)
 
             links.emplace_back(Link{id, startId, endId});
         }
-//
+
         ifs.close();
     }
 }
@@ -153,7 +163,47 @@ void NodeManager::SpawnNodesFromFile(const std::string& filename)
 void NodeManager::DeleteAllNodes()
 {
     for(auto& node : GetNodes())
-    ax::NodeEditor::DeleteNode(node->id);
+        ax::NodeEditor::DeleteNode(node->id);
+}
+
+std::vector<std::shared_ptr<Node>> NodeManager::GetSelectedNodes()
+{
+    std::vector<ax::NodeEditor::NodeId> selectedNodeIds;
+    selectedNodeIds.resize(ax::NodeEditor::GetSelectedObjectCount());
+
+    int nodeCount = ax::NodeEditor::GetSelectedNodes(selectedNodeIds.data(), static_cast<int>(selectedNodeIds.size()));
+
+
+    std::vector<std::shared_ptr<Node>> selectedNodes;
+
+    for(auto& nodeId : selectedNodeIds)
+    {
+        for(auto& node : nodes)
+        {
+            if(nodeId == node->id)
+            {
+                selectedNodes.push_back(node);
+            }
+        }
+    }
+
+    return selectedNodes;
+}
+
+void NodeManager::DuplicateSelected()
+{
+    std::vector<std::shared_ptr<Node>> selectedNodes = GetSelectedNodes();
+    UnselectAll();
+
+    for(auto& selectedNode : selectedNodes)
+    {
+        ImVec2 selectedNodeSize = ax::NodeEditor::GetNodeSize(selectedNode->id);
+        ImVec2 selectedNodePos = ax::NodeEditor::GetNodePosition(selectedNode->id);
+
+        std::shared_ptr<Node> spawnedNode = SpawnNode(selectedNode);
+        ax::NodeEditor::SetNodePosition(spawnedNode->id, {selectedNodePos.x,selectedNodePos.y+selectedNodeSize.y});
+        ax::NodeEditor::SelectNode(spawnedNode->id, true);
+    }
 }
 
 void NodeManager::Update()
@@ -307,4 +357,25 @@ std::shared_ptr<Pin> NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
         }
     }
     return nullptr;
+}
+
+void NodeManager::SelectAll()
+{
+    for(auto& node : nodes)
+    {
+        ax::NodeEditor::SelectNode(node->id, true);
+    }
+}
+
+void NodeManager::UnselectAll()
+{
+   ax::NodeEditor::ClearSelection();
+}
+
+void NodeManager::DoRecenter()
+{
+    SelectAll();
+    ax::NodeEditor::NavigateToSelection(true, 1.0f);
+    UnselectAll();
+    recenter = false;
 }

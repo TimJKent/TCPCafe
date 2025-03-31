@@ -10,6 +10,17 @@ AddNode::AddNode(ax::NodeEditor::NodeId id) : Node(id)
     AddInputPin();
 }
 
+AddNode::AddNode(AddNode& copy) : Node(++NodeManager::globalId)
+, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
+{
+    inputPins.clear();
+    for(auto& pin : copy.inputPins)
+    {
+        inputPins.push_back(std::make_shared<Pin>(*pin.get()));
+    }
+}
+
+
 std::string AddNode::GetNodeTypeName()
 {
     return "AddNode";
@@ -28,6 +39,7 @@ void AddNode::Draw()
         {
             inputPins[i]->Draw();
         }
+
     ax::NodeEditor::EndNode();
 }
 

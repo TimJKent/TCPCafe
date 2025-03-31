@@ -18,6 +18,7 @@ public:
     ImColor GetColorFromType(PinType type);
 
     Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType);
+    Pin(Pin& pin);
     Pin(nlohmann::json json);
     void Draw();
     std::string PinOutputToString();

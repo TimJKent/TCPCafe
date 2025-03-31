@@ -14,9 +14,9 @@ public:
     Node(ax::NodeEditor::NodeId id = 0);
 public:
     nlohmann::json Serialize();
+    virtual std::shared_ptr<Node> Clone(){return std::make_shared<Node>(*this);}
     virtual void SpecialSerialze(nlohmann::json& json) {}
     virtual void ConstructFromJSON(const nlohmann::json& json){}
-    ax::NodeEditor::NodeId id;
     virtual std::vector<std::shared_ptr<Pin>> GetPins() {return {};}
     ImVec2 GetPosition()
     {
@@ -25,4 +25,6 @@ public:
     virtual std::string GetNodeTypeName(){return "";}
     virtual void Draw(){} 
     virtual void Update(){} 
+public:
+    ax::NodeEditor::NodeId id;
 };

@@ -74,26 +74,66 @@ void Application::DrawMainMenu()
 {
     if(ImGui::BeginMainMenuBar())
     {
-        if(ImGui::MenuItem("Client","m", activeMenu == MENU_NAME::TCP_CLIENT))
+        if(ImGui::BeginMenu("File"))
         {
-            activeMenu = MENU_NAME::TCP_CLIENT;
+            if(ImGui::MenuItem("Import","n", false))
+            {
+                nodeManager.LoadFromFile("Test.cafe");
+            }
+            if(ImGui::MenuItem("Export","n", false))
+            {
+                nodeManager.SerializeToFile("Test.cafe");
+            }
+            ImGui::EndMenu();
         }
-        if(ImGui::MenuItem("Server","n", activeMenu == MENU_NAME::TCP_SERVER))
+        if(ImGui::BeginMenu("View"))
         {
-            activeMenu = MENU_NAME::TCP_SERVER;
+            if(ImGui::MenuItem("TCP Client","m", activeMenu == MENU_NAME::TCP_CLIENT))
+            {
+                activeMenu = MENU_NAME::TCP_CLIENT;
+            }
+            if(ImGui::MenuItem("TCP Server","n", activeMenu == MENU_NAME::TCP_SERVER))
+            {
+                activeMenu = MENU_NAME::TCP_SERVER;
+            }
+            if(ImGui::MenuItem("Node Editor","n", activeMenu == MENU_NAME::NODE_EDITOR))
+            {
+                activeMenu = MENU_NAME::NODE_EDITOR;
+            }
+
+            ImGui::EndMenu();
         }
-        if(ImGui::MenuItem("Node Editor","n", activeMenu == MENU_NAME::NODE_EDITOR))
+
+        if(activeMenu == MENU_NAME::NODE_EDITOR)
         {
-            activeMenu = MENU_NAME::NODE_EDITOR;
+            nodeManager.SetEditorActive(true);
+            if(ImGui::BeginMenu("Tools"))
+            {
+                if(ImGui::MenuItem("Select All"))
+                {
+                    nodeManager.SelectAll();
+                }
+                if(ImGui::MenuItem("Clear Selection"))
+                {
+                    nodeManager.UnselectAll();
+                }
+                if(ImGui::MenuItem("Duplicate Selected"))
+                {
+                    nodeManager.DuplicateSelected();
+                }
+                ImGui::Separator();
+                if(ImGui::MenuItem("Recenter"))
+                {
+                    nodeManager.DoRecenter();
+                }
+
+                nodeManager.SetEditorActive(false);
+    
+                ImGui::EndMenu();
+            }
         }
-        if(ImGui::MenuItem("Save","n", false))
-        {
-            nodeManager.SerializeToFile("Test.cafe");
-        }
-        if(ImGui::MenuItem("Load","n", false))
-        {
-            nodeManager.LoadFromFile("Test.cafe");
-        }
+        
+        
         ImGui::EndMainMenuBar();
     }
 }
@@ -293,7 +333,6 @@ void Application::DrawNodeEditor()
     ed::SetCurrentEditor(nodeManager.GetEditorContext());
     ed::Begin("My Editor", ImVec2(0.0, 0.0f));
     int uniqueId = 1;
-    
     // Start drawing nodes.
     int nodePushID = 0;
     for (auto& node : nodeManager.GetNodes())
@@ -305,7 +344,10 @@ void Application::DrawNodeEditor()
     }
 
     nodeManager.Update();
-    
+    if(ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_D))
+    {
+        nodeManager.DuplicateSelected();
+    }
     auto openPopupPosition = ImGui::GetMousePos();
     ed::End();
     ed::SetCurrentEditor(nullptr);
@@ -366,8 +408,6 @@ void Application::DrawNodeEditor()
             ImGui::EndMenu();
         }
         
-        
-        
         ImGui::EndPopup();
     }
 
@@ -385,4 +425,6 @@ void Application::DrawNodeEditor()
             ImGui::OpenPopup("Create New Node");
         }
     }
+
+    
 }

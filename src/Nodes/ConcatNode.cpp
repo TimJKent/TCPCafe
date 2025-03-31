@@ -10,6 +10,17 @@ ConcatNode::ConcatNode(ax::NodeEditor::NodeId id) : Node(id)
     AddInputPin();
 }
 
+ConcatNode::ConcatNode(ConcatNode& copy) : Node(++NodeManager::globalId)
+, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
+{
+    inputPins.clear();
+    for(auto& pin : copy.inputPins)
+    {
+        inputPins.push_back(std::make_shared<Pin>(*pin.get()));
+    }
+}
+
+
 std::string ConcatNode::GetNodeTypeName()
 {
     return "ConcatNode";

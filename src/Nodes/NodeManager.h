@@ -23,6 +23,12 @@ public:
     void LoadFromFile(const std::string& filename);
     void DeleteAllNodes();
     void SpawnNodesFromFile(const std::string& filename);
+    void SelectAll();
+    void UnselectAll();
+    void DoRecenter();
+    std::vector<std::shared_ptr<Node>> GetSelectedNodes();
+    void DuplicateSelected();
+    void SetEditorActive(bool active);
     nlohmann::json Serialize();
     template <typename T, typename... Args>
     std::shared_ptr<Node> SpawnNode(Args... args)
@@ -31,6 +37,13 @@ public:
         nodes.emplace_back(node);
         return node;
     }
+
+    std::shared_ptr<Node> SpawnNode(std::shared_ptr<Node> node)
+    {
+        std::shared_ptr<Node> cloneNode = node->Clone();
+        nodes.emplace_back(cloneNode);
+        return cloneNode;
+    }
     void SpawnClientSendNode(std::shared_ptr<TCPClient> tcpClient);
     ax::NodeEditor::EditorContext* GetEditorContext();
     std::vector<std::shared_ptr<Node>>& GetNodes() {return nodes;}
@@ -38,10 +51,12 @@ public:
     std::shared_ptr<Pin> GetPinFromId(ax::NodeEditor::PinId pinId);
     void SerializeToFile(const std::string& filename);
 private:
+private:
     std::shared_ptr<TCPServer> tcpServer;
     std::shared_ptr<TCPClient> tcpClient;
     ax::NodeEditor::EditorContext* nodeEditorContext = nullptr;
     std::vector<std::shared_ptr<Node>> nodes;
     std::vector<Link> links; 
     bool deleteAll = false;
+    bool recenter = false;
 };
