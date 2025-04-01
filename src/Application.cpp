@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "misc/cpp/imgui_stdlib.h"
-
 #include "Nodes/PrintNode.h"
 #include "Nodes/PrintNode.h"
 #include "Nodes/ButtonNode.h"
@@ -109,26 +108,37 @@ void Application::DrawMainMenu()
             nodeManager.SetEditorActive(true);
             if(ImGui::BeginMenu("Tools"))
             {
-                if(ImGui::MenuItem("Select All"))
+                if(ImGui::MenuItem("Select All", "Ctrl+A"))
                 {
                     nodeManager.SelectAll();
                 }
-                if(ImGui::MenuItem("Clear Selection"))
+                if(ImGui::MenuItem("Clear Selection", "ESC"))
                 {
                     nodeManager.UnselectAll();
                 }
-                if(ImGui::MenuItem("Duplicate Selected"))
+                if(ImGui::MenuItem("Duplicate Selected", "Ctrl+D"))
                 {
                     nodeManager.DuplicateSelected();
                 }
                 ImGui::Separator();
-                if(ImGui::MenuItem("Recenter"))
+                if(ImGui::MenuItem("Recenter Viewport", "Ctrl+R"))
                 {
                     nodeManager.DoRecenter();
                 }
 
                 nodeManager.SetEditorActive(false);
     
+                ImGui::EndMenu();
+            }
+
+
+            if(ImGui::BeginMenu("Nodes"))
+            {
+                std::shared_ptr<Node> spawnedNode = DrawNodeSpawnList();
+                if(spawnedNode)
+                {
+                    ax::NodeEditor::SetNodePosition(spawnedNode->id, ax::NodeEditor::ScreenToCanvas({(float)window.GetWindowSize().first/2.0f, (float)window.GetWindowSize().second/2.0f}));
+                }
                 ImGui::EndMenu();
             }
         }
@@ -296,7 +306,7 @@ void Application::DrawTCPServerWindow()
 void Application::BeginMainPanel()
 {
     auto[width, height] = window.GetWindowSize();
-    ImGui::SetNextWindowSize({(float)width,(float)height});
+    ImGui::SetNextWindowSize({(float)width,(float)height-25});
     ImGui::SetNextWindowPos({0,25});
     
     bool open = true;
@@ -327,6 +337,64 @@ void Application::SendMessageFromClient(const std::string& message)
     }
 }
 
+std::shared_ptr<Node> Application::DrawNodeSpawnList()
+{    
+    std::shared_ptr<Node> spawnedNode;
+    if(ImGui::BeginMenu("Input"))
+    {
+        if (ImGui::MenuItem("Button"))
+        {
+            spawnedNode = nodeManager.SpawnNode<ButtonNode>(0);
+        }
+        if (ImGui::MenuItem("Timer"))
+        {
+            spawnedNode =nodeManager.SpawnNode<TimerNode>(0);
+        }
+        if (ImGui::MenuItem("String"))
+        {
+            spawnedNode =nodeManager.SpawnNode<StringNode>(0);
+        }
+        if (ImGui::MenuItem("Number"))
+        {
+            spawnedNode =nodeManager.SpawnNode<NumberNode>(0);
+        }
+        ImGui::EndMenu();
+    }
+
+    if(ImGui::BeginMenu("Math")){
+        if (ImGui::MenuItem("Concatenate"))
+        {
+            spawnedNode =nodeManager.SpawnNode<ConcatNode>(0);
+        }
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Add"))
+        {
+            spawnedNode =nodeManager.SpawnNode<AddNode>(0);
+        }
+        ImGui::EndMenu();
+    }
+
+    if(ImGui::BeginMenu("Output")){
+        if (ImGui::MenuItem("Print"))
+        {
+            spawnedNode =nodeManager.SpawnNode<PrintNode>(0);
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("TCP Client"))
+        {
+            spawnedNode =nodeManager.SpawnNode<TCPClientNode>(0, tcpClient);
+        }
+        if (ImGui::MenuItem("TCP Server"))
+        {
+            spawnedNode = nodeManager.SpawnNode<TCPServerNode>(0, tcpServer);
+        }
+        ImGui::EndMenu();
+    }
+
+    return spawnedNode;
+}
+
 
 void Application::DrawNodeEditor()
 {
@@ -344,10 +412,29 @@ void Application::DrawNodeEditor()
     }
 
     nodeManager.Update();
-    if(ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_D))
+    if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_D))
     {
         nodeManager.DuplicateSelected();
     }
+    if(ImGui::Shortcut(ImGuiKey_Escape))
+    {
+        nodeManager.UnselectAll();
+    }
+    if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_R))
+    {
+        nodeManager.DoRecenter();
+    }
+    if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A))
+    {
+        if(nodeManager.GetSelectedNodes().size() > 0)
+        {
+            nodeManager.UnselectAll();
+        }else
+        {
+            nodeManager.SelectAll();
+        }
+    }
+    
     auto openPopupPosition = ImGui::GetMousePos();
     ed::End();
     ed::SetCurrentEditor(nullptr);
@@ -356,57 +443,7 @@ void Application::DrawNodeEditor()
     {
         ImGui::Text("Add Node");
         ImGui::Separator();
-        if(ImGui::BeginMenu("Input"))
-        {
-            if (ImGui::MenuItem("Button"))
-            {
-                spawnedNode = nodeManager.SpawnNode<ButtonNode>(0);
-            }
-            if (ImGui::MenuItem("Timer"))
-            {
-                spawnedNode =nodeManager.SpawnNode<TimerNode>(0);
-            }
-            if (ImGui::MenuItem("String"))
-            {
-                spawnedNode =nodeManager.SpawnNode<StringNode>(0);
-            }
-            if (ImGui::MenuItem("Number"))
-            {
-                spawnedNode =nodeManager.SpawnNode<NumberNode>(0);
-            }
-            ImGui::EndMenu();
-        }
-
-        if(ImGui::BeginMenu("Math")){
-            if (ImGui::MenuItem("Concatenate"))
-            {
-                spawnedNode =nodeManager.SpawnNode<ConcatNode>(0);
-            }
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Add"))
-            {
-                spawnedNode =nodeManager.SpawnNode<AddNode>(0);
-            }
-            ImGui::EndMenu();
-        }
-
-        if(ImGui::BeginMenu("Output")){
-            if (ImGui::MenuItem("Print"))
-            {
-                spawnedNode =nodeManager.SpawnNode<PrintNode>(0);
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("TCP Client"))
-            {
-                spawnedNode =nodeManager.SpawnNode<TCPClientNode>(0, tcpClient);
-            }
-            if (ImGui::MenuItem("TCP Server"))
-            {
-                spawnedNode = nodeManager.SpawnNode<TCPServerNode>(0, tcpServer);
-            }
-            ImGui::EndMenu();
-        }
+        spawnedNode = DrawNodeSpawnList();
         
         ImGui::EndPopup();
     }

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <asio.hpp>
 #include "Window/Window.h"
 #include "TCP/Client/TCPClient.h"
@@ -7,6 +8,7 @@
 #include "imgui_node_editor.h"
 #include "Nodes/Node.h"
 #include "Nodes/NodeManager.h"
+#include <utility>
 
 namespace ed = ax::NodeEditor;
 
@@ -30,8 +32,7 @@ private:
     void EndMainPanel();
     void SendMessageFromServer(const std::string& message);
     void SendMessageFromClient(const std::string& message);
-
-
+    std::shared_ptr<Node> DrawNodeSpawnList();
 private:
     Window window;
     std::string clientSend;
