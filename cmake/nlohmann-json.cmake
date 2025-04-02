@@ -1,5 +1,3 @@
-
-
 cmake_minimum_required(VERSION 3.11)
 include(FetchContent)
 cmake_policy(SET CMP0169 OLD)

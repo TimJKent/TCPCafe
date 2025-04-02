@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Window/FileDialogue.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "Nodes/PrintNode.h"
 #include "Nodes/PrintNode.h"
@@ -10,6 +11,7 @@
 #include "Nodes/TCPClientNode.h"
 #include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
+
 
 Application::Application()
 : window(1280, 720, "TCPCafe 0.0.1")
@@ -44,6 +46,8 @@ int Application::Run()
 {
     if(!window.IsValid()){return 1;}
 
+    FileDialogue::Init();
+    
     while (!window.ShouldClose())
     {
         ioContext.run();
@@ -64,6 +68,7 @@ int Application::Run()
        window.DrawFrame();
     }
 
+    FileDialogue::Cleanup();
     window.Close();
 
     return 0;
@@ -77,11 +82,19 @@ void Application::DrawMainMenu()
         {
             if(ImGui::MenuItem("Import","n", false))
             {
-                nodeManager.LoadFromFile("Test.cafe");
+                std::string path = FileDialogue::GetPathForOpen();
+                if(!path.empty())
+                {
+                    nodeManager.LoadFromFile(path);
+                }
             }
             if(ImGui::MenuItem("Export","n", false))
             {
-                nodeManager.SerializeToFile("Test.cafe");
+                std::string path = FileDialogue::GetPathForSave();
+                if(!path.empty())
+                {
+                    nodeManager.SerializeToFile(path);
+                }
             }
             ImGui::EndMenu();
         }

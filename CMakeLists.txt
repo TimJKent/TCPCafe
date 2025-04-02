@@ -43,7 +43,8 @@ target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_Sources})
 include(cmake/nlohmann-json.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${NLOHMANN-JSON_IncludeDirectories})
 
-message(${IMGUI_NODE_EDITOR_IncludeDirectories})
+include(cmake/nativefiledialog-extended.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${NATIVEFILEDIALOG-EXTENDED_IncludeDirectories})
 
 #END_DEPS
 
@@ -79,7 +80,7 @@ PRIVATE
     
 )
 
-target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32)
+target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32 nfd) 
 
 target_include_directories(${PROJECT_NAME}
 PUBLIC

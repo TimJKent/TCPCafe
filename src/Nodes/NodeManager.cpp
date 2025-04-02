@@ -374,8 +374,10 @@ void NodeManager::UnselectAll()
 
 void NodeManager::DoRecenter()
 {
+    SetEditorActive(true);
     SelectAll();
     ax::NodeEditor::NavigateToSelection(true, 1.0f);
     UnselectAll();
     recenter = false;
+    SetEditorActive(false);
 }
