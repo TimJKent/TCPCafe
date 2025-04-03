@@ -2,8 +2,10 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h>
 #include <vector>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #define GL_SILENCE_DEPRECATION
 
@@ -12,7 +14,7 @@ void Window::GLFWErrorCallback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-Window::Window(const uint32_t width, const uint32_t height, const std::string& title)
+Window::Window(const uint32_t width, const uint32_t height, const std::string& title, const std::string& iconName)
 : clearColor ({0.0,0.0,0.0,1.0})
 {
     isValid = glfwInit();
@@ -24,6 +26,7 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     glfwSetErrorCallback(Window::GLFWErrorCallback);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (window == nullptr){ /*return 1;*/}
@@ -37,6 +40,7 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    
     io.FontGlobalScale = (1.5f);
 
     // Setup Dear ImGui style
@@ -47,6 +51,54 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     ImGui_ImplGlfw_InitForOpenGL(window, true);
 
     ImGui_ImplOpenGL3_Init("#version 130");
+
+    
+    iconData.pixels = stbi_load(iconName.c_str(), &iconData.width, &iconData.height, 0, 4);
+    if(iconData.pixels)
+    {
+        glfwSetWindowIcon(window, 1, &iconData); 
+    }
+}
+
+Window::~Window()
+{
+    if(iconData.pixels)
+    {
+        stbi_image_free(iconData.pixels);
+    }
+}
+
+GLFWimage& Window::GetIconData()
+{
+    return iconData;
+}
+
+
+bool Window::GetIconAsOpenGLTexture(unsigned int* out_texture)
+{
+    // Load from file
+    int image_width = 0;
+    int image_height = 0;
+    unsigned char* image_data = GetIconData().pixels;
+    if (image_data == NULL)
+        return false;
+
+    // Create a OpenGL texture identifier
+    GLuint image_texture;
+    glGenTextures(1, &image_texture);
+    glBindTexture(GL_TEXTURE_2D, image_texture);
+
+    // Setup filtering parameters for display
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Upload pixels into texture
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, GetIconData().width, GetIconData().height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+
+    *out_texture = image_texture;
+
+    return true;
 }
 
 void Window::SetClearColor(const ImVec4& clearColor)

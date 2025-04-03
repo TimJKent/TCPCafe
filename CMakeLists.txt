@@ -43,6 +43,10 @@ target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_NODE_EDITOR_Sources})
 include(cmake/nlohmann-json.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${NLOHMANN-JSON_IncludeDirectories})
 
+# stb
+include(cmake/stb.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${stb_IncludeDirectories})
+
 include(cmake/nativefiledialog-extended.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${NATIVEFILEDIALOG-EXTENDED_IncludeDirectories})
 

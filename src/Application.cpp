@@ -12,9 +12,8 @@
 #include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
 
-
 Application::Application()
-: window(1280, 720, "TCPCafe 0.0.1")
+: window(1280, 720, "TCPCafe 0.0.1", "icon.png")
 , activeMenu(MENU_NAME::TCP_CLIENT)
 , ioContext()
 , tcpClient(std::make_shared<TCPClient>(ioContext))
@@ -76,8 +75,12 @@ int Application::Run()
 
 void Application::DrawMainMenu()
 {
+    ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 11 ) );
     if(ImGui::BeginMainMenuBar())
     {
+        
+        ImGui::SetCursorPosX(40);
+
         if(ImGui::BeginMenu("File"))
         {
             if(ImGui::MenuItem("Import","n", false))
@@ -156,9 +159,15 @@ void Application::DrawMainMenu()
             }
         }
         
-        
+        unsigned int my_image_texture = 0;
+        bool ret = window.GetIconAsOpenGLTexture(&my_image_texture);
+        ImVec2 storedCursorPos = ImGui::GetCursorPos();
+        ImGui::SetCursorPos({10,10});
+        ImGui::Image((ImTextureID)(intptr_t)my_image_texture, ImVec2( 20, 20));
         ImGui::EndMainMenuBar();
     }
+
+    ImGui::PopStyleVar();
 }
 
 void Application::DrawTCPClientWindow()
@@ -319,8 +328,8 @@ void Application::DrawTCPServerWindow()
 void Application::BeginMainPanel()
 {
     auto[width, height] = window.GetWindowSize();
-    ImGui::SetNextWindowSize({(float)width,(float)height-25});
-    ImGui::SetNextWindowPos({0,25});
+    ImGui::SetNextWindowSize({(float)width,(float)height-42});
+    ImGui::SetNextWindowPos({0,42});
     
     bool open = true;
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse| ImGuiWindowFlags_NoDecoration;
