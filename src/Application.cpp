@@ -7,6 +7,7 @@
 #include "Nodes/StringNode.h"
 #include "Nodes/ConcatNode.h"
 #include "Nodes/AddNode.h"
+#include "Nodes/SubtractNode.h"
 #include "Nodes/NumberNode.h"
 #include "Nodes/TCPClientNode.h"
 #include "Nodes/TCPServerNode.h"
@@ -393,6 +394,10 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         if (ImGui::MenuItem("Add"))
         {
             spawnedNode =nodeManager.SpawnNode<AddNode>(0);
+        }
+        if (ImGui::MenuItem("Subtract"))
+        {
+            spawnedNode =nodeManager.SpawnNode<SubtractNode>(0);
         }
         ImGui::EndMenu();
     }

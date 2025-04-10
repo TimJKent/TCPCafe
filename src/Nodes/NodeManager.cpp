@@ -12,6 +12,7 @@
 #include "Nodes/StringNode.h"
 #include "Nodes/ConcatNode.h"
 #include "Nodes/AddNode.h"
+#include "Nodes/SubtractNode.h"
 #include "Nodes/NumberNode.h"
 #include "Nodes/TCPClientNode.h"
 #include "Nodes/TCPServerNode.h"
@@ -126,6 +127,10 @@ void NodeManager::SpawnNodesFromFile(const std::string& filename)
             if (nodeType == "AddNode")
             {
                 spawnedNode = SpawnNode<AddNode>(id);
+            }
+            if (nodeType == "SubtractNode")
+            {
+                spawnedNode = SpawnNode<SubtractNode>(id);
             }
             if (nodeType == "PrintNode")
             {
