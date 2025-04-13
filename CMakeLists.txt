@@ -72,6 +72,7 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Nodes/ButtonNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/TimerNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/AddNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/SubtractNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/StringNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/NumberNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/ConcatNode.cpp
