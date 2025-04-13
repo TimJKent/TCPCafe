@@ -26,7 +26,6 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     glfwSetErrorCallback(Window::GLFWErrorCallback);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
     if (window == nullptr){ /*return 1;*/}
@@ -58,6 +57,56 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     {
         glfwSetWindowIcon(window, 1, &iconData); 
     }
+
+    int image_width = 0;
+    int image_height = 0;
+    unsigned char* image_data = GetIconData().pixels;
+    if (image_data == NULL)
+    {
+        loadedWindowIcon = false;
+    }
+    else
+    {
+        // Create a OpenGL texture identifier
+        GLuint image_texture;
+        glGenTextures(1, &image_texture);
+        glBindTexture(GL_TEXTURE_2D, image_texture);
+
+        // Setup filtering parameters for display
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Upload pixels into texture
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, GetIconData().width, GetIconData().height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+        loadedWindowIcon = true;
+        windowIconTextureId = image_texture;
+    }
+}
+
+void Window::SetWindowPosition(const ImVec2& newWindowPos)
+{
+    glfwSetWindowPos(window, (int)newWindowPos.x, (int)newWindowPos.y);
+}
+
+ImVec2 Window::GetScreenMousePosition() const
+{
+    double mouseX, mouseY;
+    int windowX, windowY;
+
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    glfwGetWindowPos(window, &windowX, &windowY);
+    
+    return {(float)(windowX + (int)floor(mouseX)), (float)(windowY + (int)floor(mouseY))};
+}
+
+ImVec2 Window::GetWindowMousePosition() const
+{
+    double mouseX, mouseY;
+
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    
+    return {(float)floor(mouseX), (float)floor(mouseY)};
 }
 
 Window::~Window()
@@ -74,31 +123,10 @@ GLFWimage& Window::GetIconData()
 }
 
 
-bool Window::GetIconAsOpenGLTexture(unsigned int* out_texture)
+bool Window::GetIconAsOpenGLTexture(uint32_t* out_texture)
 {
-    // Load from file
-    int image_width = 0;
-    int image_height = 0;
-    unsigned char* image_data = GetIconData().pixels;
-    if (image_data == NULL)
-        return false;
-
-    // Create a OpenGL texture identifier
-    GLuint image_texture;
-    glGenTextures(1, &image_texture);
-    glBindTexture(GL_TEXTURE_2D, image_texture);
-
-    // Setup filtering parameters for display
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Upload pixels into texture
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, GetIconData().width, GetIconData().height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-
-    *out_texture = image_texture;
-
-    return true;
+    *out_texture = windowIconTextureId;
+    return loadedWindowIcon;
 }
 
 void Window::SetClearColor(const ImVec4& clearColor)

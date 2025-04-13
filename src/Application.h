@@ -24,7 +24,7 @@ public:
     Application();
     int Run();
 private:
-    void DrawMainMenu();
+    void DrawTitleBar();
     void DrawTCPClientWindow();
     void DrawTCPServerWindow();
     void DrawNodeEditor();

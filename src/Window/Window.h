@@ -17,15 +17,20 @@ public:
     void DrawFrame();
     void Close();
     void SetClearColor(const ImVec4& clearColor);
+    void SetWindowPosition(const ImVec2& newWindowPos);
+    ImVec2 GetScreenMousePosition() const;
+    ImVec2 GetWindowMousePosition() const;
     bool ShouldClose();
     bool IsValid(){return isValid;}
     GLFWimage& GetIconData();
     std::pair<int, int> GetWindowSize();
-    bool GetIconAsOpenGLTexture(unsigned int* out_texture);
+    bool GetIconAsOpenGLTexture(uint32_t* out_texture);
     GLFWwindow* GetNativeHandle() {return window;}
 private:
     bool isValid = false;
     GLFWwindow* window;
     ImVec4 clearColor;
     GLFWimage iconData;
+    uint32_t windowIconTextureId;
+    bool loadedWindowIcon = false;
 };

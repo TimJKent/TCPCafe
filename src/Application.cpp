@@ -53,7 +53,7 @@ int Application::Run()
 
         window.BeginFrame();
         
-        DrawMainMenu();
+        DrawTitleBar();
        
         BeginMainPanel();
         switch(activeMenu)
@@ -73,13 +73,18 @@ int Application::Run()
     return 0;
 }
 
-void Application::DrawMainMenu()
+void Application::DrawTitleBar()
 {
     ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 11 ) );
+
+    static bool isUserDraggingWindow = false;
+    static ImVec2 dragOffset = {0.0f,0.0f};
+
+    
+
     if(ImGui::BeginMainMenuBar())
     {
-        
-        ImGui::SetCursorPosX(40);
+       // ImGui::SetCursorPosX(40);
 
         if(ImGui::BeginMenu("File"))
         {
@@ -159,13 +164,31 @@ void Application::DrawMainMenu()
             }
         }
         
-        unsigned int my_image_texture = 0;
-        bool ret = window.GetIconAsOpenGLTexture(&my_image_texture);
-        ImVec2 storedCursorPos = ImGui::GetCursorPos();
-        ImGui::SetCursorPos({10,10});
-        ImGui::Image((ImTextureID)(intptr_t)my_image_texture, ImVec2( 20, 20));
+        //unsigned int my_image_texture = 0;
+        //bool ret = window.GetIconAsOpenGLTexture(&my_image_texture);
+        //ImVec2 storedCursorPos = ImGui::GetCursorPos();
+        //ImGui::SetCursorPos({10,10});
+        //ImGui::Image((ImTextureID)(intptr_t)my_image_texture, ImVec2( 20, 20));
         ImGui::EndMainMenuBar();
     }
+
+    
+
+   //if(ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+   //{
+   //    if(!isUserDraggingWindow)
+   //    {
+   //        dragOffset = window.GetWindowMousePosition();
+   //        isUserDraggingWindow = true;
+   //    }
+   //    ImVec2 globalMousePos = window.GetScreenMousePosition();
+   //    ImVec2 newWindowPosition = {globalMousePos.x - dragOffset.x, globalMousePos.y - dragOffset.y};
+
+   //    window.SetWindowPosition(newWindowPosition);
+   //}else
+   //{
+   //    isUserDraggingWindow = false;
+   //}
 
     ImGui::PopStyleVar();
 }
