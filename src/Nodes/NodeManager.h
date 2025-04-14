@@ -20,9 +20,8 @@ public:
 public:
     NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient);
 public:
-    void LoadFromFile(const std::string& filename);
     void DeleteAllNodes();
-    void SpawnNodesFromFile(const std::string& filename);
+    void QueueLoadFromFile(const std::string& filename);
     void SelectAll();
     void UnselectAll();
     void DoRecenter();
@@ -51,6 +50,8 @@ public:
     std::shared_ptr<Pin> GetPinFromId(ax::NodeEditor::PinId pinId);
     void SerializeToFile(const std::string& filename);
 private:
+    void ProcessQueuedDeletedNodes();
+    void SpawnNodesFromFile();
 private:
     std::shared_ptr<TCPServer> tcpServer;
     std::shared_ptr<TCPClient> tcpClient;
@@ -59,4 +60,6 @@ private:
     std::vector<Link> links; 
     bool deleteAll = false;
     bool recenter = false;
+    int waitingForDeleteCounter = 0;
+    std::string queuedImportFilename = "";
 };

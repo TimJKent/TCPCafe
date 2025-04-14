@@ -94,7 +94,7 @@ void Application::DrawTitleBar()
                 std::string path = FileDialogue::GetPathForOpen();
                 if(!path.empty())
                 {
-                    nodeManager.LoadFromFile(path);
+                    nodeManager.QueueLoadFromFile(path);
                 }
             }
             if(ImGui::MenuItem("Export","n", false))
@@ -450,7 +450,7 @@ void Application::DrawNodeEditor()
 {
     ed::SetCurrentEditor(nodeManager.GetEditorContext());
     ed::Begin("My Editor", ImVec2(0.0, 0.0f));
-    int uniqueId = 1;
+
     // Start drawing nodes.
     int nodePushID = 0;
     for (auto& node : nodeManager.GetNodes())
@@ -461,6 +461,8 @@ void Application::DrawNodeEditor()
         ImGui::PopID();
     }
 
+    //we need to only do stuff node related in this loop. Buttons will queue things up to happen in here
+
     nodeManager.Update();
     if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_D))
     {
@@ -468,7 +470,7 @@ void Application::DrawNodeEditor()
     }
     if(ImGui::Shortcut(ImGuiKey_Escape))
     {
-        nodeManager.UnselectAll();
+        nodeManager.UnselectAll();  
     }
     if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_R))
     {

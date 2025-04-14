@@ -8,14 +8,14 @@ Node::Node(ax::NodeEditor::NodeId nodeID)
 : id(nodeID)
 {
     ++NodeManager::globalId;
-    if((uint32_t)id == 0){id = NodeManager::globalId;}
+    if((uint64_t)id.AsPointer() == 0){id = NodeManager::globalId;}
 }
 
 nlohmann::json Node::Serialize()
 {
     nlohmann::json json;
 
-    json["id"] = (uint32_t)id;
+    json["id"] = (uint64_t)id.AsPointer();
     json["type"] = GetNodeTypeName();
     ImVec2 position =  GetPosition();
     json["pos_x"] = position.x;

@@ -81,85 +81,81 @@ void NodeManager::SerializeToFile(const std::string& filename)
     SetEditorActive(false);
 }
 
-void NodeManager::LoadFromFile(const std::string& filename)
+void NodeManager::QueueLoadFromFile(const std::string& filename)
 {
-    ax::NodeEditor::SetCurrentEditor(GetEditorContext());
-    DeleteAllNodes();
-    SpawnNodesFromFile(filename);
-    ax::NodeEditor::SetCurrentEditor(nullptr);
+    queuedImportFilename = filename;
+    waitingForDeleteCounter = 2;
 }
 
-void NodeManager::SpawnNodesFromFile(const std::string& filename)
+void NodeManager::SpawnNodesFromFile()
 {
-
-    std::ifstream ifs(filename);
+    std::ifstream ifs(queuedImportFilename);
 
     if(ifs.is_open())
     {
         json json = json::parse(ifs);
-
-        for (auto& [key, val] : json["nodes"].items())
-        {
-            std::string nodeType = val["type"];
-            std::shared_ptr<Node> spawnedNode;
-            
-            ax::NodeEditor::NodeId id = (uint64_t)val["id"];
-            if (nodeType == "ButtonNode")
-            {
-                spawnedNode =  SpawnNode<ButtonNode>(id);
-            }
-            if (nodeType == "TimerNode")
-            {
-                spawnedNode = SpawnNode<TimerNode>(id);
-            }
-            if (nodeType == "StringNode")
-            {
-                spawnedNode = SpawnNode<StringNode>(id);
-            }
-            if (nodeType == "NumberNode")
-            {
-                spawnedNode = SpawnNode<NumberNode>(id);
-            }
-            if (nodeType == "ConcatNode")
-            {
-                spawnedNode = SpawnNode<ConcatNode>(id);
-            }
-            if (nodeType == "AddNode")
-            {
-                spawnedNode = SpawnNode<AddNode>(id);
-            }
-            if (nodeType == "SubtractNode")
-            {
-                spawnedNode = SpawnNode<SubtractNode>(id);
-            }
-            if (nodeType == "PrintNode")
-            {
-                spawnedNode = SpawnNode<PrintNode>(id);
-            }
-            if (nodeType == "TCPClientNode")
-            {
-                spawnedNode = SpawnNode<TCPClientNode>(id, tcpClient);
-            }
-            if (nodeType == "TCPServerNode")
-            {
-                spawnedNode = SpawnNode<TCPServerNode>(id, tcpServer);
-            }
-
-            spawnedNode->ConstructFromJSON(val);
-            float posX = val["pos_x"];
-            float posY = val["pos_y"];
-            ax::NodeEditor::SetNodePosition(id, {posX,posY});
-        }
-
-        for (auto& [key, val] : json["links"].items())
-        {
-            NodeManager::globalId++;
-            ax::NodeEditor::LinkId id = (uint64_t)val["id"];
-            ax::NodeEditor::PinId startId = (uint64_t)val["startPinId"];
-            ax::NodeEditor::PinId endId = (uint64_t)val["endPinId"];
-
-            links.emplace_back(Link{id, startId, endId});
-        }
+        
+            for (auto& [key, val] : json["nodes"].items())
+                {
+                    std::string nodeType = val["type"];
+                    std::shared_ptr<Node> spawnedNode;
+                    
+                    ax::NodeEditor::NodeId id = (uint64_t)val["id"];
+                    if (nodeType == "ButtonNode")
+                    {
+                        spawnedNode =  SpawnNode<ButtonNode>(id);
+                    }
+                    if (nodeType == "TimerNode")
+                    {
+                        spawnedNode = SpawnNode<TimerNode>(id);
+                    }
+                    if (nodeType == "StringNode")
+                    {
+                        spawnedNode = SpawnNode<StringNode>(id);
+                    }
+                    if (nodeType == "NumberNode")
+                    {
+                        spawnedNode = SpawnNode<NumberNode>(id);
+                    }
+                    if (nodeType == "ConcatNode")
+                    {
+                        spawnedNode = SpawnNode<ConcatNode>(id);
+                    }
+                    if (nodeType == "AddNode")
+                    {
+                        spawnedNode = SpawnNode<AddNode>(id);
+                    }
+                    if (nodeType == "SubtractNode")
+                    {
+                        spawnedNode = SpawnNode<SubtractNode>(id);
+                    }
+                    if (nodeType == "PrintNode")
+                    {
+                        spawnedNode = SpawnNode<PrintNode>(id);
+                    }
+                    if (nodeType == "TCPClientNode")
+                    {
+                        spawnedNode = SpawnNode<TCPClientNode>(id, tcpClient);
+                    }
+                    if (nodeType == "TCPServerNode")
+                    {
+                        spawnedNode = SpawnNode<TCPServerNode>(id, tcpServer);
+                    }
+                
+                    spawnedNode->ConstructFromJSON(val);
+                    float posX = val["pos_x"];
+                    float posY = val["pos_y"];
+                    ax::NodeEditor::SetNodePosition(id, {posX,posY});
+                }
+                for (auto& [key, val] : json["links"].items())
+                {
+                    NodeManager::globalId++;
+                    ax::NodeEditor::LinkId id = (uint64_t)val["id"];
+                    ax::NodeEditor::PinId startId = (uint64_t)val["startPinId"];
+                    ax::NodeEditor::PinId endId = (uint64_t)val["endPinId"];
+                
+                    links.emplace_back(Link{id, startId, endId});
+                }
 
         ifs.close();
     }
@@ -167,8 +163,21 @@ void NodeManager::SpawnNodesFromFile(const std::string& filename)
 
 void NodeManager::DeleteAllNodes()
 {
+
+    for(auto& link : links)
+    {
+        ax::NodeEditor::DeleteLink(link.ID);
+    }
+
+    links.clear();
+
+    
     for(auto& node : GetNodes())
+    {
         ax::NodeEditor::DeleteNode(node->id);
+    }
+
+    nodes.clear();
 }
 
 std::vector<std::shared_ptr<Node>> NodeManager::GetSelectedNodes()
@@ -213,6 +222,7 @@ void NodeManager::DuplicateSelected()
 
 void NodeManager::Update()
 {
+   
     for(auto& node : nodes)
     {
         node->Update();
@@ -284,69 +294,24 @@ void NodeManager::Update()
         ax::NodeEditor::EndCreate(); // Wraps up object creation action handling.
     }
 
-    // Handle deletion action
-    if (ax::NodeEditor::BeginDelete())
+    if(waitingForDeleteCounter == 0 && !queuedImportFilename.empty())
     {
-        ax::NodeEditor::NodeId deletedNodeId;
-        while (ax::NodeEditor::QueryDeletedNode(&deletedNodeId))
-        {
-            // If you agree that link can be deleted, accept deletion.
-            if (ax::NodeEditor::AcceptDeletedItem())
-            {
-                // Then remove link from your data.
-                for (auto& node : nodes)
-                {
-                    if (node->id == deletedNodeId)
-                    {
-                        nodes.erase(std::remove(nodes.begin(), nodes.end(), node), nodes.end());
-                        break;
-                    }
-                }       
-            }
+        SpawnNodesFromFile();
+    
+        queuedImportFilename = "";
+    }
+    if(waitingForDeleteCounter == 2)
+    {
+        DeleteAllNodes();
+    }
 
-            // You may reject node deletion by calling:
-            // ed::RejectDeletedItem();
-        }
+    if(waitingForDeleteCounter > 0)
+    {
+        waitingForDeleteCounter--;
+    }
+    
 
-        // There may be many links marked for deletion, let's loop over them.
-        ax::NodeEditor::LinkId deletedLinkId;
-        while (ax::NodeEditor::QueryDeletedLink(&deletedLinkId))
-        {
-            // If you agree that link can be deleted, accept deletion.
-            if (ax::NodeEditor::AcceptDeletedItem())
-            {
-                // Then remove link from your data.
-                for (auto& link : links)
-                {
-                    if (link.ID == deletedLinkId)
-                    {
-                        std::shared_ptr<Pin> inputPin = GetPinFromId(link.EndPinID);
-                        std::shared_ptr<Pin> outputPin = GetPinFromId(link.StartPinID);
-                            
-                        if(inputPin)
-                        {
-                            inputPin->isConnected = false;
-                            inputPin->any.reset();
-                            inputPin->active = false;
-                        }
-                        if(outputPin)
-                        {
-                            outputPin->isConnected = false;
-                            outputPin->any.reset();
-                            outputPin->active = false;
-                        }
-                        links.erase(std::remove(links.begin(), links.end(), link), links.end());
-                        break;
-                    }
-                }
-            }
-
-            // You may reject link deletion by calling:
-            // ed::RejectDeletedItem();
-        }
-
-        ax::NodeEditor::EndDelete(); // Wrap up deletion action
-    }   
+    ProcessQueuedDeletedNodes();   
 }
 
 std::shared_ptr<Pin> NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
@@ -385,4 +350,60 @@ void NodeManager::DoRecenter()
     UnselectAll();
     recenter = false;
     SetEditorActive(false);
+}
+
+void NodeManager::ProcessQueuedDeletedNodes()
+{
+    if (ax::NodeEditor::BeginDelete())
+    {
+        ax::NodeEditor::NodeId deletedNodeId;
+
+        while (ax::NodeEditor::QueryDeletedNode(&deletedNodeId))
+        {
+            if (ax::NodeEditor::AcceptDeletedItem())
+            {
+                for (auto& node : nodes)
+                {
+                    if (node->id == deletedNodeId)
+                    {
+                        nodes.erase(std::remove(nodes.begin(), nodes.end(), node), nodes.end());
+                        break;
+                    }
+                }       
+            }
+        }
+
+        ax::NodeEditor::LinkId deletedLinkId;
+        while (ax::NodeEditor::QueryDeletedLink(&deletedLinkId))
+        {
+            if (ax::NodeEditor::AcceptDeletedItem())
+            {
+                for (auto& link : links)
+                {
+                    if (link.ID == deletedLinkId)
+                    {
+                        std::shared_ptr<Pin> inputPin = GetPinFromId(link.EndPinID);
+                        std::shared_ptr<Pin> outputPin = GetPinFromId(link.StartPinID);
+
+                        if(inputPin)
+                        {
+                            inputPin->isConnected = false;
+                            inputPin->any.reset();
+                            inputPin->active = false;
+                        }
+                        if(outputPin)
+                        {
+                            outputPin->isConnected = false;
+                            outputPin->any.reset();
+                            outputPin->active = false;
+                        }
+                        links.erase(std::remove(links.begin(), links.end(), link), links.end());
+                        break;
+                    }
+                }
+            }
+        }
+
+        ax::NodeEditor::EndDelete();
+    }
 }
