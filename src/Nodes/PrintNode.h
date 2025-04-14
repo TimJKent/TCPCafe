@@ -9,6 +9,7 @@ public:
     PrintNode(PrintNode& copy);
     std::shared_ptr<Node> Clone() final {return std::make_shared<PrintNode>(*this);};
     void Draw() final;
+    void Update() final;
     void Print();
     std::vector<std::shared_ptr<Pin>> GetPins() final;
     void ConstructFromJSON(const nlohmann::json& json) final;

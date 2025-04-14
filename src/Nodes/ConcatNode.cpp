@@ -48,13 +48,13 @@ void ConcatNode::Update()
 
     for(std::shared_ptr<Pin> pin : GetPins())
     {
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active && pin->any.has_value())
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active)
         {
             output += pin->PinOutputToString();
         }
     }
 
-    outputPin->any = std::make_any<std::string>(output);
+    outputPin->value = output;
 
     if(inputPins[inputPins.size()-1]->active)
     {

@@ -11,6 +11,7 @@ Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinTy
 , pinKind(pinKind)
 , name(name)
 , pinType(pinType)
+, value(false)
 {
     value = 0.0f;
 }
@@ -20,6 +21,7 @@ Pin::Pin(json json)
 , pinKind(ax::NodeEditor::PinKind::Input)
 , name("")
 , pinType(PinType::Any)
+, value(false)
 {
     ++NodeManager::globalId;
     id = (uint64_t)json["id"];
@@ -40,32 +42,25 @@ Pin::Pin(Pin& copy)
 
 std::string Pin::PinOutputToString()
 {
-    std::string output = "";
-    
-    if(any.has_value())
+    std::string output = ""; 
+
+    if(std::holds_alternative<std::string>(value))
     {
-        if(any.type() == typeid(std::string))
-        {
-            output = std::any_cast<std::string>(any);
-        }
-        else if(any.type() == typeid(int))
-        {
-            output = std::to_string(std::any_cast<int>(any));
-        }
-        else if(any.type() == typeid(double))
-        {
-            output = std::to_string(std::any_cast<double>(any));
-        }
-        else if(any.type() == typeid(double))
-        {
-            output = std::to_string(std::any_cast<double>(any));
-        }
-        else if(any.type() == typeid(bool))
-        {
-            bool value = std::any_cast<bool>(any);
-            output = value ? "true" : "false";
-        }
+        output = std::get<std::string>(value);
     }
+    else if(std::holds_alternative<bool>(value))
+    {
+        output = std::get<bool>(value) ? "true" : "false";
+    }
+    else if(std::holds_alternative<double>(value))
+    {
+      output = std::to_string(std::get<double>(value));
+    }
+    else if(std::holds_alternative<int>(value))
+    {
+        output = std::to_string(std::get<int>(value));
+    }
+    
 
     return output;
 }

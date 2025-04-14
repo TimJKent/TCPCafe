@@ -37,7 +37,7 @@ namespace FileDialogue
         return output;
     }
 
-    std::string GetPathForSave()
+    std::string GetPathForSave(const std::string& defaultName)
     {
         std::string output = "";
         nfdu8char_t* outPath;
@@ -45,7 +45,13 @@ namespace FileDialogue
         nfdsavedialogu8args_t args = {0};
         args.filterList = filters;
         args.filterCount = 1;
-        args.defaultName = "NetworkNodes.cafe";
+        if(defaultName.empty())
+        {
+            args.defaultName = "NetworkNodes.cafe";
+        }else
+        {
+            args.defaultName = defaultName.c_str();
+        }
         nfdresult_t result = NFD_SaveDialogU8_With(&outPath, &args);
 
         if (result == NFD_OKAY)

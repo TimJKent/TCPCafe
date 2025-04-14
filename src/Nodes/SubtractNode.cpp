@@ -52,32 +52,32 @@ void SubtractNode::Update()
 
     for(std::shared_ptr<Pin> pin : GetPins())
     {
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active && pin->any.has_value())
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active)
         {
-            if(pin->any.type() == typeid(int))
+            if(std::holds_alternative<int>(pin->value))
             {
                 if (pinIndex == 0)
                 {
-                    iOutput += std::any_cast<int>(pin->any);
-                    fOutput += std::any_cast<int>(pin->any);
+                    iOutput += std::get<int>(pin->value);
+                    fOutput += std::get<int>(pin->value);
                 }
                 else
                 {
-                    iOutput -= std::any_cast<int>(pin->any);
-                    fOutput -= std::any_cast<int>(pin->any);
+                    iOutput -= std::get<int>(pin->value);
+                    fOutput -= std::get<int>(pin->value);
                 }
             }
-            else if(pin->any.type() == typeid(double))
+            else if(std::holds_alternative<double>(pin->value))
             {
                 if (pinIndex == 0)
                 {
-                    iOutput += (int)std::round(std::any_cast<double>(pin->any));
-                    fOutput += std::any_cast<double>(pin->any);
+                    iOutput += (int)std::round(std::get<double>(pin->value));
+                    fOutput += std::get<double>(pin->value);
                 }
                 else
                 {
-                    iOutput -= (int)std::round(std::any_cast<double>(pin->any));
-                    fOutput -= std::any_cast<double>(pin->any);
+                    iOutput -= (int)std::round(std::get<double>(pin->value));
+                    fOutput -= std::get<double>(pin->value);
                 }
                 outputAsFloat = true;
             }
@@ -87,11 +87,11 @@ void SubtractNode::Update()
 
     if(outputAsFloat)
     {
-        outputPin->any = std::make_any<double>(fOutput);
+        outputPin->value = fOutput;
     }
     else
     {
-        outputPin->any = std::make_any<int>(iOutput);
+        outputPin->value = iOutput;
     }
 
     if(inputPins[inputPins.size()-1]->active)

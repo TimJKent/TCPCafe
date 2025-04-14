@@ -34,11 +34,15 @@ void PrintNode::Draw()
         stringPin->Draw();
         triggerPin->Draw();
     ax::NodeEditor::EndNode();
+}
 
+void PrintNode::Update()
+{
     if(stringPin->active)
     {
-            message = stringPin->PinOutputToString();
-    }else
+        message = stringPin->PinOutputToString();
+    }
+    else
     {
         message = "";
     }
@@ -46,7 +50,7 @@ void PrintNode::Draw()
     if(triggerPin->active)
     {
         Print();
-    }
+    }  
 }
 
 std::vector<std::shared_ptr<Pin>> PrintNode::GetPins()

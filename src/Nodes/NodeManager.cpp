@@ -222,7 +222,6 @@ void NodeManager::DuplicateSelected()
 
 void NodeManager::Update()
 {
-   
     for(auto& node : nodes)
     {
         node->Update();
@@ -237,7 +236,7 @@ void NodeManager::Update()
         outputPin->isConnected = true;
         
         inputPin->active = outputPin->active;
-        inputPin->any = outputPin->any;
+        inputPin->value = outputPin->value;
 
         ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID, inputPin->GetColorFromType(inputPin->pinType), 2.0f);
     }
@@ -310,7 +309,6 @@ void NodeManager::Update()
         waitingForDeleteCounter--;
     }
     
-
     ProcessQueuedDeletedNodes();   
 }
 
@@ -388,13 +386,13 @@ void NodeManager::ProcessQueuedDeletedNodes()
                         if(inputPin)
                         {
                             inputPin->isConnected = false;
-                            inputPin->any.reset();
+                            inputPin->value = false;
                             inputPin->active = false;
                         }
                         if(outputPin)
                         {
                             outputPin->isConnected = false;
-                            outputPin->any.reset();
+                            inputPin->value = false;
                             outputPin->active = false;
                         }
                         links.erase(std::remove(links.begin(), links.end(), link), links.end());

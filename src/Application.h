@@ -32,6 +32,7 @@ private:
     void EndMainPanel();
     void SendMessageFromServer(const std::string& message);
     void SendMessageFromClient(const std::string& message);
+    void UpdateWindowTitle();
     std::shared_ptr<Node> DrawNodeSpawnList();
 private:
     Window window;
@@ -50,6 +51,7 @@ private:
 
     MENU_NAME activeMenu;
 private:
+    std::string activeFileName = "";
     asio::io_context ioContext;
     std::shared_ptr<TCPClient> tcpClient;
     std::shared_ptr<TCPServer> tcpServer;

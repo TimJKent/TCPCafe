@@ -52,30 +52,23 @@ void AddNode::Update()
 
     for(std::shared_ptr<Pin> pin : GetPins())
     {
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active && pin->any.has_value())
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active)
         {
-            if(pin->any.type() == typeid(int))
+            if(std::holds_alternative<int>(pin->value))
             {
-                iOutput += std::any_cast<int>(pin->any);
-                fOutput += std::any_cast<int>(pin->any);
+                iOutput += std::get<int>(pin->value);
+                fOutput += std::get<int>(pin->value);
             }
-            else if(pin->any.type() == typeid(double))
+            if(std::holds_alternative<double>(pin->value))
             {
-                iOutput += (int)std::round(std::any_cast<double>(pin->any));
-                fOutput += std::any_cast<double>(pin->any);
+                iOutput += (int)std::round(std::get<double>(pin->value));
+                fOutput += std::get<double>(pin->value);
                 outputAsFloat = true;
             }
         }
     }
 
-    if(outputAsFloat)
-    {
-        outputPin->any = std::make_any<double>(fOutput);
-    }
-    else
-    {
-        outputPin->any = std::make_any<int>(iOutput);
-    }
+    outputPin->value =  outputAsFloat ? fOutput : iOutput;
 
     if(inputPins[inputPins.size()-1]->active)
     {

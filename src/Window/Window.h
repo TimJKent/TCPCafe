@@ -25,6 +25,7 @@ public:
     GLFWimage& GetIconData();
     std::pair<int, int> GetWindowSize();
     bool GetIconAsOpenGLTexture(uint32_t* out_texture);
+    void SetWindowTitle(const std::string& newWindowTitle);
     GLFWwindow* GetNativeHandle() {return window;}
 private:
     bool isValid = false;

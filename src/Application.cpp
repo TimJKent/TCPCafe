@@ -13,6 +13,8 @@
 #include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
 
+#include <filesystem>
+
 Application::Application()
 : window(1280, 720, "TCPCafe 0.0.1", "icon.png")
 , activeMenu(MENU_NAME::TCP_CLIENT)
@@ -95,11 +97,13 @@ void Application::DrawTitleBar()
                 if(!path.empty())
                 {
                     nodeManager.QueueLoadFromFile(path);
+                    activeFileName = path;
+                    UpdateWindowTitle();
                 }
             }
             if(ImGui::MenuItem("Export","n", false))
             {
-                std::string path = FileDialogue::GetPathForSave();
+                std::string path = FileDialogue::GetPathForSave(activeFileName);
                 if(!path.empty())
                 {
                     nodeManager.SerializeToFile(path);
@@ -170,6 +174,14 @@ void Application::DrawTitleBar()
         //ImVec2 storedCursorPos = ImGui::GetCursorPos();
         //ImGui::SetCursorPos({10,10});
         //ImGui::Image((ImTextureID)(intptr_t)my_image_texture, ImVec2( 20, 20));
+
+        std::filesystem::path activePath = activeFileName;
+        
+        std::string filename = activePath.filename().string();
+        filename.resize((int)std::min((double)filename.size(), (double)30));
+        
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth()-11*filename.size()-4);
+        ImGui::Text(filename.c_str());
         ImGui::EndMainMenuBar();
     }
 
@@ -514,6 +526,11 @@ void Application::DrawNodeEditor()
             ImGui::OpenPopup("Create New Node");
         }
     }
+}
 
-    
+
+void Application::UpdateWindowTitle()
+{
+    std::string newWindowTitle = "TCPCafe 0.0.1 - " + activeFileName;
+    window.SetWindowTitle(newWindowTitle);
 }

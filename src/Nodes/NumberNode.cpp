@@ -52,28 +52,28 @@ void NumberNode::Draw()
 
 void NumberNode::Update()
 {
-    if(inputPin1->active && inputPin2->active && inputPin1->any.has_value())
+    if(inputPin1->active && inputPin2->active)
     {
-        if(inputPin1->any.type() == typeid(int))
+        if(std::holds_alternative<int>(inputPin1->value))
         {
-            integer = std::any_cast<int>(inputPin1->any);
+            integer = std::get<int>(inputPin1->value);
             floatingPoint = (double)integer;
         }
-        else if(inputPin1->any.type() == typeid(double))
+        else if(std::holds_alternative<double>(inputPin1->value))
         {
-            floatingPoint = std::any_cast<double>(inputPin1->any);
+            floatingPoint = std::get<double>(inputPin1->value);
             integer = (int)std::round(floatingPoint);
         }
     }
 
     if(isFloating)
     {
-        outputPin->any = std::make_any<double>(floatingPoint);
+        outputPin->value = floatingPoint;
         integer = (int)std::round(floatingPoint);
     }
     else
     {
-        outputPin->any = std::make_any<int>(integer);
+        outputPin->value = integer;
         floatingPoint = (double)integer;
     }
     outputPin->active = true;

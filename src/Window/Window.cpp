@@ -52,6 +52,7 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     ImGui_ImplOpenGL3_Init("#version 130");
 
     
+
     iconData.pixels = stbi_load(iconName.c_str(), &iconData.width, &iconData.height, 0, 4);
     if(iconData.pixels)
     {
@@ -179,4 +180,9 @@ std::pair<int, int> Window::GetWindowSize()
     glfwGetWindowSize(window, &width, &height);
 
     return {width, height};
+}
+
+void Window::SetWindowTitle(const std::string& newWindowTitle)
+{
+    glfwSetWindowTitle(window, newWindowTitle.c_str());
 }

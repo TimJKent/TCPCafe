@@ -29,8 +29,7 @@ public:
     ax::NodeEditor::PinId id;
     ax::NodeEditor::PinKind pinKind;
     PinType pinType;
-    std::any any;
-    std::variant<std::string, bool, float, int> value;
+    std::variant<std::string, bool, double, int> value;
 private:
     std::string name;
     bool triggered = false;

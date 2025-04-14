@@ -29,7 +29,7 @@ void StringNode::Draw()
         outputPin->Draw();
     ax::NodeEditor::EndNode();
 
-    outputPin->any = std::make_any<std::string>(string);
+    outputPin->value = string;
     outputPin->active = true;
 }
 
