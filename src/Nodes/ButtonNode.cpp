@@ -4,7 +4,7 @@
 
 
 ButtonNode::ButtonNode(ax::NodeEditor::NodeId id) : Node(id)
-, outputPin(std::make_shared<Pin>("", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
+, outputPin(std::make_shared<Pin>("", ax::NodeEditor::PinKind::Output, Pin::PinType::Boolean))
 {
 }
 
@@ -22,14 +22,9 @@ void ButtonNode::Draw()
 {
     ax::NodeEditor::BeginNode(id);
         ImGui::Text("Button");
-        if(ImGui::Button("Trigger"))
-        {
-            outputPin->active = true;
-        }
-        else
-        {
-            outputPin->active = false;
-        }
+            
+        outputPin->value = ImGui::Button("Trigger");
+        
         ImGui::SameLine();
         outputPin->Draw();
     ax::NodeEditor::EndNode();

@@ -30,7 +30,6 @@ void StringNode::Draw()
     ax::NodeEditor::EndNode();
 
     outputPin->value = string;
-    outputPin->active = true;
 }
 
 std::vector<std::shared_ptr<Pin>> StringNode::GetPins()

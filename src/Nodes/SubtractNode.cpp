@@ -52,7 +52,7 @@ void SubtractNode::Update()
 
     for(std::shared_ptr<Pin> pin : GetPins())
     {
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->active)
+        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->isConnected)
         {
             if(std::holds_alternative<int>(pin->value))
             {
@@ -94,17 +94,15 @@ void SubtractNode::Update()
         outputPin->value = iOutput;
     }
 
-    if(inputPins[inputPins.size()-1]->active)
+    if(inputPins[inputPins.size()-1]->isConnected)
     {
         AddInputPin();
     }
 
-    if(inputPins.size() > 2 && !inputPins[inputPins.size()-2]->active)
+    if(inputPins.size() > 2 && !inputPins[inputPins.size()-2]->isConnected)
     {
         RemoveInputPin();
     }
-
-    outputPin->active = true;
 }
 
 void SubtractNode::AddInputPin()

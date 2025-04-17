@@ -8,14 +8,14 @@ class Pin : public Serialization::ISerializable
 public:
     enum class PinType
     {
-        Trigger,
+        Boolean,
         Number,
         Any,
     };
 public:
     nlohmann::json Serialize() final;
 public:
-    ImColor GetColorFromType(PinType type);
+    ImColor GetColorFromType();
 
     Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType);
     Pin(Pin& pin);
@@ -24,7 +24,6 @@ public:
     std::string PinOutputToString();
     std::string GetName(){return name;}
 public:
-    bool active = false;
     bool isConnected = false;
     ax::NodeEditor::PinId id;
     ax::NodeEditor::PinKind pinKind;

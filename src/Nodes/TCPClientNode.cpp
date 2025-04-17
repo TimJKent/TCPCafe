@@ -5,7 +5,7 @@
 
 
 TCPClientNode::TCPClientNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPClient> tcpClient) : Node(id)
-, triggerSendPin(std::make_shared<Pin>("Send Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Trigger))
+, triggerSendPin(std::make_shared<Pin>("Send Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Boolean))
 , stringPin(std::make_shared<Pin>("Send String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 , tcpClient(tcpClient)
 {
@@ -39,7 +39,7 @@ void TCPClientNode::Draw()
         triggerSendPin->Draw();
     ax::NodeEditor::EndNode();
 
-    if(stringPin->active)
+    if(stringPin->isConnected)
     {
         message = stringPin->PinOutputToString();
     }else
@@ -47,7 +47,7 @@ void TCPClientNode::Draw()
         message = "";
     }
 
-    if(triggerSendPin->active)
+    if(triggerSendPin->isConnected)
     {
         Send();
     }

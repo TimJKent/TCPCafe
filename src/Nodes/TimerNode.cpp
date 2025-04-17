@@ -4,7 +4,7 @@
 
 
 TimerNode::TimerNode(ax::NodeEditor::NodeId id) : Node(id)
-, outputPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Output, Pin::PinType::Trigger))
+, outputPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Output, Pin::PinType::Boolean))
 {
     lastTriggerTime = std::chrono::high_resolution_clock::now();
 }
@@ -28,7 +28,6 @@ void TimerNode::Draw()
         ImGui::InputInt("MS", &repRate);
         ImGui::NewLine();
         ImGui::SameLine(70);
-        outputPin->active = false;
         outputPin->Draw();
     ax::NodeEditor::EndNode();
 }
@@ -40,12 +39,12 @@ void TimerNode::Update()
     
     if(msEllapsed.count() >= repRate)
     {
-        outputPin->active = true;
         lastTriggerTime = now;
+        outputPin->value = true;
     }
     else
     {
-        outputPin->active = false;
+        outputPin->value = false;
     }
 }
 

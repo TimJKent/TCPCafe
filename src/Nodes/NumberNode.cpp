@@ -8,7 +8,7 @@
 NumberNode::NumberNode(ax::NodeEditor::NodeId id) : Node(id)
 , outputPin(std::make_shared<Pin>("Out", ax::NodeEditor::PinKind::Output,Pin::PinType::Number))
 , inputPin1(std::make_shared<Pin>("X", ax::NodeEditor::PinKind::Input,Pin::PinType::Number))
-, inputPin2(std::make_shared<Pin>("Set", ax::NodeEditor::PinKind::Input,Pin::PinType::Trigger))
+, inputPin2(std::make_shared<Pin>("Set", ax::NodeEditor::PinKind::Input,Pin::PinType::Boolean))
 {
 }
 
@@ -52,7 +52,7 @@ void NumberNode::Draw()
 
 void NumberNode::Update()
 {
-    if(inputPin1->active && inputPin2->active)
+    if(inputPin1->isConnected && inputPin2->isConnected && std::get<bool>(inputPin2->value))
     {
         if(std::holds_alternative<int>(inputPin1->value))
         {
@@ -76,7 +76,6 @@ void NumberNode::Update()
         outputPin->value = integer;
         floatingPoint = (double)integer;
     }
-    outputPin->active = true;
 }
 
 std::vector<std::shared_ptr<Pin>> NumberNode::GetPins()

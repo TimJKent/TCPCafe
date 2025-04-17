@@ -65,13 +65,13 @@ std::string Pin::PinOutputToString()
     return output;
 }
 
-ImColor Pin::GetColorFromType(PinType type)
+ImColor Pin::GetColorFromType()
 {
-    switch(type)
+    switch(pinType)
     {
         case PinType::Any: return ImColor{204, 191, 139};
         case PinType::Number: return ImColor{91, 151, 207};
-        case PinType::Trigger: return ImColor{75, 173, 108};
+        case PinType::Boolean: if(std::holds_alternative<bool>(value) && std::get<bool>(value)){return ImColor{145, 255, 168};}else{return ImColor{75, 173, 108};}
     }
     return ImColor{255,255,255};
 }
@@ -84,7 +84,7 @@ void Pin::Draw()
         ImGui::SameLine();
     }
     ax::NodeEditor::BeginPin(id, pinKind);
-    ax::Widgets::Icon(ImVec2(static_cast<float>(24), static_cast<float>(24)), ax::Drawing::IconType::Circle, isConnected, GetColorFromType(pinType), {0,0,0,0});
+    ax::Widgets::Icon(ImVec2(static_cast<float>(24), static_cast<float>(24)), ax::Drawing::IconType::Circle, isConnected, GetColorFromType(), {0,0,0,0});
     ax::NodeEditor::EndPin();
     if(pinKind == ax::NodeEditor::PinKind::Input)
     {

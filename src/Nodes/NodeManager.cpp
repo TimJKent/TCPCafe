@@ -235,10 +235,9 @@ void NodeManager::Update()
         inputPin->isConnected = true;
         outputPin->isConnected = true;
         
-        inputPin->active = outputPin->active;
         inputPin->value = outputPin->value;
 
-        ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID, inputPin->GetColorFromType(inputPin->pinType), 2.0f);
+        ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID, inputPin->GetColorFromType(), 2.0f);
     }
 
     // Handle creation action, returns true if editor want to create new object (node or link)
@@ -265,7 +264,7 @@ void NodeManager::Update()
 
             if(inputPin->pinKind == ax::NodeEditor::PinKind::Input  && outputPin->pinKind == ax::NodeEditor::PinKind::Output)
             {
-                bool matchesType  = inputPin->pinType == outputPin->pinType || (inputPin->pinType == Pin::PinType::Any && outputPin->pinType != Pin::PinType::Trigger);
+                bool matchesType  = inputPin->pinType == outputPin->pinType || (inputPin->pinType == Pin::PinType::Any && outputPin->pinType != Pin::PinType::Boolean);
                 bool pinIsntFull = !inputPin->isConnected;
                 if(matchesType && pinIsntFull)
                 {
@@ -282,7 +281,7 @@ void NodeManager::Update()
                     links.push_back({ ax::NodeEditor::LinkId(++NodeManager::globalId), inputPinId, outputPinId});
                     
                     // Draw new link.
-                    ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID,inputPin->GetColorFromType(inputPin->pinType), 2.0f);
+                    ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID,inputPin->GetColorFromType(), 2.0f);
                 }
             }
             else
@@ -386,14 +385,10 @@ void NodeManager::ProcessQueuedDeletedNodes()
                         if(inputPin)
                         {
                             inputPin->isConnected = false;
-                            inputPin->value = false;
-                            inputPin->active = false;
                         }
                         if(outputPin)
                         {
                             outputPin->isConnected = false;
-                            inputPin->value = false;
-                            outputPin->active = false;
                         }
                         links.erase(std::remove(links.begin(), links.end(), link), links.end());
                         break;
