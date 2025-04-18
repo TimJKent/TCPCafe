@@ -5,26 +5,35 @@
 #include <vector>
 #include <memory>
 #include "Serialization/ISerializable.h"
-
-class Pin;
+#include <Nodes/Pin.h>
 
 class Node : public Serialization::ISerializable
 {
 public:
     Node(ax::NodeEditor::NodeId id = 0);
+    Node(const Node& copy);
 public:
-    nlohmann::json Serialize();
     virtual std::shared_ptr<Node> Clone(){return std::make_shared<Node>(*this);}
-    virtual void SpecialSerialze(nlohmann::json& json) {}
-    virtual void ConstructFromJSON(const nlohmann::json& json){}
-    virtual std::vector<std::shared_ptr<Pin>> GetPins() {return {};}
-    ImVec2 GetPosition()
-    {
-        return ax::NodeEditor::GetNodePosition(id);
-    }
     virtual std::string GetNodeTypeName(){return "";}
-    virtual void Draw(){} 
     virtual void Update(){} 
+    ImVec2 GetPosition() const { return ax::NodeEditor::GetNodePosition(id); }
+    nlohmann::json Serialize();
+    void ConstructFromJSON(const nlohmann::json& json);
+    const std::vector<std::shared_ptr<Pin>>& GetInputPins()  const { return inputPins;}
+    const std::vector<std::shared_ptr<Pin>>& GetOutputPins() const { return outputPins;}
+    void Draw(); 
+    void AddInputPin(const std::string& name, Pin::PinType pinType);
+    void AddOutputPin(const std::string& name, Pin::PinType pinType);
+    void RemoveInputPin();
+    void RemoveOutputPin();
+protected:
+    virtual void SpecialSerialze(nlohmann::json& json) {}
+    virtual void SpecialConstructFromJSON(const nlohmann::json& json){}    
+    virtual void DrawImpl(){} 
+    void DrawPins();
 public:
     ax::NodeEditor::NodeId id;
+protected:
+    std::vector<std::shared_ptr<Pin>> inputPins;
+    std::vector<std::shared_ptr<Pin>> outputPins;
 };

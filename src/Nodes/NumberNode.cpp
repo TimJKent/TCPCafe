@@ -6,20 +6,10 @@
 
 
 NumberNode::NumberNode(ax::NodeEditor::NodeId id) : Node(id)
-, outputPin(std::make_shared<Pin>("Out", ax::NodeEditor::PinKind::Output,Pin::PinType::Number))
-, inputPin1(std::make_shared<Pin>("X", ax::NodeEditor::PinKind::Input,Pin::PinType::Number))
-, inputPin2(std::make_shared<Pin>("Set", ax::NodeEditor::PinKind::Input,Pin::PinType::Boolean))
 {
-}
-
-NumberNode::NumberNode(NumberNode& copy) : Node(++NodeManager::globalId)
-, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
-, inputPin1(std::make_shared<Pin>(*copy.inputPin1.get()))
-, inputPin2(std::make_shared<Pin>(*copy.inputPin2.get()))
-, isFloating(copy.isFloating)
-, floatingPoint(copy.floatingPoint)
-, integer(copy.integer)
-{
+    AddOutputPin("Out", Pin::PinType::Number);
+    AddInputPin("X", Pin::PinType::Number);
+    AddInputPin("Set", Pin::PinType::Boolean);
 }
 
 
@@ -28,9 +18,8 @@ std::string NumberNode::GetNodeTypeName()
     return "NumberNode";
 }
 
-void NumberNode::Draw()
+void NumberNode::DrawImpl()
 {
-    ax::NodeEditor::BeginNode(id);
         ImGui::Text("Number");
         ImGui::SameLine();
         if( ImGui::RadioButton("Decimal", isFloating)){isFloating = !isFloating;}
@@ -43,75 +32,56 @@ void NumberNode::Draw()
         {
             ImGui::InputInt("##Int", &integer);
         }
-        inputPin1->Draw();
-        ImGui::SameLine(110);
-        outputPin->Draw();
-        inputPin2->Draw();
-    ax::NodeEditor::EndNode();
 }
 
 void NumberNode::Update()
 {
-    if(inputPin1->isConnected && inputPin2->isConnected && std::get<bool>(inputPin2->value))
+    if(inputPins[0]->isConnected && inputPins[1]->isConnected && std::get<bool>(inputPins[1]->value))
     {
-        if(std::holds_alternative<int>(inputPin1->value))
+        if(std::holds_alternative<int>(inputPins[0]->value))
         {
-            integer = std::get<int>(inputPin1->value);
+            integer = std::get<int>(inputPins[0]->value);
             floatingPoint = (double)integer;
         }
-        else if(std::holds_alternative<double>(inputPin1->value))
+        else if(std::holds_alternative<double>(inputPins[0]->value))
         {
-            floatingPoint = std::get<double>(inputPin1->value);
+            floatingPoint = std::get<double>(inputPins[0]->value);
             integer = (int)std::round(floatingPoint);
         }
     }
 
     if(isFloating)
     {
-        outputPin->value = floatingPoint;
+        outputPins[0]->value = floatingPoint;
         integer = (int)std::round(floatingPoint);
     }
     else
     {
-        outputPin->value = integer;
+        outputPins[0]->value = integer;
         floatingPoint = (double)integer;
     }
 }
 
-std::vector<std::shared_ptr<Pin>> NumberNode::GetPins()
-{
-    return {inputPin1, inputPin2, outputPin};
-}
 
-void NumberNode::ConstructFromJSON(const nlohmann::json& json)
+void NumberNode::SpecialConstructFromJSON(const nlohmann::json& json)
 {
-    for (auto& [key, val] : json["pins"].items())
+    if(json.contains("isFloating"))
     {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
-        if(pin->GetName() == "Out")
-        {
-            outputPin = pin;
-        }else if(pin->GetName() == "X")
-        {
-            inputPin1 = pin;
-        }
-        else if(pin->GetName() == "Set")
-        {
-            inputPin2 = pin;
-        }
+        isFloating = json["isFloating"];
     }
 
-    isFloating = json["isFloating"];
-
-    if(isFloating)
+    if(json.contains("number"))
     {
-        floatingPoint = json["number"];
-        integer = (int)std::round(floatingPoint);
-    }
-    else
-    {
-        integer = json["number"];
-        floatingPoint = (double)integer;
+        if(isFloating)
+        {
+            floatingPoint = json["number"];
+            integer = (int)std::round(floatingPoint);
+        }
+        else
+        {
+            integer = json["number"];
+            floatingPoint = (double)integer;
+        }
     }
 }
 

@@ -1,12 +1,12 @@
 #pragma once
-#include "Nodes/NodeManager.h"
-#include <any>
 #include <variant>
+#include "Serialization/ISerializable.h"
+#include "imgui_node_editor.h"
 
 class Pin : public Serialization::ISerializable
 {
 public:
-    enum class PinType
+    enum PinType
     {
         Boolean,
         Number,

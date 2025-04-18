@@ -17,7 +17,7 @@ public:
     SendMessageWidget(const std::string& id, std::function<void(const std::string&)> onButtonClick);
     ~SendMessageWidget();
 
-    void Draw() final;
+    void Draw();
     void RunRepRate();
 private:
     bool repRate = false;

@@ -1,6 +1,7 @@
 #include "Nodes/Pin.h"
  #include "Nodes/Drawing.h"
 #include "Nodes/Widgets.h"
+#include "Nodes/NodeManager.h"
 #include <iostream>
 
 

@@ -5,16 +5,9 @@
 
 
 PrintNode::PrintNode(ax::NodeEditor::NodeId id) : Node(id)
-, triggerPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Input, Pin::PinType::Boolean))
-, stringPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Input, Pin::PinType::Any))
 {
-
-}
-
-PrintNode::PrintNode(PrintNode& copy) : Node(++NodeManager::globalId)
-, triggerPin(std::make_shared<Pin>(*copy.triggerPin.get()))
-, stringPin(std::make_shared<Pin>(*copy.stringPin.get()))
-{
+    AddInputPin("Trigger", Pin::PinType::Boolean);
+    AddInputPin("String", Pin::PinType::Any);
 }
 
 void PrintNode::Print()
@@ -27,28 +20,23 @@ std::string PrintNode::GetNodeTypeName()
     return "PrintNode";
 }
 
-void PrintNode::Draw()
+void PrintNode::DrawImpl()
 {
-    ax::NodeEditor::BeginNode(id);
-        ImGui::Text("Print Message");
-        stringPin->Draw();
-        triggerPin->Draw();
-    ax::NodeEditor::EndNode();
+    ImGui::Text("Print Message");
 }
 
 void PrintNode::Update()
 {
-    static bool risingEdge = true;
-    if(stringPin->isConnected)
+    if(inputPins[1]->isConnected)
     {
-        message = stringPin->PinOutputToString();
+        message = inputPins[1]->PinOutputToString();
     }
     else
     {
         message = "";
     }
 
-    if(triggerPin->isConnected && std::get<bool>(triggerPin->value))
+    if(inputPins[0]->isConnected && std::get<bool>(inputPins[0]->value))
     {
         if(risingEdge)
         {
@@ -58,25 +46,5 @@ void PrintNode::Update()
     }else
     {
         risingEdge = true;
-    }
-}
-
-std::vector<std::shared_ptr<Pin>> PrintNode::GetPins()
-{
-    return {triggerPin, stringPin};
-}
-
-void PrintNode::ConstructFromJSON(const nlohmann::json& json)
-{
-    for (auto& [key, val] : json["pins"].items())
-    {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
-        if(pin->GetName() == "Trigger")
-        {
-            triggerPin = pin;
-        }else if(pin->GetName() == "String")
-        {
-            stringPin = pin;
-        }
     }
 }

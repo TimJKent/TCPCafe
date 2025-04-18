@@ -4,53 +4,37 @@
 
 
 StringNode::StringNode(ax::NodeEditor::NodeId id) : Node(id)
-, outputPin(std::make_shared<Pin>("String", ax::NodeEditor::PinKind::Output, Pin::PinType::Any))
 {
+    AddOutputPin("String", Pin::PinType::Any);
 }
 
-StringNode::StringNode(StringNode& copy) : Node(++NodeManager::globalId)
-, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
-, string(copy.string)
-{
-}
 
 std::string StringNode::GetNodeTypeName()
 {
     return "StringNode";
 }
 
-void StringNode::Draw()
+void StringNode::DrawImpl()
 {
-    ax::NodeEditor::BeginNode(id);
         ImGui::Text("String");
         ImGui::SetNextItemWidth(200);
         ImGui::InputText("##String", &string);
         ImGui::SameLine();
-        outputPin->Draw();
-    ax::NodeEditor::EndNode();
 
-    outputPin->value = string;
 }
 
-std::vector<std::shared_ptr<Pin>> StringNode::GetPins()
+void StringNode::Update()
 {
-    return {outputPin};
+    outputPins[0]->value = string;
 }
 
-void StringNode::ConstructFromJSON(const nlohmann::json& json)
+void StringNode::SpecialConstructFromJSON(const nlohmann::json& json)
 {
-    for (auto& [key, val] : json["pins"].items())
+    if(json.contains("string"))
     {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
-        if(pin->GetName() == "String")
-        {
-            outputPin = pin;
-        }
+        string = json["string"];
     }
-
-    string = json["string"];
 }
-
 
 void StringNode::SpecialSerialze(nlohmann::json& json)
 {

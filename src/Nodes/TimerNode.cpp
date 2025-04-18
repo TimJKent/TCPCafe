@@ -4,15 +4,9 @@
 
 
 TimerNode::TimerNode(ax::NodeEditor::NodeId id) : Node(id)
-, outputPin(std::make_shared<Pin>("Trigger", ax::NodeEditor::PinKind::Output, Pin::PinType::Boolean))
 {
+    AddOutputPin("Trigger", Pin::PinType::Boolean);
     lastTriggerTime = std::chrono::high_resolution_clock::now();
-}
-
-TimerNode::TimerNode(TimerNode& copy) : Node(++NodeManager::globalId)
-, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
-, repRate(copy.repRate)
-{
 }
 
 std::string TimerNode::GetNodeTypeName()
@@ -20,16 +14,13 @@ std::string TimerNode::GetNodeTypeName()
     return "TimerNode";
 }
 
-void TimerNode::Draw()
+void TimerNode::DrawImpl()
 {
-    ax::NodeEditor::BeginNode(id);
         ImGui::Text("Timer");
         ImGui::SetNextItemWidth(150);
         ImGui::InputInt("MS", &repRate);
         ImGui::NewLine();
         ImGui::SameLine(70);
-        outputPin->Draw();
-    ax::NodeEditor::EndNode();
 }
 
 void TimerNode::Update()
@@ -40,32 +31,21 @@ void TimerNode::Update()
     if(msEllapsed.count() >= repRate)
     {
         lastTriggerTime = now;
-        outputPin->value = true;
+        outputPins[0]->value = true;
     }
     else
     {
-        outputPin->value = false;
+        outputPins[0]->value = false;
     }
 }
 
 
-std::vector<std::shared_ptr<Pin>> TimerNode::GetPins()
+void TimerNode::SpecialConstructFromJSON(const nlohmann::json& json)
 {
-    return {outputPin};
-}
-
-void TimerNode::ConstructFromJSON(const nlohmann::json& json)
-{
-    for (auto& [key, val] : json["pins"].items())
+    if(json.contains("repRate"))
     {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
-        if(pin->GetName() == "Trigger")
-        {
-            outputPin = pin;
-        }
+        repRate = json["repRate"];
     }
-
-    repRate = json["repRate"];
 }
 
 void TimerNode::SpecialSerialze(nlohmann::json& json)

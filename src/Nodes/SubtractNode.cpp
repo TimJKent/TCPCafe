@@ -4,20 +4,10 @@
 #include <cmath>
 
 SubtractNode::SubtractNode(ax::NodeEditor::NodeId id) : Node(id)
-, outputPin(std::make_shared<Pin>("Diff", ax::NodeEditor::PinKind::Output, Pin::PinType::Number))
 {
-    AddInputPin();
-    AddInputPin();
-}
-
-SubtractNode::SubtractNode(SubtractNode& copy) : Node(++NodeManager::globalId)
-, outputPin(std::make_shared<Pin>(*copy.outputPin.get()))
-{
-    inputPins.clear();
-    for(auto& pin : copy.inputPins)
-    {
-        inputPins.push_back(std::make_shared<Pin>(*pin.get()));
-    }
+    AddOutputPin("Diff", Pin::PinType::Number);
+    AddInputPin("A", Pin::PinType::Number);
+    AddInputPin("A", Pin::PinType::Number);
 }
 
 std::string SubtractNode::GetNodeTypeName()
@@ -25,21 +15,9 @@ std::string SubtractNode::GetNodeTypeName()
     return "SubtractNode";
 }
 
-void SubtractNode::Draw()
+void SubtractNode::DrawImpl()
 {
-    ax::NodeEditor::BeginNode(id);
-        ImGui::Text("Subtract");
-        auto drawList  = ImGui::GetWindowDrawList();
-        inputPins[0]->Draw();
-        ImGui::SameLine();
-        outputPin->Draw();
-        inputPins[1]->Draw();
-        for(int i = 2; i < inputPins.size(); i++)
-        {
-            inputPins[i]->Draw();
-        }
-
-    ax::NodeEditor::EndNode();
+    ImGui::Text("Subtract");
 }
 
 void SubtractNode::Update()
@@ -50,9 +28,9 @@ void SubtractNode::Update()
     
     bool outputAsFloat = false;
 
-    for(std::shared_ptr<Pin> pin : GetPins())
+    for(std::shared_ptr<Pin> pin : inputPins)
     {
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input && pin->isConnected)
+        if(pin->isConnected)
         {
             if(std::holds_alternative<int>(pin->value))
             {
@@ -87,53 +65,20 @@ void SubtractNode::Update()
 
     if(outputAsFloat)
     {
-        outputPin->value = fOutput;
+        outputPins[0]->value = fOutput;
     }
     else
     {
-        outputPin->value = iOutput;
+        outputPins[0]->value = iOutput;
     }
 
     if(inputPins[inputPins.size()-1]->isConnected)
     {
-        AddInputPin();
+        AddInputPin("A", Pin::PinType::Number);
     }
 
     if(inputPins.size() > 2 && !inputPins[inputPins.size()-2]->isConnected)
     {
         RemoveInputPin();
-    }
-}
-
-void SubtractNode::AddInputPin()
-{
-    inputPins.emplace_back(std::make_shared<Pin>("A", ax::NodeEditor::PinKind::Input, Pin::PinType::Number));
-}
-
-void SubtractNode::RemoveInputPin()
-{
-    inputPins.pop_back();
-}
-
-std::vector<std::shared_ptr<Pin>> SubtractNode::GetPins()
-{
-    std::vector<std::shared_ptr<Pin>> pins = inputPins;
-    pins.emplace_back(outputPin);
-    return pins;
-}
-
-void SubtractNode::ConstructFromJSON(const nlohmann::json& json)
-{
-    inputPins.clear();
-    for (auto& [key, val] : json["pins"].items())
-    {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input)
-        {
-            inputPins.emplace_back(pin);
-        }else
-        {
-            outputPin = pin;
-        }
     }
 }
