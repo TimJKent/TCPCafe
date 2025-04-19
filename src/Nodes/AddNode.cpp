@@ -22,35 +22,35 @@ void AddNode::DrawImpl()
 
 void AddNode::Update()
 {
-   //int iOutput = 0;
-   //double fOutput = 0.0f;
-   //
-   //bool outputAsFloat = false;
+   int iOutput = 0;
+   double fOutput = 0.0f;
+   
+   bool outputAsFloat = false;
 
-   //for(std::shared_ptr<Pin> pin : inputPins)
-   //{
-   //    if(std::holds_alternative<int>(pin->value))
-   //    {
-   //        iOutput += std::get<int>(pin->value);
-   //        fOutput += std::get<int>(pin->value);
-   //    }
-   //    if(std::holds_alternative<double>(pin->value))
-   //    {
-   //        iOutput += (int)std::round(std::get<double>(pin->value));
-   //        fOutput += std::get<double>(pin->value);
-   //        outputAsFloat = true;
-   //    }
-   //}
+   for(std::shared_ptr<Pin> pin : inputPins)
+   {
+       if(std::holds_alternative<int>(pin->value))
+       {
+           iOutput += std::get<int>(pin->value);
+           fOutput += std::get<int>(pin->value);
+       }
+       if(std::holds_alternative<double>(pin->value))
+       {
+           iOutput += (int)std::round(std::get<double>(pin->value));
+           fOutput += std::get<double>(pin->value);
+           outputAsFloat = true;
+       }
+   }
 
-   //outputPins[0]->value =  outputAsFloat ? fOutput : iOutput;
+   outputPins[0]->value =  outputAsFloat ? fOutput : iOutput;
 
-   //if(inputPins[inputPins.size()-1]->isConnected)
-   //{
-   //    AddInputPin("A", Pin::PinType::Number);
-   //}
+   if(inputPins[inputPins.size()-1]->isConnected)
+   {
+       AddInputPin("A", Pin::PinType::Number);
+   }
 
-   //if(inputPins.size() > 2 && !inputPins[inputPins.size()-2]->isConnected)
-   //{
-   //    RemoveInputPin();
-   //}
+   if(inputPins.size() > 2 && !inputPins[inputPins.size()-2]->isConnected)
+   {
+       RemoveInputPin();
+   }
 }

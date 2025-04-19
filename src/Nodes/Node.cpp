@@ -1,4 +1,4 @@
-#include "Nodes/ClonableNode.h"
+#include "Nodes/Node.h"
 #include "Nodes/NodeManager.h"
 
 Node::Node(ax::NodeEditor::NodeId nodeID)
@@ -65,7 +65,7 @@ nlohmann::json Node::Serialize()
         json["pins"] += pin->Serialize();
     }
     
-    
+    SpecialSerialze(json);
 
     return json;
 }
