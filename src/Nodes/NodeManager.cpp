@@ -199,6 +199,8 @@ std::vector<std::shared_ptr<Node>> NodeManager::GetSelectedNodes()
     std::vector<ax::NodeEditor::NodeId> selectedNodeIds;
     selectedNodeIds.resize(ax::NodeEditor::GetSelectedObjectCount());
 
+    ax::NodeEditor::GetSelectedNodes(selectedNodeIds.data(), static_cast<int>(selectedNodeIds.size()));
+
     std::vector<std::shared_ptr<Node>> selectedNodes;
 
     for(auto& nodeId : selectedNodeIds)
