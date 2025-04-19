@@ -3,7 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 
-BooleanOperatorNode::BooleanOperatorNode(ax::NodeEditor::NodeId id) : Node(id)
+BooleanOperatorNode::BooleanOperatorNode(ax::NodeEditor::NodeId id) : ClonableNode<BooleanOperatorNode>(id)
 {
     AddOutputPin("Out", Pin::PinType::Boolean);
     AddInputPin("A", Pin::PinType::Boolean);

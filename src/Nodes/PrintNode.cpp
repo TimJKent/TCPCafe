@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-PrintNode::PrintNode(ax::NodeEditor::NodeId id) : Node(id)
+PrintNode::PrintNode(ax::NodeEditor::NodeId id) : ClonableNode<PrintNode>(id)
 {
     AddInputPin("Trigger", Pin::PinType::Boolean);
     AddInputPin("String", Pin::PinType::Any);

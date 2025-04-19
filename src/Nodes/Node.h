@@ -12,9 +12,10 @@ class Node : public Serialization::ISerializable
 public:
     Node(ax::NodeEditor::NodeId id = 0);
     Node(const Node& copy);
+    virtual ~Node() = default;
 public:
-    virtual std::shared_ptr<Node> Clone(){return std::make_shared<Node>(*this);}
     virtual std::string GetNodeTypeName(){return "";}
+    virtual std::shared_ptr<Node> Clone() const {return std::make_shared<Node>(*this);}
     virtual void Update(){} 
     ImVec2 GetPosition() const { return ax::NodeEditor::GetNodePosition(id); }
     nlohmann::json Serialize();

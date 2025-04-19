@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-NumberNode::NumberNode(ax::NodeEditor::NodeId id) : Node(id)
+NumberNode::NumberNode(ax::NodeEditor::NodeId id) : ClonableNode<NumberNode>(id)
 {
     AddOutputPin("Out", Pin::PinType::Number);
     AddInputPin("X", Pin::PinType::Number);

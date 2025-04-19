@@ -1,12 +1,11 @@
 #pragma once
-#include "Nodes/Node.h"
+#include "Nodes/ClonableNode.h"
 #include <chrono>
 
-class TimerNode : public Node
+class TimerNode : public ClonableNode<TimerNode>
 {
 public:
     TimerNode(ax::NodeEditor::NodeId id);
-    std::shared_ptr<Node> Clone() final {return std::make_shared<TimerNode>(*this);};
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

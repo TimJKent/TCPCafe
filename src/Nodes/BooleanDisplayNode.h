@@ -1,11 +1,11 @@
 #pragma once
-#include "Nodes/Node.h"
+#include "Nodes/ClonableNode.h"
+#include <Nodes/ClonableNode.h>
 
-class BooleanDisplayNode : public Node
+class BooleanDisplayNode : public ClonableNode<BooleanDisplayNode>
 {
 public:
     BooleanDisplayNode(ax::NodeEditor::NodeId id);
-    std::shared_ptr<Node> Clone() final {return std::make_shared<BooleanDisplayNode>(*this);};
     void DrawImpl() final;
     std::string GetNodeTypeName() final;
 };

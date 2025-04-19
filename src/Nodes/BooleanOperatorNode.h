@@ -1,7 +1,8 @@
 #pragma once
-#include "Nodes/Node.h"
+#include "Nodes/ClonableNode.h"
+#include <Nodes/ClonableNode.h>
 
-class BooleanOperatorNode : public Node
+class BooleanOperatorNode : public ClonableNode<BooleanOperatorNode>
 {
 enum OPERATOR
 {
@@ -9,7 +10,6 @@ enum OPERATOR
 };
 public:
     BooleanOperatorNode(ax::NodeEditor::NodeId id);
-    std::shared_ptr<Node> Clone() final {return std::make_shared<BooleanOperatorNode>(*this);};
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

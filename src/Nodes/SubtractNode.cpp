@@ -3,7 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 
-SubtractNode::SubtractNode(ax::NodeEditor::NodeId id) : Node(id)
+SubtractNode::SubtractNode(ax::NodeEditor::NodeId id) : ClonableNode<SubtractNode>(id)
 {
     AddOutputPin("Diff", Pin::PinType::Number);
     AddInputPin("A", Pin::PinType::Number);

@@ -3,7 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 
-AddNode::AddNode(ax::NodeEditor::NodeId id) : Node(id)
+AddNode::AddNode(ax::NodeEditor::NodeId id) : ClonableNode<AddNode>(id)
 {
     AddOutputPin("Sum", Pin::PinType::Number);
     AddInputPin("A", Pin::PinType::Number);

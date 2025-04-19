@@ -1,11 +1,10 @@
 #pragma once
-#include "Nodes/Node.h"
+#include "Nodes/ClonableNode.h"
 
-class NumberNode : public Node
+class NumberNode : public ClonableNode<NumberNode>
 {
 public:
     NumberNode(ax::NodeEditor::NodeId id);
-    std::shared_ptr<Node> Clone() final {return std::make_shared<NumberNode>(*this);};
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

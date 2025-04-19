@@ -1,11 +1,11 @@
 #pragma once
-#include "Nodes/Node.h"
+#include "Nodes/ClonableNode.h"
+#include <Nodes/ClonableNode.h>
 
-class ButtonNode : public Node
+class ButtonNode : public ClonableNode<ButtonNode>
 {
 public:
     ButtonNode(ax::NodeEditor::NodeId id);
-    std::shared_ptr<Node> Clone() final {return std::make_shared<ButtonNode>(*this);}
     void DrawImpl() final;
     std::string GetNodeTypeName() final;
 };

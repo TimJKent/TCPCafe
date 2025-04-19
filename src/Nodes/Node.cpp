@@ -1,4 +1,4 @@
-#include "Nodes/Node.h"
+#include "Nodes/ClonableNode.h"
 #include "Nodes/NodeManager.h"
 
 Node::Node(ax::NodeEditor::NodeId nodeID)

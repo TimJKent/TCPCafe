@@ -227,7 +227,8 @@ void NodeManager::DuplicateSelected()
         ImVec2 selectedNodeSize = ax::NodeEditor::GetNodeSize(selectedNode->id);
         ImVec2 selectedNodePos = ax::NodeEditor::GetNodePosition(selectedNode->id);
 
-        std::shared_ptr<Node> spawnedNode = SpawnNode(selectedNode);
+        std::shared_ptr<Node> spawnedNode = selectedNode->Clone();
+        nodes.emplace_back(spawnedNode);
         ax::NodeEditor::SetNodePosition(spawnedNode->id, {selectedNodePos.x,selectedNodePos.y+selectedNodeSize.y});
         ax::NodeEditor::SelectNode(spawnedNode->id, true);
     }

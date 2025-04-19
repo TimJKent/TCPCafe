@@ -3,7 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 
 
-TimerNode::TimerNode(ax::NodeEditor::NodeId id) : Node(id)
+TimerNode::TimerNode(ax::NodeEditor::NodeId id) : ClonableNode<TimerNode>(id)
 {
     AddOutputPin("Trigger", Pin::PinType::Boolean);
     lastTriggerTime = std::chrono::high_resolution_clock::now();

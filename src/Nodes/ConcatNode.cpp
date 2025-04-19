@@ -3,7 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 
-ConcatNode::ConcatNode(ax::NodeEditor::NodeId id) : Node(id)
+ConcatNode::ConcatNode(ax::NodeEditor::NodeId id) : ClonableNode<ConcatNode>(id)
 {
     AddOutputPin("Out", Pin::PinType::Any);
     AddInputPin("A", Pin::PinType::Any);
