@@ -31,8 +31,8 @@ void Node::Draw()
 
 void Node::DrawPins()
 {
-    int index = 0;
-    for(index; index < inputPins.size(); index++)
+    size_t index = 0;
+    for(; index < inputPins.size(); index++)
     {
         inputPins[index]->Draw();
         if(index < outputPins.size())
@@ -41,7 +41,7 @@ void Node::DrawPins()
             outputPins[index]->Draw();
         }
     }
-    for(index; index < outputPins.size(); index++)
+    for(; index < outputPins.size(); index++)
     {
         outputPins[index]->Draw();
     }

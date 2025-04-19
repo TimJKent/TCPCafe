@@ -20,7 +20,7 @@ namespace FileDialogue
         std::string output = "";
         nfdu8char_t* outPath;
         nfdu8filteritem_t filters[1] = {{ "TCPCafe File", "cafe" }};
-        nfdopendialogu8args_t args = {0};
+        nfdopendialogu8args_t args;
         args.filterList = filters;
         args.filterCount = 1;
         nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
@@ -42,7 +42,7 @@ namespace FileDialogue
         std::string output = "";
         nfdu8char_t* outPath;
         nfdu8filteritem_t filters[1] = {{ "TCPCafe File", "cafe" }};
-        nfdsavedialogu8args_t args = {0};
+        nfdsavedialogu8args_t args;
         args.filterList = filters;
         args.filterCount = 1;
         if(defaultName.empty())

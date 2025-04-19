@@ -8,7 +8,7 @@ using asio::ip::tcp;
 class TCPClient
 {
 public:
-    TCPClient(asio::io_service& ioContext);
+    TCPClient(asio::io_context& ioContext);
     void OnReadData(std::error_code ec, std::size_t len);
     void Connect(const std::string& ipAddres, uint32_t port);
     void Disconnect();
@@ -16,7 +16,7 @@ public:
     bool IsConnected();
     std::string ConsumeRXData();
 private:
-    asio::io_service& ioContext;
+    asio::io_context& ioContext;
     std::unique_ptr<tcp::socket> socket;
     std::vector<char> buffer;
     std::string rxData;

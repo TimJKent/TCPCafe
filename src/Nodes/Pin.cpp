@@ -10,9 +10,9 @@ using json = nlohmann::json;
 Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType)
 : id(++NodeManager::globalId)
 , pinKind(pinKind)
-, name(name)
 , pinType(pinType)
 , value(false)
+, name(name)
 {
     value = 0.0f;
 }
@@ -20,9 +20,9 @@ Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinTy
 Pin::Pin(json json)
 : id(0)
 , pinKind(ax::NodeEditor::PinKind::Input)
-, name("")
 , pinType(PinType::Any)
 , value(false)
+, name("")
 {
     ++NodeManager::globalId;
     id = (uint64_t)json["id"];
@@ -34,9 +34,9 @@ Pin::Pin(json json)
 Pin::Pin(Pin& copy)
 : id(++NodeManager::globalId)
 , pinKind(copy.pinKind)
-, name(copy.name)
 , pinType(copy.pinType)
 , value(copy.value)
+, name(copy.name)
 {
 
 }

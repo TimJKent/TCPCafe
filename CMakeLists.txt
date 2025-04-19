@@ -70,6 +70,9 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Nodes/PrintNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Pin.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/ButtonNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/BooleanOperatorNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/BooleanDisplayNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/ToggleNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/TimerNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/AddNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/SubtractNode.cpp

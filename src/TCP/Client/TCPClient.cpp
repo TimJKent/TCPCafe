@@ -39,7 +39,7 @@ using asio::ip::tcp;
     void TCPClient::Connect(const std::string& ipAddres, uint32_t port)
     {
         try{
-            tcp::endpoint endpoint(asio::ip::address::from_string(ipAddres), port);
+            tcp::endpoint endpoint(asio::ip::make_address(ipAddres), port);
             asio::error_code error;
             socket.reset(new tcp::socket(ioContext));
             socket->connect(endpoint, error);

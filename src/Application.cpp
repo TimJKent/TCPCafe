@@ -83,11 +83,6 @@ void Application::DrawTitleBar()
 {
     ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, ImVec2( 0, 11 ) );
 
-    static bool isUserDraggingWindow = false;
-    static ImVec2 dragOffset = {0.0f,0.0f};
-
-    
-
     if(ImGui::BeginMainMenuBar())
     {
        // ImGui::SetCursorPosX(40);

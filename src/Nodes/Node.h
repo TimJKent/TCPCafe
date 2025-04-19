@@ -27,8 +27,8 @@ public:
     void RemoveInputPin();
     void RemoveOutputPin();
 protected:
-    virtual void SpecialSerialze(nlohmann::json& json) {}
-    virtual void SpecialConstructFromJSON(const nlohmann::json& json){}    
+    virtual void SpecialSerialze(nlohmann::json&) {}
+    virtual void SpecialConstructFromJSON(const nlohmann::json&){}    
     virtual void DrawImpl(){} 
     void DrawPins();
 public:

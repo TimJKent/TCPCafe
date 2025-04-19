@@ -59,8 +59,6 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
         glfwSetWindowIcon(window, 1, &iconData); 
     }
 
-    int image_width = 0;
-    int image_height = 0;
     unsigned char* image_data = GetIconData().pixels;
     if (image_data == NULL)
     {
