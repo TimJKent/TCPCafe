@@ -5,8 +5,8 @@ cmake_policy(SET CMP0169 OLD)
 FetchContent_Declare(
         imgui_node_editor
         DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        GIT_REPOSITORY https://github.com/thedmd/imgui-node-editor.git
-        GIT_TAG "develop"
+        GIT_REPOSITORY https://github.com/pthom/imgui-node-editor.git
+        GIT_TAG "imgui_bundle"
 )
 
 FetchContent_GetProperties(imgui_node_editor)
