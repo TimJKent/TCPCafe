@@ -1,7 +1,6 @@
 #pragma once
 
 #include <nfd.h>
-#include <iostream>
 
 namespace FileDialogue
 {
@@ -17,13 +16,11 @@ namespace FileDialogue
 
     std::string GetPathForOpen()
     {
-        std::cout <<" 1" <<std::endl;
         std::string output = "";
         nfdu8char_t* outPath;
         nfdu8filteritem_t filters[1] = {{ "TCPCafe File", "cafe" }};
         nfdopendialogu8args_t args {filters, 1, nullptr, {}};
         nfdresult_t result = NFD_OpenDialogU8_With(&outPath, &args);
-        std::cout <<" 2" <<std::endl;
 
         if (result == NFD_OKAY)
         {
@@ -33,7 +30,6 @@ namespace FileDialogue
             }
             NFD_FreePathU8(outPath);
         }
-        std::cout <<" 3" <<std::endl;
         return output;
     }
 
