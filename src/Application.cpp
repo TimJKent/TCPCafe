@@ -64,7 +64,6 @@ int Application::Run()
     if(!window.IsValid()){return 1;}
 
     FileDialogue::Init();
-    static bool demoWindowOpen = false;
     while (!window.ShouldClose())
     {
         ioContext.run();
@@ -80,9 +79,6 @@ int Application::Run()
             case TCP_SERVER: DrawTCPServerWindow(); break;
             case NODE_EDITOR: DrawNodeEditor(); break;
         }
-
-        demoWindowOpen = activeMenu == DEMO;
-       // ImGui::ShowDemoWindow(&demoWindowOpen);
 
         EndMainPanel();
 
@@ -139,10 +135,6 @@ void Application::DrawTitleBar()
             {
                 activeMenu = MENU_NAME::NODE_EDITOR;
             }
-           //if(ImGui::MenuItem("Demo","n", activeMenu == MENU_NAME::DEMO))
-           //{
-           //    activeMenu = MENU_NAME::DEMO;
-           //}
 
             ImGui::EndMenu();
         }

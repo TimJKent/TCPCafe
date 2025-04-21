@@ -17,7 +17,7 @@ class Application
 public:
 enum MENU_NAME
 {
-    TCP_CLIENT, TCP_SERVER, NODE_EDITOR, DEMO
+    TCP_CLIENT, TCP_SERVER, NODE_EDITOR,
     
 };
 public:
