@@ -15,6 +15,7 @@
 #include "Nodes/TCPClientNode.h"
 #include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
+#include "Window/FileManager.h"
 
 #include <filesystem>
 
@@ -26,12 +27,17 @@ Application::Application()
 , tcpServer(std::make_shared<TCPServer>(ioContext))
 , nodeManager(tcpServer, tcpClient)
 {
- //  font_ConsolasRegular = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 18);
- //  font_ConsolasBold = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consolab.ttf", 18);
- // //if(consolasFont!=nullptr)
- // //{
- // //    ImGui::PushFont(consolasFont);
- // //}
+    std::string consolasRegularPath = "C:\\Windows\\Fonts\\consola.ttf";
+    if(FileManager::FileExists(consolasRegularPath))
+    {
+        font_ConsolasRegular = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasRegularPath.c_str(), 18);
+    }
+    std::string consolasBoldPath = "C:\\Windows\\Fonts\\consolab.ttf";
+    if(FileManager::FileExists(consolasBoldPath))
+    {
+        font_ConsolasRegular = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasBoldPath.c_str(), 18);
+    }
+
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
     tcpClientSendMessage2 = std::make_unique<SendMessageWidget>("tcpCTX2", [&](const std::string& message){SendMessageFromClient(message);});
     tcpClientSendMessage3 = std::make_unique<SendMessageWidget>("tcpCTX3", [&](const std::string& message){SendMessageFromClient(message);});
