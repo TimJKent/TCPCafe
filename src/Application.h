@@ -17,7 +17,7 @@ class Application
 public:
 enum MENU_NAME
 {
-    TCP_CLIENT, TCP_SERVER, NODE_EDITOR
+    TCP_CLIENT, TCP_SERVER, NODE_EDITOR, DEMO
     
 };
 public:
@@ -40,7 +40,8 @@ private:
     std::string clientReceive;
     std::string serverSend;
     std::string serverReceive;
-
+    ImFont* font_ConsolasRegular;
+    ImFont* font_ConsolasBold;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage1;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage2;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage3;

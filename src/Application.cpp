@@ -26,6 +26,12 @@ Application::Application()
 , tcpServer(std::make_shared<TCPServer>(ioContext))
 , nodeManager(tcpServer, tcpClient)
 {
+ //  font_ConsolasRegular = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 18);
+ //  font_ConsolasBold = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consolab.ttf", 18);
+ // //if(consolasFont!=nullptr)
+ // //{
+ // //    ImGui::PushFont(consolasFont);
+ // //}
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
     tcpClientSendMessage2 = std::make_unique<SendMessageWidget>("tcpCTX2", [&](const std::string& message){SendMessageFromClient(message);});
     tcpClientSendMessage3 = std::make_unique<SendMessageWidget>("tcpCTX3", [&](const std::string& message){SendMessageFromClient(message);});
@@ -52,7 +58,7 @@ int Application::Run()
     if(!window.IsValid()){return 1;}
 
     FileDialogue::Init();
-    
+    static bool demoWindowOpen = false;
     while (!window.ShouldClose())
     {
         ioContext.run();
@@ -68,6 +74,10 @@ int Application::Run()
             case TCP_SERVER: DrawTCPServerWindow(); break;
             case NODE_EDITOR: DrawNodeEditor(); break;
         }
+
+        demoWindowOpen = activeMenu == DEMO;
+       // ImGui::ShowDemoWindow(&demoWindowOpen);
+
         EndMainPanel();
 
        window.DrawFrame();
@@ -123,6 +133,10 @@ void Application::DrawTitleBar()
             {
                 activeMenu = MENU_NAME::NODE_EDITOR;
             }
+           //if(ImGui::MenuItem("Demo","n", activeMenu == MENU_NAME::DEMO))
+           //{
+           //    activeMenu = MENU_NAME::DEMO;
+           //}
 
             ImGui::EndMenu();
         }
@@ -167,12 +181,6 @@ void Application::DrawTitleBar()
             }
         }
         
-        //unsigned int my_image_texture = 0;
-        //bool ret = window.GetIconAsOpenGLTexture(&my_image_texture);
-        //ImVec2 storedCursorPos = ImGui::GetCursorPos();
-        //ImGui::SetCursorPos({10,10});
-        //ImGui::Image((ImTextureID)(intptr_t)my_image_texture, ImVec2( 20, 20));
-
         std::filesystem::path activePath = activeFileName;
         
         std::string filename = activePath.filename().string();
@@ -182,24 +190,6 @@ void Application::DrawTitleBar()
         ImGui::Text(filename.c_str());
         ImGui::EndMainMenuBar();
     }
-
-    
-
-   //if(ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-   //{
-   //    if(!isUserDraggingWindow)
-   //    {
-   //        dragOffset = window.GetWindowMousePosition();
-   //        isUserDraggingWindow = true;
-   //    }
-   //    ImVec2 globalMousePos = window.GetScreenMousePosition();
-   //    ImVec2 newWindowPosition = {globalMousePos.x - dragOffset.x, globalMousePos.y - dragOffset.y};
-
-   //    window.SetWindowPosition(newWindowPosition);
-   //}else
-   //{
-   //    isUserDraggingWindow = false;
-   //}
 
     ImGui::PopStyleVar();
 }

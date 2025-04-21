@@ -28,4 +28,6 @@ set(IMGUI_Sources
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
     ${imgui_SOURCE_DIR}/imgui_stacklayout.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+
 )
