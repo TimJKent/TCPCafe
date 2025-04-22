@@ -8,6 +8,7 @@
 #include "imgui_node_editor.h"
 #include "Nodes/Node.h"
 #include "Nodes/NodeManager.h"
+#include "Window/FileManager.h"
 #include <utility>
 
 namespace ed = ax::NodeEditor;
@@ -40,17 +41,21 @@ private:
     std::string clientReceive;
     std::string serverSend;
     std::string serverReceive;
-    ImFont* font_ConsolasRegular;
-    ImFont* font_ConsolasBold;
+    ImFont* font_ConsolasRegular18;
+    ImFont* font_ConsolasRegular24;
+    ImFont* font_ConsolasRegular36;
+    ImFont* font_ConsolasBold18;
+    ImFont* font_ConsolasBold24;
+    ImFont* font_ConsolasBold36;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage1;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage2;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage3;
-
     std::unique_ptr<SendMessageWidget> tcpServerSendMessage1;
     std::unique_ptr<SendMessageWidget> tcpServerSendMessage2;
     std::unique_ptr<SendMessageWidget> tcpServerSendMessage3;
+    FileManager::Session session;
 
-    MENU_NAME activeMenu;
+    MENU_NAME activeMenu = MENU_NAME::NODE_EDITOR;
 private:
     std::string activeFileName = "";
     asio::io_context ioContext;

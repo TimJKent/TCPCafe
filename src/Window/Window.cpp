@@ -40,11 +40,15 @@ Window::Window(const uint32_t width, const uint32_t height, const std::string& t
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     
-    io.FontGlobalScale = (1.0f);
-
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
+    ImGui::StyleColorsDark();
+
+    ImVec4 newBgColor = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); 
+    style.Colors[ImGuiCol_WindowBg] = newBgColor;
+    style.Colors[ImGuiCol_ChildBg] = newBgColor;
+    style.Colors[ImGuiCol_PopupBg] = newBgColor;
+
     style.WindowBorderSize = 0.0f;
     style.FrameBorderSize = 0.0f;
     

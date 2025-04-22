@@ -18,10 +18,11 @@
 #include "Window/FileManager.h"
 
 #include <filesystem>
+#include <cmath>
 
 Application::Application()
 : window(1280, 720, "TCPCafe 0.0.1", "icon.png")
-, activeMenu(MENU_NAME::TCP_CLIENT)
+, activeMenu(MENU_NAME::NODE_EDITOR)
 , ioContext()
 , tcpClient(std::make_shared<TCPClient>(ioContext))
 , tcpServer(std::make_shared<TCPServer>(ioContext))
@@ -30,12 +31,17 @@ Application::Application()
     std::string consolasRegularPath = "C:\\Windows\\Fonts\\consola.ttf";
     if(FileManager::FileExists(consolasRegularPath))
     {
-        font_ConsolasRegular = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasRegularPath.c_str(), 18);
+        font_ConsolasRegular18 = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasRegularPath.c_str(), 18);
+        font_ConsolasRegular24 = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasRegularPath.c_str(), 24);
+        font_ConsolasRegular36 = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasRegularPath.c_str(), 36);
     }
+   
     std::string consolasBoldPath = "C:\\Windows\\Fonts\\consolab.ttf";
     if(FileManager::FileExists(consolasBoldPath))
     {
-        font_ConsolasRegular = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasBoldPath.c_str(), 18);
+        font_ConsolasBold18 = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasBoldPath.c_str(), 18);
+        font_ConsolasBold24 = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasBoldPath.c_str(), 24);
+        font_ConsolasBold36 = ImGui::GetIO().Fonts->AddFontFromFileTTF(consolasBoldPath.c_str(), 36);
     }
 
     tcpClientSendMessage1 = std::make_unique<SendMessageWidget>("tcpCTX1", [&](const std::string& message){SendMessageFromClient(message);});
@@ -461,70 +467,129 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
 
 void Application::DrawNodeEditor()
 {
-    ed::SetCurrentEditor(nodeManager.GetEditorContext());
-    ed::Begin("My Editor", ImVec2(0.0, 0.0f));
 
-    // Start drawing nodes.
-    int nodePushID = 0;
-    for (auto& node : nodeManager.GetNodes())
-    {
-        std::string id = "Node_" + std::to_string(nodePushID++);
-        ImGui::PushID(id.c_str());
-        node->Draw();
-        ImGui::PopID();
-    }
-
-    //we need to only do stuff node related in this loop. Buttons will queue things up to happen in here
-
-    nodeManager.Update();
-    if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_D))
-    {
-        nodeManager.DuplicateSelected();
-    }
-    if(ImGui::Shortcut(ImGuiKey_Escape))
-    {
-        nodeManager.UnselectAll();  
-    }
-    if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_R))
-    {
-        nodeManager.DoRecenter();
-    }
-    if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A))
-    {
-        if(nodeManager.GetSelectedNodes().size() > 0)
-        {
-            nodeManager.UnselectAll();
-        }else
-        {
-            nodeManager.SelectAll();
-        }
-    }
-    
-    auto openPopupPosition = ImGui::GetMousePos();
-    ed::End();
-    ed::SetCurrentEditor(nullptr);
-    std::shared_ptr<Node> spawnedNode;
-    if (ImGui::BeginPopup("Create New Node"))
-    {
-        ImGui::Text("Add Node");
-        ImGui::Separator();
-        spawnedNode = DrawNodeSpawnList();
-        
-        ImGui::EndPopup();
-    }
-
-    if(spawnedNode)
+    if(session.IsActive())
     {
         ed::SetCurrentEditor(nodeManager.GetEditorContext());
-        ed::SetNodePosition(spawnedNode->id, openPopupPosition);
-        ed::SetCurrentEditor(nullptr);
-    }
-   
-    if(ImGui::IsItemHovered())
-    {
-        if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+        ed::Begin("My Editor", ImVec2(0.0, 0.0f));
+
+        // Start drawing nodes.
+        int nodePushID = 0;
+        for (auto& node : nodeManager.GetNodes())
         {
-            ImGui::OpenPopup("Create New Node");
+            std::string id = "Node_" + std::to_string(nodePushID++);
+            ImGui::PushID(id.c_str());
+            node->Draw();
+            ImGui::PopID();
+        }
+
+        //we need to only do stuff node related in this loop. Buttons will queue things up to happen in here
+
+        nodeManager.Update();
+        if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_D))
+        {
+            nodeManager.DuplicateSelected();
+        }
+        if(ImGui::Shortcut(ImGuiKey_Escape))
+        {
+            nodeManager.UnselectAll();  
+        }
+        if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_R))
+        {
+            nodeManager.DoRecenter();
+        }
+        if(ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A))
+        {
+            if(nodeManager.GetSelectedNodes().size() > 0)
+            {
+                nodeManager.UnselectAll();
+            }else
+            {
+                nodeManager.SelectAll();
+            }
+        }
+
+        auto openPopupPosition = ImGui::GetMousePos();
+        ed::End();
+        ed::SetCurrentEditor(nullptr);
+        std::shared_ptr<Node> spawnedNode;
+        if (ImGui::BeginPopup("Create New Node"))
+        {
+            ImGui::Text("Add Node");
+            ImGui::Separator();
+            spawnedNode = DrawNodeSpawnList();
+
+            ImGui::EndPopup();
+        }
+
+        if(spawnedNode)
+        {
+            ed::SetCurrentEditor(nodeManager.GetEditorContext());
+            ed::SetNodePosition(spawnedNode->id, openPopupPosition);
+            ed::SetCurrentEditor(nullptr);
+        }
+    
+        if(ImGui::IsItemHovered())
+        {
+            if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+            {
+                ImGui::OpenPopup("Create New Node");
+            }
+        }
+    }
+    else
+    {
+        float windowWidth = (float)window.GetWindowSize().first;
+        float windowHeight = (float)window.GetWindowSize().second;
+        ImGui::SetCursorPosY(std::max(30.0f, windowHeight/4.0f));
+        ImGui::Columns(3, 0, true);
+        ImGui::PushFont(font_ConsolasRegular36);
+
+        float mainSectionSize =  (float)std::max(600.0f, windowWidth/3.0f);
+        float otherSectionSize = std::max(20.0f, (windowWidth - mainSectionSize)/2.0f);
+
+        ImGui::SetColumnWidth(0,  otherSectionSize);
+        ImGui::SetColumnWidth(1, mainSectionSize);
+        ImGui::SetColumnWidth(2, otherSectionSize);
+        ImGui::NextColumn();
+        //Title
+        ImGui::Text("TCPCafe");
+        ImGui::PopFont();
+
+        ImGui::NewLine();
+
+        ImGui::PushFont(font_ConsolasRegular24);
+        ImGui::Text("Start");
+        ImGui::PopFont();
+
+        if(ImGui::TextLink("New File..."))
+        {
+
+        }
+        if(ImGui::TextLink("Open File..."))
+        {
+
+        }
+        std::vector<int> recentFiles {0,1};
+
+        ImGui::NewLine();
+
+        ImGui::PushFont(font_ConsolasRegular24);
+        ImGui::Text("Recent");
+        ImGui::PopFont();
+
+        int idCounter = 0;
+        for(auto& recentName : recentFiles)
+        {
+            ImGui::PushID(idCounter++);
+            if(ImGui::TextLink("FileName"))
+            {
+
+            }
+            ImGui::SameLine();
+            ImGui::Text("   C://File//Location");
+            ImGui::PopID();
+
         }
     }
 }

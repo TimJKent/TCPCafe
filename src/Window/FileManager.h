@@ -1,9 +1,16 @@
+#pragma once
 #include <filesystem>
 
 namespace FileManager
 {
-    bool FileExists(const std::string& pathAndFilename)
+    class Session
     {
-        return std::filesystem::exists(pathAndFilename);
-    }
+        public:
+            Session();
+            bool IsActive();
+        private:
+            std::filesystem::path currentPath;
+    };
+
+    bool FileExists(const std::string& pathAndFilename);
 }
