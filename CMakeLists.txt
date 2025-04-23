@@ -65,6 +65,7 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPServer.cpp
     ${PROJECT_SOURCE_DIR}/src/TCP/Server/TCPConnection.cpp
     ${PROJECT_SOURCE_DIR}/src/Window/Window.cpp
+    ${PROJECT_SOURCE_DIR}/src/Window/FileManager.cpp
     ${PROJECT_SOURCE_DIR}/src/Application.cpp
     ${PROJECT_SOURCE_DIR}/src/Widgets/SendMessageWidget.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/PrintNode.cpp
@@ -86,6 +87,11 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Nodes/Widgets.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Drawing.cpp
     
+)
+
+file(COPY
+    ${CMAKE_SOURCE_DIR}/assets/icon.png
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32 nfd) 
