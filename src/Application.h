@@ -34,6 +34,10 @@ private:
     void SendMessageFromServer(const std::string& message);
     void SendMessageFromClient(const std::string& message);
     void UpdateWindowTitle();
+    void StartNewFile();
+    void StartOpenFile();
+    void OpenFile(const std::string& path);
+    void AppWideShortcuts();
     std::shared_ptr<Node> DrawNodeSpawnList();
 private:
     Window window;
@@ -41,12 +45,10 @@ private:
     std::string clientReceive;
     std::string serverSend;
     std::string serverReceive;
-    ImFont* font_ConsolasRegular18;
-    ImFont* font_ConsolasRegular24;
-    ImFont* font_ConsolasRegular36;
-    ImFont* font_ConsolasBold18;
-    ImFont* font_ConsolasBold24;
-    ImFont* font_ConsolasBold36;
+    ImFont* font_SegoeUIRegularTiny;
+    ImFont* font_SegoeUIRegularSmall;
+    ImFont* font_SegoeUIRegularMedium;
+    ImFont* font_SegoeUIRegularLarge;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage1;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage2;
     std::unique_ptr<SendMessageWidget> tcpClientSendMessage3;
@@ -57,7 +59,6 @@ private:
 
     MENU_NAME activeMenu = MENU_NAME::NODE_EDITOR;
 private:
-    std::string activeFileName = "";
     asio::io_context ioContext;
     std::shared_ptr<TCPClient> tcpClient;
     std::shared_ptr<TCPServer> tcpServer;
