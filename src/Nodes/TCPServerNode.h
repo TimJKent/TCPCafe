@@ -14,4 +14,5 @@ public:
 private:
     std::shared_ptr<TCPServer> tcpServer;
     std::string message;
+    bool risingEdge = true;
 };

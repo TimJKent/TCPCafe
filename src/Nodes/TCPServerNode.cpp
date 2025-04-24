@@ -34,8 +34,15 @@ void TCPServerNode::Update()
 {
     message = inputPins[1]->isConnected ? inputPins[1]->PinOutputToString() : "";
 
-    if(inputPins[0]->isConnected && std::get<bool>(inputPins[0]->value)) 
+    if(inputPins[0]->isConnected && std::get<bool>(inputPins[0]->value))
     {
-        Send();
+        if(risingEdge)
+        {
+            risingEdge = false;
+            Send();
+        }
+    }else
+    {
+        risingEdge = true;
     }
 }

@@ -13,4 +13,5 @@ public:
 private:
     std::shared_ptr<TCPClient> tcpClient;
     std::string message;
+    bool risingEdge = true;
 };
