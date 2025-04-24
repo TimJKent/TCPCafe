@@ -115,13 +115,37 @@ void Application::DrawTitleBar()
 
         if(ImGui::BeginMenu("File"))
         {
-            if(ImGui::MenuItem("New File","Ctrl+N", false))
+            if(ImGui::MenuItem("New File...","Ctrl+N", false))
             {
                 StartNewFile();
             }
-            if(ImGui::MenuItem("Open File","Ctrl+O", false))
+            if(ImGui::MenuItem("Open File...","Ctrl+O", false))
             {
                StartOpenFile();
+            }
+            if(ImGui::BeginMenu("Open Recent"))
+            {
+                int idCounter = 0;
+                for(auto& recentName : session.GetRecentFiles())
+                {
+                    std::filesystem::path path = recentName;
+                    ImGui::PushID(idCounter++);
+                    if(ImGui::MenuItem(path.stem().string().c_str()))
+                    {
+                        OpenFile(path.string());
+                    }
+                    ImGui::PopID();
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::Separator();
+            if(ImGui::MenuItem("Save","Ctrl+S", false, session.IsActive()))
+            {
+               SaveFile();
+            }
+            if(ImGui::MenuItem("Save As...","Ctrl+Shift+S", false, session.IsActive()))
+            {
+               SaveFileAs();
             }
             ImGui::EndMenu();
         }
@@ -542,7 +566,6 @@ void Application::DrawNodeEditor()
         float windowHeight = (float)window.GetWindowSize().second;
         float mainSectionSize =  (float)std::max(600.0f, windowWidth/1.25f);
          mainSectionSize =  (float)std::min(1000.0f, mainSectionSize);
-        float otherSectionSize = std::max(20.0f, (windowWidth - mainSectionSize)/2.0f);
         ImGui::SetCursorPosY(std::max(30.0f, windowHeight/10.0f));
         if(ImGui::BeginTable("MainPageTable", 3))
         {
@@ -626,6 +649,22 @@ void Application::StartOpenFile()
     }
 }
 
+void Application::SaveFile()
+{
+    nodeManager.SerializeToFile(session.GetActivePathAndFileName());
+}
+
+void Application::SaveFileAs()
+{
+    std::string path = FileDialogue::GetPathForSave(session.GetActivePathAndFileName());
+    if(!path.empty())
+    {
+        session.SetActivePath(path);
+        nodeManager.SerializeToFile(path);
+        session.AddRecentFile(path);
+        UpdateWindowTitle();
+    }
+}
 
 void Application::UpdateWindowTitle()
 {

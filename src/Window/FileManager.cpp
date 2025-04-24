@@ -1,4 +1,3 @@
-#pragma once
 #include "Window/FileManager.h"
 
 #include <cstdlib>

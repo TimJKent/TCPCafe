@@ -36,6 +36,8 @@ private:
     void UpdateWindowTitle();
     void StartNewFile();
     void StartOpenFile();
+    void SaveFile();
+    void SaveFileAs();
     void OpenFile(const std::string& path);
     void AppWideShortcuts();
     std::shared_ptr<Node> DrawNodeSpawnList();
