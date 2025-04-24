@@ -14,7 +14,8 @@ TCP Server View
 ## Building
 
 ### Generators
-Tested Compilers: MSVC, MinGW
+- Tested Compilers: MinGW
+- MSVC: Known bug that prevents BeginCombo's from working correctly
 
 ### CMake
 1. Create Directory /build
