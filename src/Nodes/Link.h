@@ -2,7 +2,6 @@
 
 #include "imgui_node_editor.h"
 #include "Serialization/ISerializable.h"
-#include "Nodes/GlobalID.h"
 #include <iostream>
 
 class Link : public Serialization::ISerializable

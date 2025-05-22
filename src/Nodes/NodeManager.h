@@ -9,7 +9,6 @@
 #include "Serialization/ISerializable.h"
 #include <TCP/Client/TCPClient.h>
 #include <TCP/Server/TCPServer.h>
-#include "Nodes/GlobalID.h"
 
 class TCPClient;
 
