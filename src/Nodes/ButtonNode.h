@@ -5,7 +5,7 @@
 class ButtonNode : public ClonableNode<ButtonNode>
 {
 public:
-    ButtonNode(ax::NodeEditor::NodeId id);
+    ButtonNode();
     void DrawImpl() final;
     std::string GetNodeTypeName() final;
 };

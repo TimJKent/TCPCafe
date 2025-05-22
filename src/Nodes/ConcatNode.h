@@ -5,7 +5,7 @@
 class ConcatNode : public ClonableNode<ConcatNode>
 {
 public:
-    ConcatNode(ax::NodeEditor::NodeId id);
+    ConcatNode();
     void DrawImpl() final;
     void Update() final;
     std::string GetNodeTypeName() final;

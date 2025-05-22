@@ -4,7 +4,7 @@
 class NumberNode : public ClonableNode<NumberNode>
 {
 public:
-    NumberNode(ax::NodeEditor::NodeId id);
+    NumberNode();
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

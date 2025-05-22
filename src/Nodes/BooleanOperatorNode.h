@@ -9,7 +9,7 @@ enum OPERATOR
     AND, OR, NOT, XOR
 };
 public:
-    BooleanOperatorNode(ax::NodeEditor::NodeId id);
+    BooleanOperatorNode();
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

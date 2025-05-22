@@ -20,7 +20,6 @@
 #include "Nodes/BooleanOperatorNode.h"
 #include "Nodes/BooleanDisplayNode.h"
 
-int NodeManager::globalId = 100;
 using json = nlohmann::json;
 
 NodeManager::NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient) 
@@ -93,83 +92,85 @@ void NodeManager::SpawnNodesFromFile()
 {
     std::ifstream ifs(queuedImportFilename);
 
+    std::unordered_map<uint64_t, uint64_t> idMap;
+
     if(ifs.is_open())
     {
         json json = json::parse(ifs);
         
             for (auto& [key, val] : json["nodes"].items())
-                {
-                    std::string nodeType = val["type"];
-                    std::shared_ptr<Node> spawnedNode;
-                    
-                    ax::NodeEditor::NodeId id = (uint64_t)val["id"];
-                    if (nodeType == "ButtonNode")
-                    {
-                        spawnedNode =  SpawnNode<ButtonNode>(id);
-                    }
-                    if(nodeType == "BooleanOperatorNode")
-                    {
-                        spawnedNode = SpawnNode<BooleanOperatorNode>(id);
-                    }
-                    if(nodeType == "BooleanDisplayNode")
-                    {
-                        spawnedNode = SpawnNode<BooleanDisplayNode>(id);
-                    }
-                    if (nodeType == "TimerNode")
-                    {
-                        spawnedNode = SpawnNode<TimerNode>(id);
-                    }
-                    if (nodeType == "StringNode")
-                    {
-                        spawnedNode = SpawnNode<StringNode>(id);
-                    }
-                    if (nodeType == "NumberNode")
-                    {
-                        spawnedNode = SpawnNode<NumberNode>(id);
-                    }
-                    if (nodeType == "ConcatNode")
-                    {
-                        spawnedNode = SpawnNode<ConcatNode>(id);
-                    }
-                    if (nodeType == "AddNode")
-                    {
-                        spawnedNode = SpawnNode<AddNode>(id);
-                    }
-                    if (nodeType == "SubtractNode")
-                    {
-                        spawnedNode = SpawnNode<SubtractNode>(id);
-                    }
-                    if (nodeType == "PrintNode")
-                    {
-                        spawnedNode = SpawnNode<PrintNode>(id);
-                    }
-                    if (nodeType == "TCPClientNode")
-                    {
-                        spawnedNode = SpawnNode<TCPClientNode>(id, tcpClient);
-                    }
-                    if (nodeType == "TCPServerNode")
-                    {
-                        spawnedNode = SpawnNode<TCPServerNode>(id, tcpServer);
-                    }
-                    if(nodeType == "ToggleNode")
-                    {
-                        spawnedNode = SpawnNode<ToggleNode>(id);
-                    }
+            {
+                std::string nodeType = val["type"];
+                std::shared_ptr<Node> spawnedNode;
                 
-                    spawnedNode->ConstructFromJSON(val);
-                    float posX = val["pos_x"];
-                    float posY = val["pos_y"];
-                    ax::NodeEditor::SetNodePosition(id, {posX,posY});
-                }
-                for (auto& [key, val] : json["links"].items())
-                {
-                    NodeManager::globalId++;
-                    ax::NodeEditor::LinkId id = (uint64_t)val["id"];
-                    ax::NodeEditor::PinId startId = (uint64_t)val["startPinId"];
-                    ax::NodeEditor::PinId endId = (uint64_t)val["endPinId"];
+                ax::NodeEditor::NodeId id = (uint64_t)val["id"];
                 
-                    links.emplace_back(Link{id, startId, endId});
+                if (nodeType == "ButtonNode")
+                {
+                    spawnedNode =  SpawnNode<ButtonNode>();
                 }
+                if(nodeType == "BooleanOperatorNode")
+                {
+                    spawnedNode = SpawnNode<BooleanOperatorNode>();
+                }
+                if(nodeType == "BooleanDisplayNode")
+                {
+                    spawnedNode = SpawnNode<BooleanDisplayNode>();
+                }
+                if (nodeType == "TimerNode")
+                {
+                    spawnedNode = SpawnNode<TimerNode>();
+                }
+                if (nodeType == "StringNode")
+                {
+                    spawnedNode = SpawnNode<StringNode>();
+                }
+                if (nodeType == "NumberNode")
+                {
+                    spawnedNode = SpawnNode<NumberNode>();
+                }
+                if (nodeType == "ConcatNode")
+                {
+                    spawnedNode = SpawnNode<ConcatNode>();
+                }
+                if (nodeType == "AddNode")
+                {
+                    spawnedNode = SpawnNode<AddNode>();
+                }
+                if (nodeType == "SubtractNode")
+                {
+                    spawnedNode = SpawnNode<SubtractNode>();
+                }
+                if (nodeType == "PrintNode")
+                {
+                    spawnedNode = SpawnNode<PrintNode>();
+                }
+                if (nodeType == "TCPClientNode")
+                {
+                    spawnedNode = SpawnNode<TCPClientNode>(tcpClient);
+                }
+                if (nodeType == "TCPServerNode")
+                {
+                    spawnedNode = SpawnNode<TCPServerNode>(tcpServer);
+                }
+                if(nodeType == "ToggleNode")
+                {
+                    spawnedNode = SpawnNode<ToggleNode>();
+                }
+            
+                spawnedNode->ConstructFromJSON(val, idMap);
+                float posX = val["pos_x"];
+                float posY = val["pos_y"];
+                
+                ax::NodeEditor::SetNodePosition(spawnedNode->id, {posX,posY});
+            }
+            for (auto& [key, val] : json["links"].items())
+            {
+                ax::NodeEditor::PinId startId = idMap[(uint64_t)val["startPinId"]];
+                ax::NodeEditor::PinId endId = idMap[(uint64_t)val["endPinId"]];
+            
+                links.emplace_back(Link{startId, endId});
+            }
 
         ifs.close();
     }
@@ -243,14 +244,12 @@ void NodeManager::Update()
 
     for (auto& linkInfo : links)
     {
-        
         std::shared_ptr<Pin> inputPin = GetPinFromId(linkInfo.StartPinID);
         std::shared_ptr<Pin> outputPin = GetPinFromId(linkInfo.EndPinID);
         inputPin->isConnected = true;
         outputPin->isConnected = true;
         
         inputPin->value = outputPin->value;
-
         ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID, inputPin->GetColorFromType(), 2.0f);
     }
     // Handle creation action, returns true if editor want to create new object (node or link)
@@ -280,7 +279,7 @@ void NodeManager::Update()
                 if (ax::NodeEditor::AcceptNewItem())
                 {
                     // Since we accepted new link, lets add one to our list of links.
-                    links.push_back({ ax::NodeEditor::LinkId(++NodeManager::globalId), inputPinId, outputPinId});
+                    links.push_back({inputPinId, outputPinId});
                     
                     // Draw new link.
                     ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID,inputPin->GetColorFromType(), 2.0f);

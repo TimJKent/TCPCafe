@@ -8,7 +8,7 @@
 using json = nlohmann::json;
 
 Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType)
-: id(++NodeManager::globalId)
+: id(++Nodes::globalID)
 , pinKind(pinKind)
 , pinType(pinType)
 , value(false)
@@ -17,22 +17,22 @@ Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinTy
     value = 0.0f;
 }
 
-Pin::Pin(json json)
-: id(0)
+Pin::Pin(json json, std::unordered_map<uint64_t, uint64_t>& idMap)
+: id(++Nodes::globalID)
 , pinKind(ax::NodeEditor::PinKind::Input)
 , pinType(PinType::Any)
 , value(false)
 , name("")
 {
-    ++NodeManager::globalId;
-    id = (uint64_t)json["id"];
+    
+    idMap[(uint64_t)json["id"]] = (uint64_t)id;
     pinKind = json["flow"] == 0 ? ax::NodeEditor::PinKind::Input : ax::NodeEditor::PinKind::Output;
     pinType = json["type"];
     name = json["name"];
 }
 
 Pin::Pin(Pin& copy)
-: id(++NodeManager::globalId)
+: id(++Nodes::globalID)
 , pinKind(copy.pinKind)
 , pinType(copy.pinType)
 , value(copy.value)
