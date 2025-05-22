@@ -55,7 +55,7 @@ private:
     std::shared_ptr<TCPClient> tcpClient;
     ax::NodeEditor::EditorContext* nodeEditorContext = nullptr;
     std::vector<std::shared_ptr<Node>> nodes;
-    std::vector<Link> links; 
+    std::vector<std::unique_ptr<Link>> links; 
     bool deleteAll = false;
     bool recenter = false;
     int waitingForDeleteCounter = 0;
