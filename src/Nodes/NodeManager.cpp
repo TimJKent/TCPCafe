@@ -92,7 +92,6 @@ void NodeManager::SpawnNodesFromFile()
 {
     std::ifstream ifs(queuedImportFilename);
 
-    // original, new
     std::unordered_map<uint64_t, uint64_t> idMap;
 
     if(ifs.is_open())

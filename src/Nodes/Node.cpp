@@ -76,8 +76,6 @@ void Node::ConstructFromJSON(const nlohmann::json& json, std::unordered_map<uint
     {
         std::shared_ptr<Pin> pin = std::make_shared<Pin>(val, idMap);
 
-        //Map here
-
         if(pin->pinKind == ax::NodeEditor::PinKind::Input)
         {
             inputPins.emplace_back(pin);
