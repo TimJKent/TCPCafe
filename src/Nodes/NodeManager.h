@@ -44,7 +44,7 @@ public:
     ax::NodeEditor::EditorContext* GetEditorContext();
     std::vector<std::shared_ptr<Node>>& GetNodes() {return nodes;}
     void Update();
-    std::shared_ptr<Pin> GetPinFromId(ax::NodeEditor::PinId pinId);
+    Pin* GetPinFromId(ax::NodeEditor::PinId pinId);
     void SerializeToFile(const std::string& filename);
 private:
     void ProcessQueuedDeletedNodes();

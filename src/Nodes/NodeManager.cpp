@@ -244,8 +244,8 @@ void NodeManager::Update()
 
     for (auto& linkInfo : links)
     {
-        std::shared_ptr<Pin> inputPin = GetPinFromId(linkInfo->StartPinID);
-        std::shared_ptr<Pin> outputPin = GetPinFromId(linkInfo->EndPinID);
+        Pin* inputPin = GetPinFromId(linkInfo->StartPinID);
+        Pin* outputPin = GetPinFromId(linkInfo->EndPinID);
         inputPin->isConnected = true;
         outputPin->isConnected = true;
         
@@ -259,8 +259,8 @@ void NodeManager::Update()
         if (ax::NodeEditor::QueryNewLink(&outputPinId, &inputPinId))
         {
             bool accept = false;
-            std::shared_ptr<Pin> inputPin = GetPinFromId(inputPinId);
-            std::shared_ptr<Pin> outputPin = GetPinFromId(outputPinId);
+            Pin* inputPin = GetPinFromId(inputPinId);
+            Pin* outputPin = GetPinFromId(outputPinId);
 
             if(inputPin->pinKind == ax::NodeEditor::PinKind::Input  && outputPin->pinKind == ax::NodeEditor::PinKind::Output)
             {
@@ -312,26 +312,9 @@ void NodeManager::Update()
     ProcessQueuedDeletedNodes();   
 }
 
-std::shared_ptr<Pin> NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
+Pin* NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
 {
-    for (auto& node : nodes)
-    {
-        for(std::shared_ptr<Pin> pin : node->GetOutputPins())
-        {
-            if(pin->id == pinId)
-            {
-                return pin;
-            }
-        }
-        for(std::shared_ptr<Pin> pin : node->GetInputPins())
-        {
-            if(pin->id == pinId)
-            {
-                return pin;
-            }
-        }
-    }
-    return nullptr;
+    return reinterpret_cast<Pin*>((uintptr_t)pinId);
 }
 
 void NodeManager::SelectAll()
@@ -387,8 +370,8 @@ void NodeManager::ProcessQueuedDeletedNodes()
                 {
                     if (link->ID == deletedLinkId)
                     {
-                        std::shared_ptr<Pin> inputPin = GetPinFromId(link->EndPinID);
-                        std::shared_ptr<Pin> outputPin = GetPinFromId(link->StartPinID);
+                        Pin* inputPin = GetPinFromId(link->EndPinID);
+                        Pin* outputPin = GetPinFromId(link->StartPinID);
 
                         if(inputPin)
                         {
