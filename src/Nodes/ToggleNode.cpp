@@ -3,7 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 
 
-ToggleNode::ToggleNode(ax::NodeEditor::NodeId id) : ClonableNode<ToggleNode>(id)
+ToggleNode::ToggleNode() : ClonableNode<ToggleNode>()
 {
     AddOutputPin("", Pin::PinType::Boolean);
 }

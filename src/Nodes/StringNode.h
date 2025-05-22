@@ -4,7 +4,7 @@
 class StringNode : public ClonableNode<StringNode>
 {
 public:
-    StringNode(ax::NodeEditor::NodeId id);
+    StringNode();
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

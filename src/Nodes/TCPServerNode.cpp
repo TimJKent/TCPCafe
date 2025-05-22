@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-TCPServerNode::TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServer> tcpServer) : ClonableNode<TCPServerNode>(id)
+TCPServerNode::TCPServerNode(std::shared_ptr<TCPServer> tcpServer) : ClonableNode<TCPServerNode>()
 , tcpServer(tcpServer)
 {
     AddInputPin("Send", Pin::PinType::Boolean);

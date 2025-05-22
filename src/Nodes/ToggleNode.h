@@ -4,7 +4,7 @@
 class ToggleNode : public ClonableNode<ToggleNode>
 {
 public:
-    ToggleNode(ax::NodeEditor::NodeId id);
+    ToggleNode();
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

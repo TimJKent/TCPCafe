@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-TCPClientNode::TCPClientNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPClient> tcpClient) : ClonableNode<TCPClientNode>(id)
+TCPClientNode::TCPClientNode(std::shared_ptr<TCPClient> tcpClient) : ClonableNode<TCPClientNode>()
 , tcpClient(tcpClient)
 {
     AddInputPin("Send", Pin::PinType::Boolean);

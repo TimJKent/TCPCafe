@@ -19,7 +19,7 @@ public:
 
     Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinType);
     Pin(Pin& pin);
-    Pin(nlohmann::json json);
+    Pin(nlohmann::json json, std::unordered_map<uint64_t, uint64_t>& idMap);
     void Draw();
     std::string PinOutputToString();
     std::string GetName(){return name;}

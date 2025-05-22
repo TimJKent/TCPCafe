@@ -417,24 +417,24 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
     {
         if (ImGui::MenuItem("Button"))
         {
-            spawnedNode = nodeManager.SpawnNode<ButtonNode>(0);
+            spawnedNode = nodeManager.SpawnNode<ButtonNode>();
         }
         if (ImGui::MenuItem("Toggle"))
         {
-            spawnedNode = nodeManager.SpawnNode<ToggleNode>(0);
+            spawnedNode = nodeManager.SpawnNode<ToggleNode>();
         }
         if (ImGui::MenuItem("Timer"))
         {
-            spawnedNode =nodeManager.SpawnNode<TimerNode>(0);
+            spawnedNode =nodeManager.SpawnNode<TimerNode>();
         }
         ImGui::Separator();
         if (ImGui::MenuItem("String"))
         {
-            spawnedNode =nodeManager.SpawnNode<StringNode>(0);
+            spawnedNode =nodeManager.SpawnNode<StringNode>();
         }
         if (ImGui::MenuItem("Number"))
         {
-            spawnedNode =nodeManager.SpawnNode<NumberNode>(0);
+            spawnedNode =nodeManager.SpawnNode<NumberNode>();
         }
         ImGui::EndMenu();
     }
@@ -442,21 +442,21 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
     if(ImGui::BeginMenu("Math")){
         if (ImGui::MenuItem("Concatenate"))
         {
-            spawnedNode =nodeManager.SpawnNode<ConcatNode>(0);
+            spawnedNode =nodeManager.SpawnNode<ConcatNode>();
         }
         ImGui::Separator();
 
         if (ImGui::MenuItem("Add"))
         {
-            spawnedNode =nodeManager.SpawnNode<AddNode>(0);
+            spawnedNode =nodeManager.SpawnNode<AddNode>();
         }
         if (ImGui::MenuItem("Subtract"))
         {
-            spawnedNode =nodeManager.SpawnNode<SubtractNode>(0);
+            spawnedNode =nodeManager.SpawnNode<SubtractNode>();
         }
         if (ImGui::MenuItem("Boolean Operator"))
         {
-            spawnedNode = nodeManager.SpawnNode<BooleanOperatorNode>(0);
+            spawnedNode = nodeManager.SpawnNode<BooleanOperatorNode>();
         }
             
         ImGui::EndMenu();
@@ -465,20 +465,20 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
     if(ImGui::BeginMenu("Output")){
         if (ImGui::MenuItem("Print"))
         {
-            spawnedNode =nodeManager.SpawnNode<PrintNode>(0);
+            spawnedNode =nodeManager.SpawnNode<PrintNode>();
         }
         if(ImGui::MenuItem("Boolean Display"))
         {
-            spawnedNode  = nodeManager.SpawnNode<BooleanDisplayNode>(0);
+            spawnedNode  = nodeManager.SpawnNode<BooleanDisplayNode>();
         }
         ImGui::Separator();
         if (ImGui::MenuItem("TCP Client"))
         {
-            spawnedNode =nodeManager.SpawnNode<TCPClientNode>(0, tcpClient);
+            spawnedNode =nodeManager.SpawnNode<TCPClientNode>(tcpClient);
         }
         if (ImGui::MenuItem("TCP Server"))
         {
-            spawnedNode = nodeManager.SpawnNode<TCPServerNode>(0, tcpServer);
+            spawnedNode = nodeManager.SpawnNode<TCPServerNode>(tcpServer);
         }
         
         ImGui::EndMenu();

@@ -1,15 +1,13 @@
 #include "Nodes/Node.h"
 #include "Nodes/NodeManager.h"
 
-Node::Node(ax::NodeEditor::NodeId nodeID)
-: id(nodeID)
-{
-    ++NodeManager::globalId;
-    if((uint64_t)id.AsPointer() == 0){id = NodeManager::globalId;}
+Node::Node()
+: id(++Nodes::globalID)
+{  
 }
 
 Node::Node(const Node& copy)
-: id(++NodeManager::globalId)
+: id(++Nodes::globalID)
 {
     for(auto& pin : copy.inputPins)
     {
@@ -70,13 +68,16 @@ nlohmann::json Node::Serialize()
     return json;
 }
 
-void Node::ConstructFromJSON(const nlohmann::json& json)
+void Node::ConstructFromJSON(const nlohmann::json& json, std::unordered_map<uint64_t, uint64_t>& idMap)
 {
     inputPins.clear();
     outputPins.clear();
     for (auto& [key, val] : json["pins"].items())
     {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val);
+        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val, idMap);
+
+        //Map here
+
         if(pin->pinKind == ax::NodeEditor::PinKind::Input)
         {
             inputPins.emplace_back(pin);

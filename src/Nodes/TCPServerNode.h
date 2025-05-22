@@ -6,7 +6,7 @@
 class TCPServerNode : public ClonableNode<TCPServerNode>
 {
 public:
-    TCPServerNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPServer> tcpServer);
+    TCPServerNode(std::shared_ptr<TCPServer> tcpServer);
     void DrawImpl() final;
     void Update() final;
     void Send();

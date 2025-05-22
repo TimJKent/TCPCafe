@@ -5,7 +5,7 @@
 class AddNode : public ClonableNode<AddNode>
 {
 public:
-    AddNode(ax::NodeEditor::NodeId id);
+    AddNode();
     void DrawImpl() final;
     void Update() final;
     std::string GetNodeTypeName() final;

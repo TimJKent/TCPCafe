@@ -5,7 +5,7 @@
 class BooleanDisplayNode : public ClonableNode<BooleanDisplayNode>
 {
 public:
-    BooleanDisplayNode(ax::NodeEditor::NodeId id);
+    BooleanDisplayNode();
     void DrawImpl() final;
     std::string GetNodeTypeName() final;
 };

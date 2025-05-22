@@ -5,7 +5,7 @@
 class TCPClientNode : public ClonableNode<TCPClientNode>
 {
 public:
-    TCPClientNode(ax::NodeEditor::NodeId id, std::shared_ptr<TCPClient> tcpClient);
+    TCPClientNode(std::shared_ptr<TCPClient> tcpClient);
     void DrawImpl() final;
     void Update() final;
     void Send();

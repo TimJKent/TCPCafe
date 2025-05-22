@@ -2,7 +2,7 @@
 #include "imgui_node_editor.h"
 #include "misc/cpp/imgui_stdlib.h"
 
-ButtonNode::ButtonNode(ax::NodeEditor::NodeId id) : ClonableNode<ButtonNode>(id)
+ButtonNode::ButtonNode() : ClonableNode<ButtonNode>()
 {
     AddOutputPin("", Pin::PinType::Boolean);
 }

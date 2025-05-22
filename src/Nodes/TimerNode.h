@@ -5,7 +5,7 @@
 class TimerNode : public ClonableNode<TimerNode>
 {
 public:
-    TimerNode(ax::NodeEditor::NodeId id);
+    TimerNode();
     void DrawImpl() final;
     void Update() final;
     void SpecialConstructFromJSON(const nlohmann::json& json) final;

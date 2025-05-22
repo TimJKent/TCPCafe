@@ -9,14 +9,12 @@
 #include "Serialization/ISerializable.h"
 #include <TCP/Client/TCPClient.h>
 #include <TCP/Server/TCPServer.h>
-
+#include "Nodes/GlobalID.h"
 
 class TCPClient;
 
 class NodeManager : public Serialization::ISerializable
 {
-public:
-    static int globalId;
 public:
     NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient);
 public:

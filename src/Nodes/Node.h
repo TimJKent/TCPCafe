@@ -10,7 +10,7 @@
 class Node : public Serialization::ISerializable
 {
 public:
-    Node(ax::NodeEditor::NodeId id = 0);
+    Node();
     Node(const Node& copy);
     virtual ~Node() = default;
 public:
@@ -19,7 +19,7 @@ public:
     virtual void Update(){} 
     ImVec2 GetPosition() const { return ax::NodeEditor::GetNodePosition(id); }
     nlohmann::json Serialize();
-    void ConstructFromJSON(const nlohmann::json& json);
+    void ConstructFromJSON(const nlohmann::json& json, std::unordered_map<uint64_t, uint64_t>& idMap);
     const std::vector<std::shared_ptr<Pin>>& GetInputPins()  const { return inputPins;}
     const std::vector<std::shared_ptr<Pin>>& GetOutputPins() const { return outputPins;}
     void Draw(); 
@@ -29,7 +29,7 @@ public:
     void RemoveOutputPin();
 protected:
     virtual void SpecialSerialze(nlohmann::json&) {}
-    virtual void SpecialConstructFromJSON(const nlohmann::json&){}    
+    virtual void SpecialConstructFromJSON(const nlohmann::json&){}
     virtual void DrawImpl(){} 
     void DrawPins();
 public:

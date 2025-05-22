@@ -4,7 +4,7 @@
 class PrintNode : public ClonableNode<PrintNode>
 {
 public:
-    PrintNode(ax::NodeEditor::NodeId id);
+    PrintNode();
     void DrawImpl() final;
     void Update() final;
     void Print();

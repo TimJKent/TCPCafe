@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-BooleanDisplayNode::BooleanDisplayNode(ax::NodeEditor::NodeId id) : ClonableNode<BooleanDisplayNode>(id)
+BooleanDisplayNode::BooleanDisplayNode() : ClonableNode<BooleanDisplayNode>()
 {
     AddInputPin("in", Pin::PinType::Boolean);
 }
