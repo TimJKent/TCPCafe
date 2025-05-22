@@ -2,17 +2,18 @@
 
 #include "imgui_node_editor.h"
 #include "Serialization/ISerializable.h"
-#include "Nodes/GlobalID.h"
+#include <iostream>
 
 class Link : public Serialization::ISerializable
 {
 public:
     Link(ax::NodeEditor::PinId startPinId, ax::NodeEditor::PinId endPinId)
-    : ID(++Nodes::globalID)
+    : ID(reinterpret_cast<uintptr_t>(this))
     , StartPinID(startPinId)
     , EndPinID(endPinId)
     , Color(255, 255, 255)
-    {}
+    {
+    }
 
 public:
     nlohmann::json Serialize() final 

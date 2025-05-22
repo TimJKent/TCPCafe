@@ -45,9 +45,9 @@ nlohmann::json NodeManager::Serialize()
         json["nodes"] += node->Serialize();
     }
     
-    for(Link link : links)
+    for(auto& link : links)
     {
-        json["links"] += link.Serialize();
+        json["links"] += link->Serialize();
     }
     
     return json;
@@ -169,7 +169,7 @@ void NodeManager::SpawnNodesFromFile()
                 ax::NodeEditor::PinId startId = idMap[(uint64_t)val["startPinId"]];
                 ax::NodeEditor::PinId endId = idMap[(uint64_t)val["endPinId"]];
             
-                links.emplace_back(Link{startId, endId});
+                links.emplace_back(std::make_unique<Link>(startId, endId));
             }
 
         ifs.close();
@@ -181,7 +181,7 @@ void NodeManager::DeleteAllNodes()
 
     for(auto& link : links)
     {
-        ax::NodeEditor::DeleteLink(link.ID);
+        ax::NodeEditor::DeleteLink(link->ID);
     }
 
     links.clear();
@@ -244,13 +244,13 @@ void NodeManager::Update()
 
     for (auto& linkInfo : links)
     {
-        std::shared_ptr<Pin> inputPin = GetPinFromId(linkInfo.StartPinID);
-        std::shared_ptr<Pin> outputPin = GetPinFromId(linkInfo.EndPinID);
+        Pin* inputPin = GetPinFromId(linkInfo->StartPinID);
+        Pin* outputPin = GetPinFromId(linkInfo->EndPinID);
         inputPin->isConnected = true;
         outputPin->isConnected = true;
         
         inputPin->value = outputPin->value;
-        ax::NodeEditor::Link(linkInfo.ID, linkInfo.StartPinID, linkInfo.EndPinID, inputPin->GetColorFromType(), 2.0f);
+        ax::NodeEditor::Link(linkInfo->ID, linkInfo->StartPinID, linkInfo->EndPinID, inputPin->GetColorFromType(), 2.0f);
     }
     // Handle creation action, returns true if editor want to create new object (node or link)
     if (ax::NodeEditor::BeginCreate(ImColor(255, 255, 255), 2.0f))
@@ -259,8 +259,8 @@ void NodeManager::Update()
         if (ax::NodeEditor::QueryNewLink(&outputPinId, &inputPinId))
         {
             bool accept = false;
-            std::shared_ptr<Pin> inputPin = GetPinFromId(inputPinId);
-            std::shared_ptr<Pin> outputPin = GetPinFromId(outputPinId);
+            Pin* inputPin = GetPinFromId(inputPinId);
+            Pin* outputPin = GetPinFromId(outputPinId);
 
             if(inputPin->pinKind == ax::NodeEditor::PinKind::Input  && outputPin->pinKind == ax::NodeEditor::PinKind::Output)
             {
@@ -279,10 +279,10 @@ void NodeManager::Update()
                 if (ax::NodeEditor::AcceptNewItem())
                 {
                     // Since we accepted new link, lets add one to our list of links.
-                    links.push_back({inputPinId, outputPinId});
+                    links.emplace_back(std::make_unique<Link>(inputPinId, outputPinId));
                     
                     // Draw new link.
-                    ax::NodeEditor::Link(links.back().ID, links.back().StartPinID, links.back().EndPinID,inputPin->GetColorFromType(), 2.0f);
+                    ax::NodeEditor::Link(links.back()->ID, links.back()->StartPinID, links.back()->EndPinID,inputPin->GetColorFromType(), 2.0f);
                 }
             }
             else
@@ -312,26 +312,9 @@ void NodeManager::Update()
     ProcessQueuedDeletedNodes();   
 }
 
-std::shared_ptr<Pin> NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
+Pin* NodeManager::GetPinFromId(ax::NodeEditor::PinId pinId)
 {
-    for (auto& node : nodes)
-    {
-        for(std::shared_ptr<Pin> pin : node->GetOutputPins())
-        {
-            if(pin->id == pinId)
-            {
-                return pin;
-            }
-        }
-        for(std::shared_ptr<Pin> pin : node->GetInputPins())
-        {
-            if(pin->id == pinId)
-            {
-                return pin;
-            }
-        }
-    }
-    return nullptr;
+    return reinterpret_cast<Pin*>((uintptr_t)pinId);
 }
 
 void NodeManager::SelectAll()
@@ -385,10 +368,10 @@ void NodeManager::ProcessQueuedDeletedNodes()
             {
                 for (auto& link : links)
                 {
-                    if (link.ID == deletedLinkId)
+                    if (link->ID == deletedLinkId)
                     {
-                        std::shared_ptr<Pin> inputPin = GetPinFromId(link.EndPinID);
-                        std::shared_ptr<Pin> outputPin = GetPinFromId(link.StartPinID);
+                        Pin* inputPin = GetPinFromId(link->EndPinID);
+                        Pin* outputPin = GetPinFromId(link->StartPinID);
 
                         if(inputPin)
                         {

@@ -2,12 +2,12 @@
 #include "Nodes/NodeManager.h"
 
 Node::Node()
-: id(++Nodes::globalID)
-{  
+: id(reinterpret_cast<uint64_t>(this))
+{
 }
 
 Node::Node(const Node& copy)
-: id(++Nodes::globalID)
+: id(reinterpret_cast<uint64_t>(this))
 {
     for(auto& pin : copy.inputPins)
     {

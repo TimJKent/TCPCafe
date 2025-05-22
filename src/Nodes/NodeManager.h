@@ -9,7 +9,6 @@
 #include "Serialization/ISerializable.h"
 #include <TCP/Client/TCPClient.h>
 #include <TCP/Server/TCPServer.h>
-#include "Nodes/GlobalID.h"
 
 class TCPClient;
 
@@ -45,7 +44,7 @@ public:
     ax::NodeEditor::EditorContext* GetEditorContext();
     std::vector<std::shared_ptr<Node>>& GetNodes() {return nodes;}
     void Update();
-    std::shared_ptr<Pin> GetPinFromId(ax::NodeEditor::PinId pinId);
+    Pin* GetPinFromId(ax::NodeEditor::PinId pinId);
     void SerializeToFile(const std::string& filename);
 private:
     void ProcessQueuedDeletedNodes();
@@ -55,7 +54,7 @@ private:
     std::shared_ptr<TCPClient> tcpClient;
     ax::NodeEditor::EditorContext* nodeEditorContext = nullptr;
     std::vector<std::shared_ptr<Node>> nodes;
-    std::vector<Link> links; 
+    std::vector<std::unique_ptr<Link>> links; 
     bool deleteAll = false;
     bool recenter = false;
     int waitingForDeleteCounter = 0;
