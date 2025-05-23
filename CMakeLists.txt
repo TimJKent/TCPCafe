@@ -47,8 +47,16 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${NLOHMANN-JSON_IncludeDirecto
 include(cmake/stb.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${stb_IncludeDirectories})
 
+# nativefiledialog-extended
 include(cmake/nativefiledialog-extended.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${NATIVEFILEDIALOG-EXTENDED_IncludeDirectories})
+
+
+# lua - sol2
+include(cmake/lua.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${lua_IncludeDirectories})
+include(cmake/sol2.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${sol2_IncludeDirectories})
 
 #END_DEPS
 
@@ -93,7 +101,7 @@ file(COPY
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32 nfd) 
+target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32 nfd lua) 
 
 target_include_directories(${PROJECT_NAME}
 PUBLIC
