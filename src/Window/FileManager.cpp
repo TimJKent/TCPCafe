@@ -5,20 +5,33 @@
 #include <fstream>
 #include "nlohmann/json.hpp"
 
+
+
 FileManager::Session::Session()
 : currentPath("")
 {
     std::filesystem::path appDataPath = GetAppDataPath();
     if(!appDataPath.empty())
     {
-        tcpCafeAppDataPath = appDataPath / "TCPCafe";
+        tcpCafeAppDataPath = appDataPath / appDataFolderName;
 
+        // Check if user data follder exists
         if(!FileExists(tcpCafeAppDataPath.string()))
         {
             std::filesystem::create_directory(tcpCafeAppDataPath);
         }
 
-        std::filesystem::path recentFilesPath = tcpCafeAppDataPath / "Recent.json";
+        //Check if modules folder exists
+        std::filesystem::path tcpCafeModulePath = appDataPath / appDataFolderName / moduleFolderName;
+        
+        if(!FileExists(tcpCafeModulePath.string()))
+        {
+            std::filesystem::create_directory(tcpCafeModulePath);
+        }
+
+        moduleManager.LoadModules(tcpCafeModulePath.string());
+
+        std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
         if(!FileExists(recentFilesPath.string()))
         {
             std::ofstream recentFilesFile(recentFilesPath);
@@ -32,7 +45,7 @@ FileManager::Session::Session()
 void FileManager::Session::AddRecentFile(const std::string& path)
 {
     if(!AppDataPathInitilized){return;}
-    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / "Recent.json";
+    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
     std::ifstream ifs(recentFilesPath);
     nlohmann::json json;
     if(ifs.is_open())
@@ -112,7 +125,7 @@ void FileManager::Session::AddRecentFile(const std::string& path)
 std::vector<std::string> FileManager::Session::GetRecentFiles()
 {
     if(!AppDataPathInitilized){return {};}
-    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / "Recent.json";
+    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
     std::ifstream ifs(recentFilesPath);
     nlohmann::json json;
     if(ifs.is_open())

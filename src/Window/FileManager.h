@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include "Modules/ModuleManager.h"
 
 namespace FileManager
 {
@@ -23,10 +24,13 @@ namespace FileManager
             void AddRecentFile(const std::string& path);
             std::vector<std::string> GetRecentFiles();
         public:
-            bool AppDataPathInitilized = false;
-        private:
+            bool AppDataPathInitilized = false;            
             std::filesystem::path currentPath;
             std::filesystem::path tcpCafeAppDataPath;
+            const char* appDataFolderName = "TCPCafe";
+            const char* moduleFolderName = "Modules";
+            const char* recentsFileName = "Recent.json";
+            ModuleManager moduleManager;
     };
 
     bool FileExists(const std::string& pathAndFilename);

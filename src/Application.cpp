@@ -17,6 +17,8 @@
 #include "Nodes/TimerNode.h"
 #include "Window/FileManager.h"
 
+#include "Modules/Module.h"
+
 #include <filesystem>
 #include <cmath>
 
@@ -75,9 +77,10 @@ int Application::Run()
         BeginMainPanel();
         switch(activeMenu)
         {
-            case TCP_CLIENT: DrawTCPClientWindow(); break;
-            case TCP_SERVER: DrawTCPServerWindow(); break;
+            case TCP_CLIENT:  DrawTCPClientWindow(); break;
+            case TCP_SERVER:  DrawTCPServerWindow(); break;
             case NODE_EDITOR: DrawNodeEditor(); break;
+            case MODULES:     DrawModuleWindow(); break;
         }
         
         AppWideShortcuts();
@@ -146,6 +149,16 @@ void Application::DrawTitleBar()
             if(ImGui::MenuItem("Save As...","Ctrl+Shift+S", false, session.IsActive()))
             {
                SaveFileAs();
+            }
+            ImGui::Separator();
+            if(ImGui::MenuItem("Modules"))
+            {
+                activeMenu = MENU_NAME::MODULES;
+            }
+            ImGui::Separator();
+            if(ImGui::MenuItem("Exit"))
+            {
+                window.Close();
             }
             ImGui::EndMenu();
         }
@@ -218,6 +231,32 @@ void Application::DrawTitleBar()
     }
 
     ImGui::PopStyleVar();
+}
+
+void Application::DrawModuleWindow()
+{
+    if(ImGui::BeginTable("##modules_table_id", 1, ImGuiTableFlags_Borders))
+    {
+        ImGui::TableSetupColumn("Modules", ImGuiTableColumnFlags_WidthStretch );
+        ImGui::TableHeadersRow();
+        int idCounter = 0;
+        for(auto& module : session.moduleManager.GetModules())
+        {
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::PushID(idCounter++);
+            std::string moduleNameText = module.GetCategory() + ": " + module.GetName();
+            if (ImGui::CollapsingHeader(moduleNameText.c_str()))
+                {
+                    ImGui::Text(("Description:     " + module.GetDescription()).c_str());
+                    ImGui::Text(("Version:         " + module.GetVersion()).c_str());                
+                    ImGui::Text(("Author:          " + module.GetAuthor()).c_str());
+                    ImGui::Text(("File Location:   " + module.GetFile()).c_str());
+                }
+            ImGui::PopID();
+        }
+        ImGui::EndTable();
+    }
 }
 
 void Application::DrawTCPClientWindow()

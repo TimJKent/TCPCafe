@@ -18,7 +18,7 @@ class Application
 public:
 enum MENU_NAME
 {
-    TCP_CLIENT, TCP_SERVER, NODE_EDITOR,
+    TCP_CLIENT, TCP_SERVER, NODE_EDITOR, MODULES
     
 };
 public:
@@ -29,6 +29,7 @@ private:
     void DrawTCPClientWindow();
     void DrawTCPServerWindow();
     void DrawNodeEditor();
+    void DrawModuleWindow();
     void BeginMainPanel();
     void EndMainPanel();
     void SendMessageFromServer(const std::string& message);
