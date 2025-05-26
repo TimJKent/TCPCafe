@@ -15,6 +15,7 @@
 #include "Nodes/TCPClientNode.h"
 #include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
+#include "Nodes/LuaNode.h"
 #include "Window/FileManager.h"
 
 #include "Modules/Module.h"
@@ -240,20 +241,23 @@ void Application::DrawModuleWindow()
         ImGui::TableSetupColumn("Modules", ImGuiTableColumnFlags_WidthStretch );
         ImGui::TableHeadersRow();
         int idCounter = 0;
-        for(auto& module : session.moduleManager.GetModules())
+        for(auto& moduleKeyValuePair : session.moduleManager.GetModules())
         {
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::PushID(idCounter++);
-            std::string moduleNameText = module.GetCategory() + ": " + module.GetName();
-            if (ImGui::CollapsingHeader(moduleNameText.c_str()))
+            for(auto& module : moduleKeyValuePair.second)
+            {
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::PushID(idCounter++);
+                std::string moduleNameText = module->GetCategory() + ": " + module->GetName();
+                if (ImGui::CollapsingHeader(moduleNameText.c_str()))
                 {
-                    ImGui::Text(("Description:     " + module.GetDescription()).c_str());
-                    ImGui::Text(("Version:         " + module.GetVersion()).c_str());                
-                    ImGui::Text(("Author:          " + module.GetAuthor()).c_str());
-                    ImGui::Text(("File Location:   " + module.GetFile()).c_str());
+                    ImGui::Text(("Description:     " + module->GetDescription()).c_str());
+                    ImGui::Text(("Version:         " + module->GetVersion()).c_str());                
+                    ImGui::Text(("Author:          " + module->GetAuthor()).c_str());
+                    ImGui::Text(("File Location:   " + module->GetFile()).c_str());
                 }
-            ImGui::PopID();
+                ImGui::PopID();
+            }
         }
         ImGui::EndTable();
     }
@@ -452,6 +456,24 @@ void Application::SendMessageFromClient(const std::string& message)
 std::shared_ptr<Node> Application::DrawNodeSpawnList()
 {    
     std::shared_ptr<Node> spawnedNode;
+
+
+    for(auto& moduleKeyValuePair : session.moduleManager.GetModules())
+    {
+        if(ImGui::BeginMenu(moduleKeyValuePair.first.c_str()))
+        {
+            for(auto& module : moduleKeyValuePair.second)
+            {
+                if(ImGui::MenuItem(module->GetName().c_str()))
+                {
+                    spawnedNode = nodeManager.SpawnNode<LuaNode>(module);
+                }
+            }
+            ImGui::EndMenu();
+        }
+    }
+
+/*
     if(ImGui::BeginMenu("Input"))
     {
         if (ImGui::MenuItem("Button"))
@@ -522,7 +544,7 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         
         ImGui::EndMenu();
     }
-
+*/
     return spawnedNode;
 }
 
