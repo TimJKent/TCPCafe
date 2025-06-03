@@ -9,7 +9,7 @@ class Module
 public:
     Module()
     {
-        lua.open_libraries(sol::lib::base, sol::lib::package);
+        lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
     }
   
     void Load(const std::string& path)
