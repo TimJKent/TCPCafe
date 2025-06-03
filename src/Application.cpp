@@ -29,7 +29,7 @@ Application::Application()
 , ioContext()
 , tcpClient(std::make_shared<TCPClient>(ioContext))
 , tcpServer(std::make_shared<TCPServer>(ioContext))
-, nodeManager(tcpServer, tcpClient)
+, nodeManager(tcpServer, tcpClient, session)
 {
     std::string segoeRegularPath = "C:\\Windows\\Fonts\\segoeui.ttf";
     if(FileManager::FileExists(segoeRegularPath))
@@ -236,6 +236,11 @@ void Application::DrawTitleBar()
 
 void Application::DrawModuleWindow()
 {
+    if(ImGui::Button("Reload Modules"))
+    {
+        session.ReloadModules();
+    }
+
     if(ImGui::BeginTable("##modules_table_id", 1, ImGuiTableFlags_Borders))
     {
         ImGui::TableSetupColumn("Modules", ImGuiTableColumnFlags_WidthStretch );
@@ -473,7 +478,7 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         }
     }
 
-/*
+
     if(ImGui::BeginMenu("Input"))
     {
         if (ImGui::MenuItem("Button"))
@@ -499,6 +504,7 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         }
         ImGui::EndMenu();
     }
+    /*
 
     if(ImGui::BeginMenu("Math")){
         if (ImGui::MenuItem("Concatenate"))

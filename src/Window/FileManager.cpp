@@ -21,15 +21,7 @@ FileManager::Session::Session()
             std::filesystem::create_directory(tcpCafeAppDataPath);
         }
 
-        //Check if modules folder exists
-        std::filesystem::path tcpCafeModulePath = appDataPath / appDataFolderName / moduleFolderName;
-        
-        if(!FileExists(tcpCafeModulePath.string()))
-        {
-            std::filesystem::create_directory(tcpCafeModulePath);
-        }
-
-        moduleManager.LoadModules(tcpCafeModulePath.string());
+        ReloadModules();
 
         std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
         if(!FileExists(recentFilesPath.string()))
@@ -40,6 +32,19 @@ FileManager::Session::Session()
         }
         AppDataPathInitilized = true;
     }
+}
+
+void FileManager::Session::ReloadModules()
+{
+        //Check if modules folder exists
+        std::filesystem::path tcpCafeModulePath = GetAppDataPath() / appDataFolderName / moduleFolderName;
+        
+        if(!FileExists(tcpCafeModulePath.string()))
+        {
+            std::filesystem::create_directory(tcpCafeModulePath);
+        }
+
+        moduleManager.LoadModules(tcpCafeModulePath.string());
 }
 
 void FileManager::Session::AddRecentFile(const std::string& path)

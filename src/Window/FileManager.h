@@ -23,6 +23,7 @@ namespace FileManager
             std::string GetActivePathAndFileName();
             void AddRecentFile(const std::string& path);
             std::vector<std::string> GetRecentFiles();
+            void ReloadModules();
         public:
             bool AppDataPathInitilized = false;            
             std::filesystem::path currentPath;

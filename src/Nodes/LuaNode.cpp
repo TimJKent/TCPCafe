@@ -3,6 +3,7 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include <cmath>
 #include <sol/sol.hpp>
+#include <iostream>
 
 
 LuaNode::LuaNode(std::shared_ptr<Module> module) : ClonableNode<LuaNode>()
@@ -25,74 +26,41 @@ LuaNode::LuaNode(std::shared_ptr<Module> module) : ClonableNode<LuaNode>()
        return AddOutputPin(name, pinType);
     });
 
-    env.set_function("GetPinValueAsDouble", [this](const std::string& name) {
-        for(auto& pin : inputPins)
-        {
-            if(pin->GetName() == name)
-            {
-                if(std::holds_alternative<double>(pin->value))
-                {
-                    return std::get<double>(pin->value);
-                }
 
-            }
-        }
-        return 0.0;
-    });
-
-    env.set_function("GetPinValueAsInt", [this](const std::string& name) {
-        for(auto& pin : inputPins)
-        {
-            if(pin->GetName() == name)
-            {
-                if(std::holds_alternative<int>(pin->value))
-                {
-                    return std::get<int>(pin->value);
-                }
-            }
-        }
-        return 0;
-    });
-
-    env.set_function("GetPinValueAsString", [this](const std::string& name) {
+    env.set_function("GetPinValue", [this](const std::string& name) {
         for(auto& pin : inputPins)
         {
             if(pin->GetName() == name)
             {
                 if(std::holds_alternative<std::string>(pin->value))
                 {
-                    return std::get<std::string>(pin->value);
+                    return sol::make_object(env.lua_state(), pin->value);
                 }
                 else if(std::holds_alternative<int>(pin->value))
                 {
-                    return std::to_string(std::get<int>(pin->value));
+                    return sol::make_object(env.lua_state(), pin->value);
                 }
                 else if(std::holds_alternative<double>(pin->value))
                 {
-                    return std::to_string(std::get<double>(pin->value));
+                    return sol::make_object(env.lua_state(), pin->value);
                 }
-            }
-        }
-        return std::string("");
-    });
-
-    env.set_function("GetPinValueAsBool", [this](const std::string& name) {
-        for(auto& pin : inputPins)
-        {
-            if(pin->GetName() == name)
-            {
-                if(std::holds_alternative<bool>(pin->value))
+                else if(std::holds_alternative<bool>(pin->value))
                 {
-                    return std::get<bool>(pin->value);
+                    return sol::make_object(env.lua_state(), pin->value);
                 }
             }
         }
-        return false;
+        return sol::make_object(env.lua_state(), sol::nil);
     });
 
     env.set_function("SetPinValue", [this](const std::string& name, sol::object obj) {
-        for(auto& pin : inputPins)
+        for(auto& pin : outputPins)
         {
+            if(pin->GetName() != name)
+            {
+                continue;
+            }
+
            switch (obj.get_type()) {
             case sol::type::number:
                 pin->value = obj.as<double>();
@@ -128,8 +96,8 @@ void LuaNode::DrawImpl()
 
 void LuaNode::Update()
 {
-   if(startFunc.valid())
+    if(startFunc.valid())
     {
-        updateFunc();
+         updateFunc();
     }
 }
