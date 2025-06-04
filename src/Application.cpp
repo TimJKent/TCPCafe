@@ -241,6 +241,17 @@ void Application::DrawModuleWindow()
         session.ReloadModules();
     }
 
+    ImGui::SameLine();
+
+    if(ImGui::Button("Open Module Folder"))
+    {
+        std::filesystem::path modulePath = session.GetModulePath();
+        if(std::filesystem::exists(modulePath))
+        {
+            FileManager::OpenFileExplorerAtPath(modulePath.string());
+        }
+    }
+
     if(ImGui::BeginTable("##modules_table_id", 1, ImGuiTableFlags_Borders))
     {
         ImGui::TableSetupColumn("Modules", ImGuiTableColumnFlags_WidthStretch );
@@ -504,22 +515,11 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         }
         ImGui::EndMenu();
     }
-    /*
 
-    if(ImGui::BeginMenu("Math")){
-        if (ImGui::MenuItem("Concatenate"))
+    if(ImGui::BeginMenu("Bools")){
+        if(ImGui::MenuItem("Boolean Display"))
         {
-            spawnedNode =nodeManager.SpawnNode<ConcatNode>();
-        }
-        ImGui::Separator();
-
-        if (ImGui::MenuItem("Add"))
-        {
-            spawnedNode =nodeManager.SpawnNode<AddNode>();
-        }
-        if (ImGui::MenuItem("Subtract"))
-        {
-            spawnedNode =nodeManager.SpawnNode<SubtractNode>();
+            spawnedNode  = nodeManager.SpawnNode<BooleanDisplayNode>();
         }
         if (ImGui::MenuItem("Boolean Operator"))
         {
@@ -529,16 +529,9 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         ImGui::EndMenu();
     }
 
-    if(ImGui::BeginMenu("Output")){
-        if (ImGui::MenuItem("Print"))
-        {
-            spawnedNode =nodeManager.SpawnNode<PrintNode>();
-        }
-        if(ImGui::MenuItem("Boolean Display"))
-        {
-            spawnedNode  = nodeManager.SpawnNode<BooleanDisplayNode>();
-        }
-        ImGui::Separator();
+
+    if(ImGui::BeginMenu("Network"))
+    {
         if (ImGui::MenuItem("TCP Client"))
         {
             spawnedNode =nodeManager.SpawnNode<TCPClientNode>(tcpClient);
@@ -550,7 +543,7 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         
         ImGui::EndMenu();
     }
-*/
+
     return spawnedNode;
 }
 

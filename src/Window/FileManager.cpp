@@ -5,6 +5,16 @@
 #include <fstream>
 #include "nlohmann/json.hpp"
 
+    void FileManager::OpenFileExplorerAtPath(const std::string& path)
+    {
+        #ifdef _WIN32
+            system(("explorer \"" + path + "\"").c_str());
+        #elif __APPLE__
+            system(("open \"" + path + "\"").c_str());
+        #elif __linux__
+            system(("xdg-open \"" + path + "\"").c_str());
+        #endif
+    }
 
 
 FileManager::Session::Session()
@@ -37,7 +47,7 @@ FileManager::Session::Session()
 void FileManager::Session::ReloadModules()
 {
         //Check if modules folder exists
-        std::filesystem::path tcpCafeModulePath = GetAppDataPath() / appDataFolderName / moduleFolderName;
+        std::filesystem::path tcpCafeModulePath = GetModulePath();
         
         if(!FileExists(tcpCafeModulePath.string()))
         {
@@ -194,6 +204,11 @@ std::string FileManager::Session::GetActiveFileName()
 std::string FileManager::Session::GetActivePath()
 {
     return currentPath.remove_filename().string();
+}
+
+std::string FileManager::Session::GetModulePath()
+{
+    return (GetAppDataPath() / appDataFolderName / moduleFolderName).string();
 }
 
 std::filesystem::path appDataPath;

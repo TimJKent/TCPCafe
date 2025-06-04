@@ -6,6 +6,8 @@
 
 namespace FileManager
 {
+    void OpenFileExplorerAtPath(const std::string& path);
+
     class Session
     {
         public:
@@ -21,6 +23,7 @@ namespace FileManager
             std::string GetActiveFileName();
             std::string GetActivePath();
             std::string GetActivePathAndFileName();
+            std::string GetModulePath();
             void AddRecentFile(const std::string& path);
             std::vector<std::string> GetRecentFiles();
             void ReloadModules();
