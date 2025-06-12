@@ -13,8 +13,11 @@
 - MSVC: Known bug that prevents BeginCombo's from working correctly
 
 ### CMake
-1. Create Directory /build
-1. cd build
-1. cmake -G "Generator Name" ..
-1. cmake --build .
-1. ./TCPCafe.exe
+Inside of /TCPCafe
+```
+mkdir build
+cd build
+cmake ..
+cmake --build .
+./TCPCafe.exe
+```
