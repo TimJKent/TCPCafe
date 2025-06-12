@@ -5,20 +5,35 @@
 #include <fstream>
 #include "nlohmann/json.hpp"
 
+    void FileManager::OpenFileExplorerAtPath(const std::string& path)
+    {
+        #ifdef _WIN32
+            system(("explorer \"" + path + "\"").c_str());
+        #elif __APPLE__
+            system(("open \"" + path + "\"").c_str());
+        #elif __linux__
+            system(("xdg-open \"" + path + "\"").c_str());
+        #endif
+    }
+
+
 FileManager::Session::Session()
 : currentPath("")
 {
     std::filesystem::path appDataPath = GetAppDataPath();
     if(!appDataPath.empty())
     {
-        tcpCafeAppDataPath = appDataPath / "TCPCafe";
+        tcpCafeAppDataPath = appDataPath / appDataFolderName;
 
+        // Check if user data follder exists
         if(!FileExists(tcpCafeAppDataPath.string()))
         {
             std::filesystem::create_directory(tcpCafeAppDataPath);
         }
 
-        std::filesystem::path recentFilesPath = tcpCafeAppDataPath / "Recent.json";
+        ReloadModules();
+
+        std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
         if(!FileExists(recentFilesPath.string()))
         {
             std::ofstream recentFilesFile(recentFilesPath);
@@ -29,10 +44,23 @@ FileManager::Session::Session()
     }
 }
 
+void FileManager::Session::ReloadModules()
+{
+        //Check if modules folder exists
+        std::filesystem::path tcpCafeModulePath = GetModulePath();
+        
+        if(!FileExists(tcpCafeModulePath.string()))
+        {
+            std::filesystem::create_directory(tcpCafeModulePath);
+        }
+
+        moduleManager.LoadModules(tcpCafeModulePath.string());
+}
+
 void FileManager::Session::AddRecentFile(const std::string& path)
 {
     if(!AppDataPathInitilized){return;}
-    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / "Recent.json";
+    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
     std::ifstream ifs(recentFilesPath);
     nlohmann::json json;
     if(ifs.is_open())
@@ -112,7 +140,7 @@ void FileManager::Session::AddRecentFile(const std::string& path)
 std::vector<std::string> FileManager::Session::GetRecentFiles()
 {
     if(!AppDataPathInitilized){return {};}
-    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / "Recent.json";
+    std::filesystem::path recentFilesPath = tcpCafeAppDataPath / recentsFileName;
     std::ifstream ifs(recentFilesPath);
     nlohmann::json json;
     if(ifs.is_open())
@@ -176,6 +204,11 @@ std::string FileManager::Session::GetActiveFileName()
 std::string FileManager::Session::GetActivePath()
 {
     return currentPath.remove_filename().string();
+}
+
+std::string FileManager::Session::GetModulePath()
+{
+    return (GetAppDataPath() / appDataFolderName / moduleFolderName).string();
 }
 
 std::filesystem::path appDataPath;

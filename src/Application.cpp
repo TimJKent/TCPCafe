@@ -15,7 +15,10 @@
 #include "Nodes/TCPClientNode.h"
 #include "Nodes/TCPServerNode.h"
 #include "Nodes/TimerNode.h"
+#include "Nodes/LuaNode.h"
 #include "Window/FileManager.h"
+
+#include "Modules/Module.h"
 
 #include <filesystem>
 #include <cmath>
@@ -26,7 +29,7 @@ Application::Application()
 , ioContext()
 , tcpClient(std::make_shared<TCPClient>(ioContext))
 , tcpServer(std::make_shared<TCPServer>(ioContext))
-, nodeManager(tcpServer, tcpClient)
+, nodeManager(tcpServer, tcpClient, session)
 {
     std::string segoeRegularPath = "C:\\Windows\\Fonts\\segoeui.ttf";
     if(FileManager::FileExists(segoeRegularPath))
@@ -75,9 +78,10 @@ int Application::Run()
         BeginMainPanel();
         switch(activeMenu)
         {
-            case TCP_CLIENT: DrawTCPClientWindow(); break;
-            case TCP_SERVER: DrawTCPServerWindow(); break;
+            case TCP_CLIENT:  DrawTCPClientWindow(); break;
+            case TCP_SERVER:  DrawTCPServerWindow(); break;
             case NODE_EDITOR: DrawNodeEditor(); break;
+            case MODULES:     DrawModuleWindow(); break;
         }
         
         AppWideShortcuts();
@@ -146,6 +150,16 @@ void Application::DrawTitleBar()
             if(ImGui::MenuItem("Save As...","Ctrl+Shift+S", false, session.IsActive()))
             {
                SaveFileAs();
+            }
+            ImGui::Separator();
+            if(ImGui::MenuItem("Modules"))
+            {
+                activeMenu = MENU_NAME::MODULES;
+            }
+            ImGui::Separator();
+            if(ImGui::MenuItem("Exit"))
+            {
+                window.Close();
             }
             ImGui::EndMenu();
         }
@@ -218,6 +232,51 @@ void Application::DrawTitleBar()
     }
 
     ImGui::PopStyleVar();
+}
+
+void Application::DrawModuleWindow()
+{
+    if(ImGui::Button("Reload Modules"))
+    {
+        session.ReloadModules();
+    }
+
+    ImGui::SameLine();
+
+    if(ImGui::Button("Open Module Folder"))
+    {
+        std::filesystem::path modulePath = session.GetModulePath();
+        if(std::filesystem::exists(modulePath))
+        {
+            FileManager::OpenFileExplorerAtPath(modulePath.string());
+        }
+    }
+
+    if(ImGui::BeginTable("##modules_table_id", 1, ImGuiTableFlags_Borders))
+    {
+        ImGui::TableSetupColumn("Modules", ImGuiTableColumnFlags_WidthStretch );
+        ImGui::TableHeadersRow();
+        int idCounter = 0;
+        for(auto& moduleKeyValuePair : session.moduleManager.GetModules())
+        {
+            for(auto& module : moduleKeyValuePair.second)
+            {
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::PushID(idCounter++);
+                std::string moduleNameText = module->GetCategory() + ": " + module->GetName();
+                if (ImGui::CollapsingHeader(moduleNameText.c_str()))
+                {
+                    ImGui::Text(("Description:     " + module->GetDescription()).c_str());
+                    ImGui::Text(("Version:         " + module->GetVersion()).c_str());                
+                    ImGui::Text(("Author:          " + module->GetAuthor()).c_str());
+                    ImGui::Text(("File Location:   " + module->GetFile()).c_str());
+                }
+                ImGui::PopID();
+            }
+        }
+        ImGui::EndTable();
+    }
 }
 
 void Application::DrawTCPClientWindow()
@@ -413,6 +472,24 @@ void Application::SendMessageFromClient(const std::string& message)
 std::shared_ptr<Node> Application::DrawNodeSpawnList()
 {    
     std::shared_ptr<Node> spawnedNode;
+
+
+    for(auto& moduleKeyValuePair : session.moduleManager.GetModules())
+    {
+        if(ImGui::BeginMenu(moduleKeyValuePair.first.c_str()))
+        {
+            for(auto& module : moduleKeyValuePair.second)
+            {
+                if(ImGui::MenuItem(module->GetName().c_str()))
+                {
+                    spawnedNode = nodeManager.SpawnNode<LuaNode>(module);
+                }
+            }
+            ImGui::EndMenu();
+        }
+    }
+
+
     if(ImGui::BeginMenu("Input"))
     {
         if (ImGui::MenuItem("Button"))
@@ -439,20 +516,10 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         ImGui::EndMenu();
     }
 
-    if(ImGui::BeginMenu("Math")){
-        if (ImGui::MenuItem("Concatenate"))
+    if(ImGui::BeginMenu("Bools")){
+        if(ImGui::MenuItem("Boolean Display"))
         {
-            spawnedNode =nodeManager.SpawnNode<ConcatNode>();
-        }
-        ImGui::Separator();
-
-        if (ImGui::MenuItem("Add"))
-        {
-            spawnedNode =nodeManager.SpawnNode<AddNode>();
-        }
-        if (ImGui::MenuItem("Subtract"))
-        {
-            spawnedNode =nodeManager.SpawnNode<SubtractNode>();
+            spawnedNode  = nodeManager.SpawnNode<BooleanDisplayNode>();
         }
         if (ImGui::MenuItem("Boolean Operator"))
         {
@@ -462,16 +529,9 @@ std::shared_ptr<Node> Application::DrawNodeSpawnList()
         ImGui::EndMenu();
     }
 
-    if(ImGui::BeginMenu("Output")){
-        if (ImGui::MenuItem("Print"))
-        {
-            spawnedNode =nodeManager.SpawnNode<PrintNode>();
-        }
-        if(ImGui::MenuItem("Boolean Display"))
-        {
-            spawnedNode  = nodeManager.SpawnNode<BooleanDisplayNode>();
-        }
-        ImGui::Separator();
+
+    if(ImGui::BeginMenu("Network"))
+    {
         if (ImGui::MenuItem("TCP Client"))
         {
             spawnedNode =nodeManager.SpawnNode<TCPClientNode>(tcpClient);

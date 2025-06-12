@@ -9,13 +9,14 @@
 #include "Serialization/ISerializable.h"
 #include <TCP/Client/TCPClient.h>
 #include <TCP/Server/TCPServer.h>
+#include "Window/FileManager.h"
 
 class TCPClient;
 
 class NodeManager : public Serialization::ISerializable
 {
 public:
-    NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient);
+    NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient, FileManager::Session& session);
 public:
     void DeleteAllNodes();
     void QueueLoadFromFile(const std::string& filename);
@@ -59,4 +60,5 @@ private:
     bool recenter = false;
     int waitingForDeleteCounter = 0;
     std::string queuedImportFilename = "";
+    FileManager::Session& session;
 };

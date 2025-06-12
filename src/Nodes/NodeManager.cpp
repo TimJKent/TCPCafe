@@ -19,12 +19,14 @@
 #include "Nodes/TimerNode.h"
 #include "Nodes/BooleanOperatorNode.h"
 #include "Nodes/BooleanDisplayNode.h"
+#include "Nodes/LuaNode.h"
 
 using json = nlohmann::json;
 
-NodeManager::NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient) 
+NodeManager::NodeManager(std::shared_ptr<TCPServer> tcpServer, std::shared_ptr<TCPClient> tcpClient, FileManager::Session& session) 
 : tcpServer(tcpServer)
 , tcpClient(tcpClient)
+, session(session)
 {
     ax::NodeEditor::Config config;
     config.NavigateButtonIndex = 2;
@@ -105,57 +107,72 @@ void NodeManager::SpawnNodesFromFile()
                 
                 ax::NodeEditor::NodeId id = (uint64_t)val["id"];
                 
-                if (nodeType == "ButtonNode")
+                if  (nodeType == "ButtonNode")
                 {
                     spawnedNode =  SpawnNode<ButtonNode>();
                 }
-                if(nodeType == "BooleanOperatorNode")
+                else if (nodeType == "BooleanOperatorNode")
                 {
                     spawnedNode = SpawnNode<BooleanOperatorNode>();
                 }
-                if(nodeType == "BooleanDisplayNode")
+                else if (nodeType == "BooleanDisplayNode")
                 {
                     spawnedNode = SpawnNode<BooleanDisplayNode>();
                 }
-                if (nodeType == "TimerNode")
+                else if  (nodeType == "TimerNode")
                 {
                     spawnedNode = SpawnNode<TimerNode>();
                 }
-                if (nodeType == "StringNode")
+                else if  (nodeType == "StringNode")
                 {
                     spawnedNode = SpawnNode<StringNode>();
                 }
-                if (nodeType == "NumberNode")
+                else if  (nodeType == "NumberNode")
                 {
                     spawnedNode = SpawnNode<NumberNode>();
                 }
-                if (nodeType == "ConcatNode")
+                else if  (nodeType == "ConcatNode")
                 {
                     spawnedNode = SpawnNode<ConcatNode>();
                 }
-                if (nodeType == "AddNode")
+                else if  (nodeType == "AddNode")
                 {
                     spawnedNode = SpawnNode<AddNode>();
                 }
-                if (nodeType == "SubtractNode")
+                else if  (nodeType == "SubtractNode")
                 {
                     spawnedNode = SpawnNode<SubtractNode>();
                 }
-                if (nodeType == "PrintNode")
+                else if  (nodeType == "PrintNode")
                 {
                     spawnedNode = SpawnNode<PrintNode>();
                 }
-                if (nodeType == "TCPClientNode")
+                else if  (nodeType == "TCPClientNode")
                 {
                     spawnedNode = SpawnNode<TCPClientNode>(tcpClient);
                 }
-                if (nodeType == "TCPServerNode")
+                else if  (nodeType == "TCPServerNode")
                 {
                     spawnedNode = SpawnNode<TCPServerNode>(tcpServer);
                 }
-                if(nodeType == "ToggleNode")
+                else if(nodeType == "ToggleNode")
                 {
                     spawnedNode = SpawnNode<ToggleNode>();
+                }
+                else
+                {
+                    //TODO: This is slow and awful
+                    for(auto& moduleCategory : session.moduleManager.GetModules())
+                    {
+                        for(auto& module : moduleCategory.second)
+                        {
+                            if(module->GetName() == nodeType)
+                            {
+                                spawnedNode = SpawnNode<LuaNode>(module);
+                                break;
+                            }
+                        }
+                    }
                 }
             
                 spawnedNode->ConstructFromJSON(val, idMap);

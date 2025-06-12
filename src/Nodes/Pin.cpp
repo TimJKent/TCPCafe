@@ -14,7 +14,7 @@ Pin::Pin(const std::string& name, ax::NodeEditor::PinKind pinKind, PinType pinTy
 , value(false)
 , name(name)
 {
-    value = 0.0f;
+    value = false;
 }
 
 Pin::Pin(json json, std::unordered_map<uint64_t, uint64_t>& idMap)

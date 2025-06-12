@@ -47,8 +47,16 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${NLOHMANN-JSON_IncludeDirecto
 include(cmake/stb.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${stb_IncludeDirectories})
 
+# nativefiledialog-extended
 include(cmake/nativefiledialog-extended.cmake)
 target_include_directories(${PROJECT_NAME} PUBLIC ${NATIVEFILEDIALOG-EXTENDED_IncludeDirectories})
+
+
+# lua - sol2
+include(cmake/lua.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${lua_IncludeDirectories})
+include(cmake/sol2.cmake)
+target_include_directories(${PROJECT_NAME} PUBLIC ${sol2_IncludeDirectories})
 
 #END_DEPS
 
@@ -86,6 +94,8 @@ PRIVATE
     ${PROJECT_SOURCE_DIR}/src/Nodes/NodeManager.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Widgets.cpp
     ${PROJECT_SOURCE_DIR}/src/Nodes/Drawing.cpp
+    ${PROJECT_SOURCE_DIR}/src/Nodes/LuaNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Modules/ModuleManager.cpp
 )
 
 file(COPY
@@ -93,7 +103,30 @@ file(COPY
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32 nfd) 
+set(DEFAULT_MODULE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/default_modules")
+message(STATUS "Copying default modules from ${DEFAULT_MODULE_SOURCE_DIR}")
+
+if(WIN32)
+    file(TO_CMAKE_PATH "$ENV{APPDATA}" APPDATA_PATH)
+    set(DEST_DIR "${APPDATA_PATH}/TCPCafe/Modules")
+
+    file(GLOB_RECURSE ALL_MODULES "${DEFAULT_MODULE_SOURCE_DIR}/*")
+
+    foreach(ASSET ${ALL_MODULES})
+      file(RELATIVE_PATH REL_PATH "${DEFAULT_MODULE_SOURCE_DIR}" "${ASSET}")
+      set(DEST_FILE "${DEST_DIR}/${REL_PATH}")
+      get_filename_component(DEST_DIR_PATH "${DEST_FILE}" DIRECTORY)
+      file(MAKE_DIRECTORY "${DEST_DIR_PATH}")
+      message("Copying ${DEST_FILE}")
+      file(COPY "${ASSET}" DESTINATION "${DEST_DIR_PATH}")
+    endforeach()
+    message(STATUS "Default modules copied to ${DEST_DIR}")
+else()
+    message(WARNING "Could not copy default modules")
+endif()
+
+
+target_link_libraries(${PROJECT_NAME} glfw opengl32.lib wsock32 ws2_32 nfd lua) 
 
 target_include_directories(${PROJECT_NAME}
 PUBLIC

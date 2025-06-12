@@ -72,18 +72,22 @@ void Node::ConstructFromJSON(const nlohmann::json& json, std::unordered_map<uint
 {
     inputPins.clear();
     outputPins.clear();
-    for (auto& [key, val] : json["pins"].items())
+    if(json.contains("pins"))
     {
-        std::shared_ptr<Pin> pin = std::make_shared<Pin>(val, idMap);
-
-        if(pin->pinKind == ax::NodeEditor::PinKind::Input)
+        for (auto& [key, val] : json["pins"].items())
         {
-            inputPins.emplace_back(pin);
-        }else
-        {
-            outputPins.emplace_back(pin);
+            std::shared_ptr<Pin> pin = std::make_shared<Pin>(val, idMap);
+        
+            if(pin->pinKind == ax::NodeEditor::PinKind::Input)
+            {
+                inputPins.emplace_back(pin);
+            }else
+            {
+                outputPins.emplace_back(pin);
+            }
         }
     }
+    
     SpecialConstructFromJSON(json);
 }
 
